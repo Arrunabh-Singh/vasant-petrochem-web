@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+}
+
+:root {
+  /* LOGO BASED PALETTE */
+  --color-vasant-primary: #246851; /* The Logo's Deep Teal */
+  --color-vasant-dark: #1a4a3a;    /* Darker shade for contrast */
+  --color-vasant-light: #e6f0ed;   /* Very light tint for backgrounds */
+  --color-vasant-accent: #34d399;  /* Bright Emerald for highlights */
+}
+
+@layer base {
+  body {
+    @apply bg-white text-slate-800 antialiased overflow-x-hidden selection:bg-[#246851] selection:text-white;
+  }
+}
+
+@layer components {
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .h1-hero {
+    @apply font-serif text-5xl md:text-7xl font-bold tracking-tight text-[#1a4a3a] leading-tight;
+  }
+  
+  .h2-section {
+    @apply font-serif text-3xl md:text-5xl font-bold text-[#246851] mb-6 relative;
+  }
+  
+  /* Glassmorphism tuned for Green/Teal */
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-md border border-[#246851]/10 shadow-xl;
+  }
+  
+  .glass-card {
+    @apply bg-white backdrop-blur-sm border border-slate-100 hover:border-[#246851]/40 hover:bg-[#e6f0ed]/50 transition-all duration-500 shadow-sm hover:shadow-lg;
+  }
+
+  /* Brand Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-8 py-4 overflow-hidden 
+    font-semibold text-white transition duration-300 ease-out bg-[#246851] rounded-sm;
+  }
+  
+  .btn-primary::before {
+    @apply absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-[#1a4a3a] ease-out;
+    content: '';
+  }
+  
+  .btn-primary:hover::before {
+    @apply translate-x-0;
+  }
+  
+  .btn-outline-brand {
+    @apply relative inline-flex items-center justify-center px-8 py-4 font-bold text-[#246851] transition-all duration-200 border-2 border-[#246851] font-sans rounded-sm
+    hover:bg-[#246851] hover:text-white;
+  }
+
+  /* Gradients */
+  .text-gradient-brand {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-[#246851] to-[#34d399];
+  }
+  
+  .bg-grid-pattern {
+    background-size: 50px 50px;
+    background-image: linear-gradient(to right, rgba(36, 104, 81, 0.05) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(36, 104, 81, 0.05) 1px, transparent 1px);
+  }
+}
