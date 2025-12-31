@@ -1,24 +1,24 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Droplets, Factory, ShieldCheck, MapPin, Phone, Mail, Menu, X, ChevronRight, Zap, Globe, Leaf } from "lucide-react";
+import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { ArrowRight, Droplets, Factory, ShieldCheck, MapPin, Phone, Mail, Menu, X, Globe } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
 // --- ANIMATION VARIANTS ---
-const fadeInUp = {
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
     y: 0, 
     transition: { 
       duration: 0.8, 
-      ease: [0.25, 0.25, 0, 1] // Custom cubic-bezier for "easeOut" equivalent but typesafe
+      ease: "easeOut"
     } 
   }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -143,7 +143,7 @@ const Hero = () => {
           </motion.h1>
           
           <motion.p variants={fadeInUp} className="text-slate-600 text-lg md:text-xl mb-12 leading-relaxed font-light">
-            Vasant Petrochem delivers premium industrial solvents and fuels engineered for performance. We combine cutting-edge refining technology with a robust supply chain to power Central India's manufacturing sector.
+            Vasant Petrochem delivers premium industrial solvents and fuels engineered for performance. We combine cutting-edge refining technology with a robust supply chain to power Central India&apos;s manufacturing sector.
           </motion.p>
           
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-5">
@@ -414,7 +414,7 @@ const Contact = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           
           <div className="lg:w-2/5 text-white relative z-10">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">Let's Fuel Your Growth</h2>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">Let&apos;s Fuel Your Growth</h2>
             <p className="text-slate-300 mb-10 leading-relaxed">
               Connect with our team in Indore for premium supply chain solutions.
             </p>
