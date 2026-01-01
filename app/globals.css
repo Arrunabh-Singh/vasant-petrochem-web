@@ -34,11 +34,11 @@
   
   /* Glassmorphism tuned for Green/Teal */
   .glass-panel {
-    @apply bg-white/80 backdrop-blur-md border border-[#246851]/10 shadow-xl;
+    @apply bg-white/60 backdrop-blur-lg border border-[#246851]/10 shadow-xl;
   }
   
   .glass-card {
-    @apply bg-white backdrop-blur-sm border border-slate-100 hover:border-[#246851]/40 hover:bg-[#e6f0ed]/50 transition-all duration-500 shadow-sm hover:shadow-lg;
+    @apply bg-white/70 backdrop-blur-md border border-slate-100 hover:border-[#246851]/40 hover:bg-[#e6f0ed]/50 transition-all duration-500 shadow-sm hover:shadow-lg;
   }
 
   /* Brand Buttons */
