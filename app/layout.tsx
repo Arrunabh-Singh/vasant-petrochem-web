@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Vastu Principle: 
 // The Inter font (Sans-serif) represents Modernity and Clarity (Air Element).
@@ -21,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-white text-slate-900`}>
+        <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
