@@ -11,6 +11,25 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 export const metadata: Metadata = {
   title: "Vasant Petrochem | Premium Refinery in Indore",
   description: "Vasant Petrochem - A modern, Vastu-compliant oil refinery based in Mangaliya, Indore. Excellence in petrochemicals with harmony and sustainability.",
+  openGraph: {
+    title: "Vasant Petrochem | Premium Refinery",
+    description: "Advanced petrochemical solutions powering Central India's manufacturing sector.",
+    url: "https://vasantpetrochem.com",
+    siteName: "Vasant Petrochem",
+    images: [
+      {
+        url: "/vasant_logo.png",
+        width: 800,
+        height: 800,
+        alt: "Vasant Petrochem Logo",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
