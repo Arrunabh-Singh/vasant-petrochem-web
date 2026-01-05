@@ -80,7 +80,7 @@ const Hero = () => {
                     style={{ y, opacity }}
                     className="lg:w-1/2 relative w-full"
                 >
-                    <div className="relative w-full aspect-[4/3] max-w-[600px] mx-auto group perspective-1000">
+                    <div className="relative w-full aspect-[4/3] max-w-[800px] mx-auto group perspective-1000">
                         {/* Backing decorative element */}
                         <div className="absolute -inset-4 border-2 border-[#246851]/10 rounded-2xl z-0 transition-transform duration-700 group-hover:rotate-1"></div>
 

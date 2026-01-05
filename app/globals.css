@@ -14,6 +14,9 @@
 }
 
 @layer base {
+  html {
+    scroll-padding-top: 100px; /* Fix for fixed navbar overlap */
+  }
   body {
     @apply bg-white text-slate-800 antialiased overflow-x-hidden selection:bg-[#246851] selection:text-white;
   }
@@ -43,18 +46,12 @@
 
   /* Brand Buttons */
   .btn-primary {
-    @apply relative inline-flex items-center justify-center px-8 py-4 overflow-hidden 
-    font-semibold text-white transition duration-300 ease-out bg-[#246851] rounded-sm;
+    @apply inline-flex items-center justify-center px-8 py-4 
+    font-bold text-white transition-all duration-300 ease-out bg-[#246851] rounded-sm
+    hover:bg-[#1a4a3a] hover:shadow-lg hover:-translate-y-1;
   }
   
-  .btn-primary::before {
-    @apply absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-[#1a4a3a] ease-out;
-    content: '';
-  }
-  
-  .btn-primary:hover::before {
-    @apply translate-x-0;
-  }
+  /* Removed complex pseudo-element hover for cleaner interaction */
   
   .btn-outline-brand {
     @apply relative inline-flex items-center justify-center px-8 py-4 font-bold text-[#246851] transition-all duration-200 border-2 border-[#246851] font-sans rounded-sm
