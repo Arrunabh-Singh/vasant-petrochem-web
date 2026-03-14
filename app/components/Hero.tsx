@@ -66,11 +66,11 @@ const Hero = () => {
                     </motion.p>
 
                     <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-5">
-                        <a href="#products" className="btn-primary px-10 shadow-xl shadow-[#246851]/10 hover:shadow-[#246851]/25">
-                            VIEW CATALOG
+                        <a href="#contact" className="btn-primary px-10 shadow-xl shadow-[#246851]/10 hover:shadow-[#246851]/25">
+                            GET A FREE QUOTE
                         </a>
-                        <a href="#contact" className="btn-outline-brand px-10">
-                            CONTACT SALES
+                        <a href="#products" className="btn-outline-brand px-10">
+                            VIEW CATALOG
                         </a>
                     </motion.div>
                 </motion.div>

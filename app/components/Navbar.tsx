@@ -4,27 +4,22 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-
-    // Smooth scroll handler
-    const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-        e.preventDefault();
-        setIsOpen(false);
-        const element = document.querySelector(href);
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
-        }
-    };
+    const pathname = usePathname();
 
     const navLinks = [
         { name: "Home", href: "#home" },
         { name: "About", href: "#about" },
         { name: "Products", href: "#products" },
+        { name: "Industries", href: "#industries" },
         { name: "Contact", href: "#contact" },
     ];
+
+    const isActive = (href: string) =>
+        href === "#home" ? pathname === "/" : false;
 
     return (
         <motion.nav
@@ -35,26 +30,16 @@ const Navbar = () => {
         >
             <div className="container-wide">
                 <div className="flex justify-between items-center h-24">
-                    {/* Logo Section */}
-                    <Link href="/" className="flex-shrink-0 flex items-center gap-6 group cursor-pointer">
+                    {/* Logo */}
+                    <a href="#home" className="flex-shrink-0 flex items-center gap-6 group cursor-pointer">
                         <div className="relative w-20 h-20 transition-transform duration-500 group-hover:scale-105">
-                            <Image
-                                src="/vasant_logo.png"
-                                alt="Vasant Petrochem Logo"
-                                fill
-                                className="object-contain"
-                                priority
-                            />
+                            <Image src="/vasant_logo.png" alt="Vasant Petrochem Logo" fill className="object-contain" priority />
                         </div>
                         <div className="flex flex-col border-l border-[#246851]/20 pl-6 h-12 justify-center">
-                            <span className="font-serif text-2xl font-bold text-[#1a4a3a] tracking-wide leading-none">
-                                VASANT
-                            </span>
-                            <span className="text-[10px] font-bold text-[#246851] tracking-[0.3em] uppercase mt-1">
-                                Petrochem
-                            </span>
+                            <span className="font-serif text-2xl font-bold text-[#1a4a3a] tracking-wide leading-none">VASANT</span>
+                            <span className="text-[10px] font-bold text-[#246851] tracking-[0.3em] uppercase mt-1">Petrochem</span>
                         </div>
-                    </Link>
+                    </a>
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex space-x-10 items-center">
@@ -62,19 +47,18 @@ const Navbar = () => {
                             <a
                                 key={item.name}
                                 href={item.href}
-                                onClick={(e) => handleScroll(e, item.href)}
-                                className="text-xs font-bold text-slate-500 hover:text-[#246851] transition-colors uppercase tracking-[0.15em] relative group"
+                                className={`text-xs font-bold transition-colors uppercase tracking-[0.15em] relative group ${
+                                    isActive(item.href) ? "text-[#246851]" : "text-slate-500 hover:text-[#246851]"
+                                }`}
                             >
                                 {item.name}
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#246851] transition-all duration-300 group-hover:w-full" />
+                                <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#246851] transition-all duration-300 ${
+                                    isActive(item.href) ? "w-full" : "w-0 group-hover:w-full"
+                                }`} />
                             </a>
                         ))}
-                        <a
-                            href="#contact"
-                            onClick={(e) => handleScroll(e, "#contact")}
-                            className="btn-primary text-[11px] px-8 py-3 tracking-widest rounded-sm shadow-lg shadow-[#246851]/10 hover:shadow-[#246851]/20"
-                        >
-                            GET QUOTE
+                        <a href="#contact" className="btn-primary text-[11px] px-8 py-3 tracking-widest rounded-sm shadow-lg shadow-[#246851]/10 hover:shadow-[#246851]/20">
+                            GET A FREE QUOTE
                         </a>
                     </div>
 
@@ -105,18 +89,20 @@ const Navbar = () => {
                                 <a
                                     key={item.name}
                                     href={item.href}
-                                    onClick={(e) => handleScroll(e, item.href)}
-                                    className="text-lg font-bold text-[#1a4a3a] py-3 border-b border-slate-50 hover:text-[#246851] pl-2 hover:bg-slate-50 transition-colors"
+                                    onClick={() => setIsOpen(false)}
+                                    className={`text-lg font-bold py-3 border-b border-slate-50 pl-2 hover:bg-slate-50 transition-colors ${
+                                        isActive(item.href) ? "text-[#246851]" : "text-[#1a4a3a] hover:text-[#246851]"
+                                    }`}
                                 >
                                     {item.name}
                                 </a>
                             ))}
                             <a
                                 href="#contact"
-                                onClick={(e) => handleScroll(e, "#contact")}
+                                onClick={() => setIsOpen(false)}
                                 className="btn-primary text-center mt-6 w-full py-4 text-xs tracking-widest"
                             >
-                                GET QUOTE
+                                GET A FREE QUOTE
                             </a>
                         </div>
                     </motion.div>

@@ -2,19 +2,38 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
+
+const productOptions = [
+    "Industrial Fuel Oil (IFO-380)",
+    "Base Oil SN500",
+    "Base Oil SN150",
+    "Paving Bitumen (VG-30)",
+    "Rubber Process Oil",
+    "Light Diesel Oil",
+    "Mineral Turpentine (MTO)",
+    "Petroleum Jelly",
+    "Other",
+];
 
 const Contact = () => {
-    const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        company: "",
+        product: "",
+        quantity: "",
+        message: "",
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const subject = `Website Inquiry: ${formData.name}`;
-        const body = `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`;
+        const subject = `Quote Request: ${formData.product || "General Inquiry"} — ${formData.company || formData.name}`;
+        const body = `Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company}\nProduct: ${formData.product}\nQuantity: ${formData.quantity}\n\nMessage:\n${formData.message}`;
         window.location.href = `mailto:vasantpetrochem@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
@@ -32,9 +51,9 @@ const Contact = () => {
                         viewport={{ once: true }}
                         className="lg:w-2/5 text-white relative z-10"
                     >
-                        <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">Let&apos;s Fuel Your Growth</h2>
+                        <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">Request a Free Quote</h2>
                         <p className="text-slate-300 mb-10 leading-relaxed">
-                            Connect with our team in Indore for premium supply chain solutions.
+                            Get custom pricing within 24 hours. Our team in Indore is ready to serve your petrochemical needs.
                         </p>
 
                         <div className="space-y-8">
@@ -65,6 +84,15 @@ const Contact = () => {
                                     <a href="mailto:vasantpetrochem@gmail.com" className="text-slate-300 text-sm hover:text-[#34d399] transition-colors">vasantpetrochem@gmail.com</a>
                                 </div>
                             </div>
+                            <div className="flex gap-4 items-center group">
+                                <div className="w-12 h-12 rounded-full bg-[#34d399]/10 flex items-center justify-center text-[#34d399] border border-[#34d399]/20 group-hover:bg-[#34d399]/20 transition-colors">
+                                    <Clock size={22} />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-white mb-1">Business Hours</p>
+                                    <p className="text-slate-300 text-sm">Mon — Sat: 9:00 AM — 6:00 PM IST</p>
+                                </div>
+                            </div>
                         </div>
                     </motion.div>
 
@@ -78,7 +106,7 @@ const Contact = () => {
                         <form className="space-y-5 bg-white/5 p-8 rounded-2xl border border-white/10 backdrop-blur-sm" onSubmit={handleSubmit}>
                             <div className="grid md:grid-cols-2 gap-5">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Name</label>
+                                    <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Full Name *</label>
                                     <input
                                         type="text" name="name" value={formData.name} onChange={handleChange} required
                                         className="w-full bg-black/20 border border-white/10 px-4 py-3 text-white focus:border-[#34d399] outline-none rounded-lg transition-colors placeholder:text-white/20"
@@ -86,7 +114,7 @@ const Contact = () => {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Email</label>
+                                    <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Business Email *</label>
                                     <input
                                         type="email" name="email" value={formData.email} onChange={handleChange} required
                                         className="w-full bg-black/20 border border-white/10 px-4 py-3 text-white focus:border-[#34d399] outline-none rounded-lg transition-colors placeholder:text-white/20"
@@ -94,22 +122,52 @@ const Contact = () => {
                                     />
                                 </div>
                             </div>
+                            <div className="grid md:grid-cols-2 gap-5">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Company Name</label>
+                                    <input
+                                        type="text" name="company" value={formData.company} onChange={handleChange}
+                                        className="w-full bg-black/20 border border-white/10 px-4 py-3 text-white focus:border-[#34d399] outline-none rounded-lg transition-colors placeholder:text-white/20"
+                                        placeholder="ABC Industries Pvt. Ltd."
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Product of Interest</label>
+                                    <select
+                                        name="product" value={formData.product} onChange={handleChange}
+                                        className="w-full bg-black/20 border border-white/10 px-4 py-3 text-white focus:border-[#34d399] outline-none rounded-lg transition-colors appearance-none cursor-pointer"
+                                    >
+                                        <option value="" className="bg-[#1a4a3a]">Select a product...</option>
+                                        {productOptions.map((p) => (
+                                            <option key={p} value={p} className="bg-[#1a4a3a]">{p}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Inquiry</label>
+                                <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Quantity Required</label>
+                                <input
+                                    type="text" name="quantity" value={formData.quantity} onChange={handleChange}
+                                    className="w-full bg-black/20 border border-white/10 px-4 py-3 text-white focus:border-[#34d399] outline-none rounded-lg transition-colors placeholder:text-white/20"
+                                    placeholder="e.g., 500 KL / month, 20 MT, bulk order"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-[#34d399] uppercase tracking-widest pl-1">Additional Details</label>
                                 <textarea
-                                    rows={4} name="message" value={formData.message} onChange={handleChange} required
+                                    rows={3} name="message" value={formData.message} onChange={handleChange}
                                     className="w-full bg-black/20 border border-white/10 px-4 py-3 text-white focus:border-[#34d399] outline-none rounded-lg transition-colors resize-none placeholder:text-white/20"
-                                    placeholder="Tell us about your requirements..."
+                                    placeholder="Delivery timeline, packaging preferences, certifications needed..."
                                 ></textarea>
                             </div>
                             <button
                                 type="submit"
-                                className="w-full py-4 bg-[#34d399] text-[#1a4a3a] font-bold rounded-lg hover:bg-white transition-all transform hover:-translate-y-1 shadow-lg shadow-[#34d399]/20"
+                                className="w-full py-4 bg-[#34d399] text-[#1a4a3a] font-bold rounded-lg hover:bg-white transition-all transform hover:-translate-y-1 shadow-lg shadow-[#34d399]/20 text-sm tracking-wide"
                             >
-                                SEND MESSAGE
+                                GET A FREE QUOTE
                             </button>
                             <p className="text-[10px] text-slate-400 text-center mt-4">
-                                Note: Clicking send will open your default email client (e.g. Gmail) to securely transmit your inquiry.
+                                Clicking send will open your default email client. We respond within 24 hours on business days.
                             </p>
                         </form>
                     </motion.div>
