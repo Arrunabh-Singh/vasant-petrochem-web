@@ -1,11 +1,22 @@
-"use client";
-
 import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { contact, site, addressLine } from "../content";
+import { getProducts } from "@/lib/products";
 
-const Footer = () => {
+const industries = [
+    "Road Construction",
+    "Paint & Coatings",
+    "Rubber & Polymers",
+    "Power & Energy",
+    "Automotive & Lubricants",
+];
+
+const Footer = async () => {
+    const products = await getProducts();
+
     return (
-        <footer className="bg-[#f8fafc] pt-24 pb-12 border-t border-slate-200">
+        <footer className="bg-surface pt-24 pb-12 border-t border-slate-200">
             <div className="container-wide">
                 <div className="grid md:grid-cols-12 gap-12 mb-16">
                     {/* Brand Column */}
@@ -13,16 +24,16 @@ const Footer = () => {
                         <div className="relative w-28 h-28 mb-6">
                             <Image src="/vasant_logo.png" alt="Vasant Petrochem Logo" fill className="object-contain" />
                         </div>
-                        <span className="font-serif font-bold text-[#1a4a3a] text-2xl mb-2">VASANT PETROCHEM</span>
+                        <span className="font-serif font-bold text-brand-dark text-2xl mb-2">VASANT PETROCHEM</span>
                         <p className="text-slate-500 text-sm leading-relaxed max-w-sm mb-6">
-                            Industrial Area, Mangaliya, Indore, MP 453771.<br />
-                            Premium petrochemical refinery powering Central India&apos;s manufacturing sector.
+                            {addressLine}.<br />
+                            {site.tagline}
                         </p>
                         <div className="flex gap-4">
-                            <a href="mailto:vasantpetrochem@gmail.com" className="w-10 h-10 rounded-full bg-[#1a4a3a] text-white flex items-center justify-center hover:bg-[#246851] transition-colors" aria-label="Email Us">
+                            <a href={`mailto:${contact.email}`} className="w-10 h-10 rounded-full bg-brand-dark text-white flex items-center justify-center hover:bg-brand transition-colors" aria-label="Email Us">
                                 <Mail size={16} />
                             </a>
-                            <a href="tel:+919425058496" className="w-10 h-10 rounded-full bg-[#1a4a3a] text-white flex items-center justify-center hover:bg-[#246851] transition-colors" aria-label="Call Us">
+                            <a href={contact.phoneHref} className="w-10 h-10 rounded-full bg-brand-dark text-white flex items-center justify-center hover:bg-brand transition-colors" aria-label="Call Us">
                                 <Phone size={16} />
                             </a>
                         </div>
@@ -30,44 +41,41 @@ const Footer = () => {
 
                     {/* Quick Links */}
                     <div className="md:col-span-4 lg:col-span-2">
-                        <h4 className="text-[#1a4a3a] font-bold uppercase tracking-widest text-xs mb-8">Company</h4>
+                        <h4 className="text-brand-dark font-bold uppercase tracking-widest text-xs mb-8">Company</h4>
                         <ul className="space-y-4 text-sm font-medium text-slate-600">
-                            <li><a href="#home" className="hover:text-[#246851] transition-colors">Home</a></li>
-                            <li><a href="#about" className="hover:text-[#246851] transition-colors">About Us</a></li>
-                            <li><a href="#infrastructure" className="hover:text-[#246851] transition-colors">Infrastructure</a></li>
-                            <li><a href="#certifications" className="hover:text-[#246851] transition-colors">Certifications</a></li>
-                            <li><a href="#contact" className="hover:text-[#246851] transition-colors">Contact</a></li>
+                            <li><Link href="/" className="hover:text-brand transition-colors">Home</Link></li>
+                            <li><Link href="/about" className="hover:text-brand transition-colors">About Us</Link></li>
+                            <li><Link href="/about#infrastructure" className="hover:text-brand transition-colors">Infrastructure</Link></li>
+                            <li><Link href="/contact" className="hover:text-brand transition-colors">Contact</Link></li>
                         </ul>
                     </div>
 
                     {/* Products Links */}
                     <div className="md:col-span-4 lg:col-span-3">
-                        <h4 className="text-[#1a4a3a] font-bold uppercase tracking-widest text-xs mb-8">Key Products</h4>
+                        <h4 className="text-brand-dark font-bold uppercase tracking-widest text-xs mb-8">Key Products</h4>
                         <ul className="space-y-4 text-sm font-medium text-slate-600">
-                            <li><a href="#products" className="hover:text-[#246851] transition-colors">Industrial Fuel Oil</a></li>
-                            <li><a href="#products" className="hover:text-[#246851] transition-colors">Base Oil SN500</a></li>
-                            <li><a href="#products" className="hover:text-[#246851] transition-colors">Paving Bitumen VG-30</a></li>
-                            <li><a href="#products" className="hover:text-[#246851] transition-colors">Rubber Process Oil</a></li>
-                            <li><a href="#products" className="hover:text-[#246851] transition-colors">Mineral Turpentine Oil</a></li>
+                            {products.map((p) => (
+                                <li key={p.id}>
+                                    <Link href={`/products/${p.slug}`} className="hover:text-brand transition-colors">{p.name}</Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     {/* Industries */}
                     <div className="md:col-span-4 lg:col-span-2">
-                        <h4 className="text-[#1a4a3a] font-bold uppercase tracking-widest text-xs mb-8">Industries</h4>
+                        <h4 className="text-brand-dark font-bold uppercase tracking-widest text-xs mb-8">Industries</h4>
                         <ul className="space-y-4 text-sm font-medium text-slate-600">
-                            <li><a href="#industries" className="hover:text-[#246851] transition-colors">Road Construction</a></li>
-                            <li><a href="#industries" className="hover:text-[#246851] transition-colors">Paint & Coatings</a></li>
-                            <li><a href="#industries" className="hover:text-[#246851] transition-colors">Rubber & Polymers</a></li>
-                            <li><a href="#industries" className="hover:text-[#246851] transition-colors">Power & Energy</a></li>
-                            <li><a href="#industries" className="hover:text-[#246851] transition-colors">Automotive</a></li>
+                            {industries.map((ind) => (
+                                <li key={ind}><Link href="/industries" className="hover:text-brand transition-colors">{ind}</Link></li>
+                            ))}
                         </ul>
                     </div>
                 </div>
 
                 <div className="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest text-center md:text-left">&copy; 2025 Vasant Petrochem. All Rights Reserved.</p>
-                    <p className="text-[10px] text-slate-300">Mangaliya, Indore, Madhya Pradesh, India</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest text-center md:text-left">&copy; {site.foundedYear} {site.name}. All Rights Reserved.</p>
+                    <p className="text-[10px] text-slate-300">{contact.address.street}, {contact.address.city}, {contact.address.region}, India</p>
                 </div>
             </div>
         </footer>

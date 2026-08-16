@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { site, contact } from "./content";
+import MotionProvider from "./components/MotionProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vasantpetrochem.com"),
-  title: "Vasant Petrochem | Premium Petrochemical Refinery in Indore, India",
-  description: "Vasant Petrochem is a leading petrochemical refinery in Mangaliya, Indore. We manufacture and supply base oil, bitumen, industrial fuel oil, rubber process oil, mineral turpentine, and light diesel oil across Central India.",
+  metadataBase: new URL(site.url),
+  title: {
+    default: "Vasant Petrochem | Industrial Oils, Fuels & Lubricants, Indore",
+    template: "%s | Vasant Petrochem",
+  },
+  description: "Vasant Petrochem manufactures and trades base oil, bitumen, industrial fuel oil, rubber process oil, mineral turpentine, light diesel oil, and branded industrial lubricants from Mangaliya, Indore, across Central India.",
   keywords: [
-    "petrochemical refinery Indore",
+    "petrochemical company Indore",
     "base oil manufacturer India",
-    "bitumen supplier Gujarat",
-    "industrial solvents supplier bulk",
+    "bitumen supplier Madhya Pradesh",
+    "industrial lubricants trader India",
     "petroleum products Madhya Pradesh",
     "VG-30 bitumen road construction",
     "base oil SN500 supplier",
@@ -21,21 +26,13 @@ export const metadata: Metadata = {
     "mineral turpentine oil India",
     "industrial fuel oil supplier",
     "light diesel oil bulk",
-    "petrochemical company India",
+    "industrial lubricants supplier India",
   ],
   openGraph: {
-    title: "Vasant Petrochem | Premium Petrochemical Refinery in Indore",
-    description: "Advanced petrochemical solutions powering Central India's manufacturing sector. Base oils, bitumen, industrial fuels, solvents & more.",
-    url: "https://vasantpetrochem.com",
-    siteName: "Vasant Petrochem",
-    images: [
-      {
-        url: "/vasant_logo.png",
-        width: 800,
-        height: 800,
-        alt: "Vasant Petrochem Logo",
-      },
-    ],
+    title: "Vasant Petrochem | Industrial Oils, Fuels & Lubricants",
+    description: "Manufacturing and trading base oils, bitumen, industrial fuels, and branded lubricants across Central India.",
+    url: site.url,
+    siteName: site.name,
     locale: "en_IN",
     type: "website",
   },
@@ -47,8 +44,17 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://vasantpetrochem.com",
+    canonical: site.url,
   },
+};
+
+const postalAddress = {
+  "@type": "PostalAddress",
+  streetAddress: contact.address.street,
+  addressLocality: contact.address.city,
+  addressRegion: contact.address.region,
+  postalCode: contact.address.postalCode,
+  addressCountry: contact.address.country,
 };
 
 const jsonLd = {
@@ -56,47 +62,33 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://vasantpetrochem.com/#organization",
-      name: "Vasant Petrochem",
-      url: "https://vasantpetrochem.com",
-      logo: "https://vasantpetrochem.com/vasant_logo.png",
-      description: "Premium petrochemical refinery manufacturing and supplying base oils, bitumen, industrial fuels, solvents, and process oils across Central India.",
+      "@id": `${site.url}/#organization`,
+      name: site.name,
+      url: site.url,
+      logo: `${site.url}/vasant_logo.png`,
+      description: "Manufacturer and trader of base oils, bitumen, industrial fuels, process oils, and branded industrial lubricants across Central India.",
       contactPoint: {
         "@type": "ContactPoint",
-        telephone: "+91-94250-58496",
+        telephone: contact.phone,
         contactType: "sales",
-        email: "vasantpetrochem@gmail.com",
+        email: contact.email,
         availableLanguage: ["English", "Hindi"],
       },
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Industrial Area, Mangaliya",
-        addressLocality: "Indore",
-        addressRegion: "Madhya Pradesh",
-        postalCode: "453771",
-        addressCountry: "IN",
-      },
+      address: postalAddress,
     },
     {
       "@type": "LocalBusiness",
-      "@id": "https://vasantpetrochem.com/#localbusiness",
-      name: "Vasant Petrochem",
-      image: "https://vasantpetrochem.com/vasant_logo.png",
-      url: "https://vasantpetrochem.com",
-      telephone: "+91-94250-58496",
-      email: "vasantpetrochem@gmail.com",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Industrial Area, Mangaliya",
-        addressLocality: "Indore",
-        addressRegion: "Madhya Pradesh",
-        postalCode: "453771",
-        addressCountry: "IN",
-      },
+      "@id": `${site.url}/#localbusiness`,
+      name: site.name,
+      image: `${site.url}/vasant_logo.png`,
+      url: site.url,
+      telephone: contact.phone,
+      email: contact.email,
+      address: postalAddress,
       geo: {
         "@type": "GeoCoordinates",
-        latitude: 22.6569,
-        longitude: 75.7898,
+        latitude: contact.address.lat,
+        longitude: contact.address.lng,
       },
       openingHoursSpecification: {
         "@type": "OpeningHoursSpecification",
@@ -108,10 +100,10 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "@id": "https://vasantpetrochem.com/#website",
-      url: "https://vasantpetrochem.com",
-      name: "Vasant Petrochem",
-      publisher: { "@id": "https://vasantpetrochem.com/#organization" },
+      "@id": `${site.url}/#website`,
+      url: site.url,
+      name: site.name,
+      publisher: { "@id": `${site.url}/#organization` },
     },
   ],
 };
@@ -130,7 +122,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-white text-slate-900`}>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );

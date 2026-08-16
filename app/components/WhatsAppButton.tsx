@@ -1,15 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { contact, site } from "../content";
 
 const WhatsAppButton = () => {
     const message = encodeURIComponent(
-        "Hello, I am interested in Vasant Petrochem's products. Please get in touch."
+        `Hello, I am interested in ${site.name}'s products. Please get in touch.`
     );
 
     return (
         <motion.a
-            href={`https://wa.me/919425058496?text=${message}`}
+            href={`https://wa.me/${contact.whatsapp}?text=${message}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
@@ -30,7 +31,7 @@ const WhatsAppButton = () => {
             </svg>
 
             {/* Tooltip */}
-            <span className="absolute right-16 bg-[#1a4a3a] text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none shadow-lg">
+            <span className="absolute right-16 bg-brand-dark text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none shadow-lg">
                 Chat on WhatsApp
             </span>
         </motion.a>

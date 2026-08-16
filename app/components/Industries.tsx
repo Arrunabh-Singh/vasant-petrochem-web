@@ -45,7 +45,7 @@ const industries = [
 const Industries = () => {
     return (
         <section id="industries" className="py-24 bg-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-gradient-radial from-[#246851]/5 to-transparent rounded-bl-full pointer-events-none blur-3xl" />
+            <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-radial from-brand/5 to-transparent rounded-bl-full pointer-events-none blur-3xl" />
 
             <div className="container-wide relative z-10">
                 <div className="text-center max-w-2xl mx-auto mb-16">
@@ -53,7 +53,7 @@ const Industries = () => {
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-[#34d399] font-bold tracking-[0.2em] uppercase text-xs"
+                        className="text-brand-accent font-bold tracking-[0.2em] uppercase text-xs"
                     >
                         Markets We Serve
                     </motion.span>
@@ -62,7 +62,7 @@ const Industries = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-3xl md:text-4xl font-serif font-bold text-[#1a4a3a] mt-3"
+                        className="text-3xl md:text-4xl font-serif font-bold text-brand-dark mt-3"
                     >
                         Industries & Applications
                     </motion.h2>
@@ -85,18 +85,18 @@ const Industries = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: idx * 0.08 }}
-                            className="group p-8 rounded-2xl bg-[#f8fafc] hover:bg-white border border-transparent hover:border-[#246851]/10 hover:shadow-xl transition-all duration-300 cursor-default"
+                            className="group p-8 rounded-2xl bg-surface hover:bg-white border border-transparent hover:border-brand/10 hover:shadow-xl transition-all duration-300 cursor-default"
                         >
-                            <div className="w-14 h-14 bg-[#246851]/5 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#246851] transition-all duration-300">
-                                <ind.icon className="w-7 h-7 text-[#246851] group-hover:text-white transition-colors duration-300" />
+                            <div className="w-14 h-14 bg-brand/5 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand transition-all duration-300">
+                                <ind.icon className="w-7 h-7 text-brand group-hover:text-white transition-colors duration-300" />
                             </div>
-                            <h3 className="text-lg font-bold text-[#1a4a3a] mb-2">{ind.name}</h3>
+                            <h3 className="text-lg font-bold text-brand-dark mb-2">{ind.name}</h3>
                             <p className="text-slate-500 text-sm leading-relaxed mb-4">{ind.desc}</p>
                             <div className="flex flex-wrap gap-2">
                                 {ind.products.map((product, pidx) => (
                                     <span
                                         key={pidx}
-                                        className="text-[10px] font-bold uppercase tracking-wider text-[#246851] bg-[#246851]/5 px-3 py-1 rounded-full"
+                                        className="text-[10px] font-bold uppercase tracking-wider text-brand bg-brand/5 px-3 py-1 rounded-full"
                                     >
                                         {product}
                                     </span>
