@@ -1,21 +1,23 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
-export type SignInState = { error?: string };
-
-export async function signIn(_prevState: SignInState, formData: FormData): Promise<SignInState> {
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
-
-  if (!email || !password) return { error: "Email and password are required." };
-
+export async function signInWithGoogle() {
+  const origin = (await headers()).get("origin");
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: "Invalid email or password." };
 
-  redirect("/admin");
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${origin}/auth/callback` },
+  });
+
+  if (error || !data.url) {
+    redirect("/admin/login?error=oauth_failed");
+  }
+
+  redirect(data.url);
 }
 
 export async function signOut() {
