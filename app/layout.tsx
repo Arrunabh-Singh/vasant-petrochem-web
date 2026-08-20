@@ -1,11 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { site, contact } from "./content";
-import MotionProvider from "./components/MotionProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+
+// viewportFit "cover" is what makes env(safe-area-inset-*) non-zero on iOS,
+// so the fixed bottom action bar clears the home indicator.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#f6faf8",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -122,7 +130,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-surface text-slate-800`}>
-        <MotionProvider>{children}</MotionProvider>
+        {children}
       </body>
     </html>
   );

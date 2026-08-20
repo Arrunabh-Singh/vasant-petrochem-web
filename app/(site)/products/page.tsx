@@ -20,7 +20,7 @@ export default async function ProductsPage() {
   const products = await getProducts();
 
   return (
-    <section className="wash-top pt-[100px] lg:pt-[clamp(120px,14vw,176px)] pb-14 lg:pb-24 min-h-screen">
+    <section className="wash-top pt-[100px] lg:pt-[clamp(120px,14vw,176px)] pb-14 lg:pb-24 min-h-dvh">
       <div className="container-wide">
         <div className="max-w-3xl mb-7 lg:mb-10">
           <span className="eyebrow">Product catalog</span>

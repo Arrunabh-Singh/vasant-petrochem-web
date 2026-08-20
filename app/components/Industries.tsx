@@ -111,7 +111,7 @@ const Industries = () => {
                 {/* Desktop: expanded card grid */}
                 <div className="hidden lg:grid lg:grid-cols-3 gap-6">
                     {industries.map((ind, idx) => (
-                        <Reveal key={ind.name} delay={idx * 0.06} className="h-full">
+                        <Reveal key={ind.name} className="h-full">
                             <div className="h-full p-[34px] rounded-[22px] glass glass-hover">
                                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 bg-[linear-gradient(150deg,rgba(52,211,153,0.22),rgba(36,104,81,0.08))] border border-white/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
                                     <ind.icon size={28} className="text-brand" strokeWidth={2} />

@@ -9,9 +9,8 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
     <>
       <AmbientBackground />
       <Navbar />
-      {/* pb clears the fixed mobile action bar; lg drops it. */}
-      <div className="relative z-1 pb-[92px] lg:pb-0">
-        <main className="min-h-screen">{children}</main>
+      <div className="relative z-1 pb-action-bar">
+        <main className="min-h-dvh">{children}</main>
         <Footer />
       </div>
       <WhatsAppButton />

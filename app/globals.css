@@ -25,6 +25,7 @@
 @keyframes vp-rise   { 0%, 100% { opacity: 0.25 } 50% { opacity: 0.7 } }
 @keyframes vp-sheen  { 0% { transform: translateX(-130%) skewX(-18deg) } 55%, 100% { transform: translateX(240%) skewX(-18deg) } }
 @keyframes vp-beam   { 0%, 100% { opacity: 0.18 } 50% { opacity: 0.42 } }
+@keyframes vp-reveal { from { opacity: 0; transform: translateY(30px) } to { opacity: 1; transform: none } }
 @keyframes vp-cue    { 0% { transform: translateY(-100%); opacity: 0 } 40% { opacity: 1 } 100% { transform: translateY(100%); opacity: 0 } }
 @keyframes vp-drift  {
   0%, 100% { transform: translate3d(0,0,0) scale(1) }
@@ -41,8 +42,11 @@
   html {
     background: var(--color-surface);
     scroll-behavior: smooth;
-    scroll-padding-top: 92px;
+    scroll-padding-top: 84px;
     -webkit-text-size-adjust: 100%;
+  }
+  @media (min-width: 1024px) {
+    html { scroll-padding-top: 112px; }
   }
   body {
     @apply bg-surface text-slate-800 antialiased overflow-x-hidden selection:bg-brand selection:text-white;
@@ -64,6 +68,7 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+    .reveal { animation: none !important; }
   }
 }
 
@@ -71,33 +76,56 @@
   .container-wide {
     max-width: 80rem;
     margin-inline: auto;
-    padding-inline: clamp(18px, 2.5vw, 32px);
+    padding-inline: 22px;
   }
+  @media (min-width: 1024px) {
+    .container-wide { padding-inline: clamp(18px, 2.5vw, 32px); }
+  }
+
+  /* Full-bleed rail that still lines up with .container-wide's gutter.
+     Replaces the negative margins that were making the page wider than
+     the phone screen. */
+  .bleed-rail {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-inline: 22px;
+    scrollbar-width: none;
+  }
+  .bleed-rail::-webkit-scrollbar { width: 0; height: 0 }
 
   /* --- Glass language -----------------------------------------------------
      One card recipe, used by every light surface in the design. `.glass-hover`
      opts a card into the lift; static panels leave it off. */
   .glass {
-    background: linear-gradient(145deg, rgba(255,255,255,0.84), rgba(255,255,255,0.44));
-    backdrop-filter: blur(24px) saturate(1.6);
-    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    @apply backdrop-blur-[10px] backdrop-saturate-[1.4] lg:backdrop-blur-[24px] lg:backdrop-saturate-[1.6];
+    background: linear-gradient(145deg, rgba(255,255,255,0.88), rgba(255,255,255,0.52));
     border: 1px solid rgba(255,255,255,0.78);
     box-shadow: 0 24px 60px -28px rgba(15,46,36,0.38), inset 0 1px 0 rgba(255,255,255,0.9);
   }
-  .glass-hover {
-    transition: background 0.4s, border-color 0.4s, box-shadow 0.4s, transform 0.4s;
+  @media (min-width: 1024px) {
+    .glass {
+      background: linear-gradient(145deg, rgba(255,255,255,0.84), rgba(255,255,255,0.44));
+    }
   }
+  /* Hover lift is a pointer affordance; on touch it just sticks after a tap. */
+  @media (hover: hover) and (pointer: fine) {
+    .glass-hover {
+      transition: background 0.4s, border-color 0.4s, box-shadow 0.4s, transform 0.4s;
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
   .glass-hover:hover {
     background: linear-gradient(145deg, rgba(255,255,255,0.96), rgba(255,255,255,0.62));
     border-color: rgba(255,255,255,0.96);
     box-shadow: 0 40px 80px -30px rgba(15,46,36,0.45), inset 0 1px 0 rgba(255,255,255,1);
     transform: translateY(-6px);
   }
+  }
   /* Light glass sitting on top of a dark panel. */
   .glass-dark {
+    @apply backdrop-blur-[14px] backdrop-saturate-[1.4];
     background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.04));
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
     border: 1px solid rgba(255,255,255,0.17);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 24px 50px -26px rgba(0,0,0,0.6);
   }
@@ -256,7 +284,10 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
     border-radius: 14px;
     padding: 15px 16px;
-    font-size: 15px;
+    font-size: 16px;
+  }
+  @media (min-width: 1024px) {
+    .field-input { font-size: 15px; }
   }
   .field-input::placeholder { color: rgba(255,255,255,0.32); }
 
@@ -270,6 +301,31 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(52,211,153,0.16));
     border: 1px solid rgba(255,255,255,0.8);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* Scroll reveal. The phone artboard has none, so this is desktop-only --
+     and it is pure CSS with no initial hidden state, so a slow or failed
+     bundle can never leave the page blank the way a JS-gated opacity does. */
+  @media (min-width: 1024px) {
+    @supports (animation-timeline: view()) {
+      .reveal {
+        animation: vp-reveal linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 26%;
+      }
+    }
+  }
+
+  /* The fixed bottom bar has to clear the iOS home indicator, and the page
+     has to clear the bar. One source of truth for both. */
+  .action-bar {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .pb-action-bar {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 1024px) {
+    .pb-action-bar { padding-bottom: 0; }
   }
 
   /* --- Utilities ---------------------------------------------------------- */

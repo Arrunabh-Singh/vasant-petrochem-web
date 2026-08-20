@@ -10,7 +10,7 @@ const quoteMessage = encodeURIComponent("Hello, I'd like to request a quote.");
  * thumb reach; the desktop equivalent is the WhatsApp pill + nav CTA.
  */
 const MobileActionBar = () => (
-    <div className="lg:hidden fixed bottom-0 inset-x-0 z-58 grid grid-cols-[56px_56px_1fr] gap-2.5 px-4 pt-3 pb-4 bg-[linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.94))] backdrop-blur-[26px] backdrop-saturate-[1.7] border-t border-white/80 shadow-[0_-18px_44px_-26px_rgba(15,46,36,0.45)]">
+    <div className="lg:hidden fixed bottom-0 inset-x-0 z-58 action-bar grid grid-cols-[56px_56px_1fr] gap-2.5 px-4 pt-3 bg-[linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.94))] backdrop-blur-[26px] backdrop-saturate-[1.7] border-t border-white/80 shadow-[0_-18px_44px_-26px_rgba(15,46,36,0.45)]">
         <a
             href={contact.phoneHref}
             aria-label="Call Vasant Petrochem"

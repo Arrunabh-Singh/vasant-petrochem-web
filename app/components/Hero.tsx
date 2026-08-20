@@ -1,40 +1,22 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import ParallaxVisual from "./ParallaxVisual";
 import RefineryVisual from "./RefineryVisual";
 
+/**
+ * Server-rendered on purpose: the hero is the first thing a phone paints, so
+ * nothing here waits on a bundle. Only the desktop parallax is client-side.
+ */
 const Hero = ({ productCount }: { productCount: number }) => {
-    const { scrollY } = useScroll();
-    const y = useTransform(scrollY, [0, 500], [0, 100]);
-    const opacity = useTransform(scrollY, [0, 500], [1, 0.5]);
-
-    // The artboards only park the visual on scroll at desktop widths; on a
-    // phone the same treatment fades the image out mid-read.
-    const [parallax, setParallax] = useState(false);
-    useEffect(() => {
-        const mq = window.matchMedia("(min-width: 1024px)");
-        const sync = () => setParallax(mq.matches);
-        sync();
-        mq.addEventListener("change", sync);
-        return () => mq.removeEventListener("change", sync);
-    }, []);
-
     return (
-        <section className="relative overflow-hidden wash-top pt-[108px] lg:pt-32 pb-14 lg:pb-20 lg:min-h-screen lg:flex lg:items-center">
+        <section className="relative overflow-hidden wash-top pt-[108px] lg:pt-32 pb-14 lg:pb-20 lg:min-h-dvh lg:flex lg:items-center">
             <div aria-hidden className="absolute inset-0 z-0 bg-grid-pattern opacity-60" />
             <div aria-hidden className="absolute -top-[6%] left-[30%] w-[70vw] lg:w-[34vw] h-[116%] lg:h-[130%] z-0 pointer-events-none rotate-[16deg] lg:rotate-[14deg] blur-[46px] lg:blur-[50px] anim-beam bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent)]" />
             <div aria-hidden className="hidden lg:block absolute -top-[10%] left-[52%] w-[20vw] h-[130%] z-0 pointer-events-none rotate-[14deg] opacity-70 bg-[linear-gradient(90deg,transparent,rgba(52,211,153,0.26),transparent)]" />
             <div aria-hidden className="hidden lg:block absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_50%_45%,transparent_42%,rgba(15,46,36,0.14)_100%)]" />
 
             <div className="container-wide relative z-10 w-full grid lg:grid-cols-2 items-center gap-12 lg:gap-[clamp(48px,6vw,96px)]">
-                <motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
-                >
+                <div>
                     <div className="inline-flex items-center gap-2.5 lg:gap-3 px-[18px] lg:px-5 py-2.5 lg:py-2 rounded-full glass mb-7 lg:mb-10">
                         <span className="relative flex w-2 h-2">
                             <span className="absolute inline-flex w-full h-full rounded-full bg-brand opacity-75 anim-ping" />
@@ -66,12 +48,9 @@ const Hero = ({ productCount }: { productCount: number }) => {
                             <span className="hidden lg:inline">VIEW CATALOG</span>
                         </Link>
                     </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                    style={parallax ? { y, opacity } : undefined}
-                    className="relative w-full mt-10 lg:mt-0 lg:pb-[clamp(30px,5vw,48px)]"
-                >
+                <ParallaxVisual className="relative w-full mt-10 lg:mt-0 lg:pb-[clamp(30px,5vw,48px)]">
                     {/* Mobile: the frame is a glass tray with the stat row inside it.
                         Desktop: a floating glass slab behind a bleeding stat card. */}
                     <div className="relative w-full max-w-[800px] mx-auto p-3.5 lg:p-0 rounded-[28px] lg:rounded-none glass lg:bg-none lg:border-0 lg:shadow-none lg:backdrop-blur-none">
@@ -105,7 +84,7 @@ const Hero = ({ productCount }: { productCount: number }) => {
                             </p>
                         </div>
                     </div>
-                </motion.div>
+                </ParallaxVisual>
             </div>
 
             {/* Scroll cue — phone artboard only */}

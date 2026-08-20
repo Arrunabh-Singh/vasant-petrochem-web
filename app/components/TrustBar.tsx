@@ -17,7 +17,7 @@ const TrustBar = ({ productCount }: { productCount: number }) => {
             <div className="container-wide relative z-10">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-[clamp(12px,2vw,32px)]">
                     {stats.map((stat, idx) => (
-                        <Reveal key={stat.label} delay={idx * 0.08}>
+                        <Reveal key={stat.label}>
                             <div className="h-full px-[18px] lg:px-[clamp(12px,2vw,18px)] py-[22px] lg:py-[clamp(20px,3vw,26px)] rounded-[20px] glass-dark lg:text-center">
                                 <p className="font-serif text-[22px] lg:text-[clamp(24px,2.4vw,30px)] font-bold text-white leading-[1.1] mb-2 lg:mb-1">
                                     {stat.value}

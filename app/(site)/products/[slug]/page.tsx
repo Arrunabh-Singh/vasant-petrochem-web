@@ -67,7 +67,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         }}
       />
 
-      <section className="wash-top pt-[96px] lg:pt-[clamp(120px,14vw,176px)] pb-14 lg:pb-24 min-h-screen">
+      <section className="wash-top pt-[96px] lg:pt-[clamp(120px,14vw,176px)] pb-14 lg:pb-24 min-h-dvh">
         <div className="container-wide">
           <Link
             href="/products"
@@ -190,7 +190,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <h2 className="h2-section mb-6 lg:mb-8">Related products</h2>
               <div className="grid gap-4 lg:grid-cols-3 lg:gap-6">
                 {related.map((p, idx) => (
-                  <Reveal key={p.id} delay={idx * 0.06} className="h-full">
+                  <Reveal key={p.id} className="h-full">
                     <ProductCard product={p} />
                   </Reveal>
                 ))}

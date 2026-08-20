@@ -37,7 +37,7 @@ const Contact = ({
     }, [state.status]);
 
     return (
-        <section id="contact" className="wash-top pt-[100px] lg:pt-32 pb-14 lg:pb-24 min-h-screen">
+        <section id="contact" className="wash-top pt-[100px] lg:pt-32 pb-14 lg:pb-24 min-h-dvh">
             <div className="container-wide">
                 {/* The shell is transparent on a phone and becomes the dark slab at lg. */}
                 <div className="relative overflow-hidden lg:grid lg:grid-cols-2 lg:gap-[clamp(40px,4vw,64px)] lg:p-[clamp(32px,4vw,64px)] lg:rounded-[30px] lg:border lg:border-white/15 lg:bg-[linear-gradient(135deg,rgba(15,46,36,0.97),rgba(36,104,81,0.92))] lg:shadow-[0_60px_120px_-50px_rgba(15,46,36,0.85),inset_0_1px_0_rgba(255,255,255,0.18)]">

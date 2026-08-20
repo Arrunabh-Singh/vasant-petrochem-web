@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -77,6 +76,7 @@ const Navbar = () => {
                             onClick={() => setIsOpen((v) => !v)}
                             aria-label={isOpen ? "Close menu" : "Open menu"}
                             aria-expanded={isOpen}
+                            aria-controls="mobile-menu"
                             className="lg:hidden w-12 h-12 flex items-center justify-center rounded-[14px] text-brand-dark bg-[linear-gradient(145deg,rgba(255,255,255,0.7),rgba(255,255,255,0.3))] border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -89,46 +89,38 @@ const Navbar = () => {
                 </div>
             </header>
 
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        key="sheet"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.22 }}
-                        className="lg:hidden fixed inset-x-0 bottom-0 top-[68px] z-55 overflow-y-auto px-[22px] py-7 bg-[linear-gradient(170deg,rgba(255,255,255,0.92),rgba(230,240,237,0.86))] backdrop-blur-[30px] backdrop-saturate-[1.7]"
+            {/* Always mounted and animated with a CSS transition -- `inert` keeps
+                it out of the tab order and the a11y tree while closed, and no
+                content depends on JS to become visible. */}
+            <div
+                id="mobile-menu"
+                inert={!isOpen}
+                className={`lg:hidden fixed inset-x-0 bottom-0 top-[68px] z-55 overflow-y-auto overscroll-contain px-[22px] py-7 bg-[linear-gradient(170deg,rgba(255,255,255,0.94),rgba(230,240,237,0.9))] backdrop-blur-[26px] transition-[opacity,transform,visibility] duration-250 ease-out ${
+                    isOpen ? "visible opacity-100 translate-y-0" : "invisible opacity-0 -translate-y-2"
+                }`}
+            >
+                {nav.map((item) => (
+                    <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center justify-between mb-3 px-5 py-[22px] rounded-[20px] bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,255,255,0.55))] border border-white/85 shadow-[0_16px_34px_-24px_rgba(15,46,36,0.4),inset_0_1px_0_rgba(255,255,255,0.95)]"
                     >
-                        {nav.map((item, i) => (
-                            <motion.div
-                                key={item.name}
-                                initial={{ opacity: 0, y: 14 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.04 * i, duration: 0.3 }}
-                            >
-                                <Link
-                                    href={item.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex items-center justify-between mb-3 px-5 py-[22px] rounded-[20px] bg-[linear-gradient(145deg,rgba(255,255,255,0.88),rgba(255,255,255,0.48))] border border-white/85 shadow-[0_16px_34px_-24px_rgba(15,46,36,0.4),inset_0_1px_0_rgba(255,255,255,0.95)]"
-                                >
-                                    <span className={`font-serif text-2xl font-bold ${isActive(item.href) ? "text-brand" : "text-brand-dark"}`}>
-                                        {item.name}
-                                    </span>
-                                    <ArrowRight size={20} className="text-brand" />
-                                </Link>
-                            </motion.div>
-                        ))}
+                        <span className={`font-serif text-2xl font-bold ${isActive(item.href) ? "text-brand" : "text-brand-dark"}`}>
+                            {item.name}
+                        </span>
+                        <ArrowRight size={20} className="text-brand" />
+                    </Link>
+                ))}
 
-                        <div className="mt-[26px] p-6 rounded-[22px] panel-deep">
-                            <p className="eyebrow mb-1.5">Talk to the desk</p>
-                            <a href={contact.phoneHref} className="block font-serif text-[26px] font-bold text-white mb-1">
-                                {contact.phone}
-                            </a>
-                            <p className="text-[13px] text-slate-300">{contact.hours}</p>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                <div className="mt-[26px] mb-[92px] p-6 rounded-[22px] panel-deep">
+                    <p className="eyebrow mb-1.5">Talk to the desk</p>
+                    <a href={contact.phoneHref} className="block font-serif text-[26px] font-bold text-white mb-1">
+                        {contact.phone}
+                    </a>
+                    <p className="text-[13px] text-slate-300">{contact.hours}</p>
+                </div>
+            </div>
         </>
     );
 };

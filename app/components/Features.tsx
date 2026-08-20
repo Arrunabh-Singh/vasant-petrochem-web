@@ -31,7 +31,7 @@ const Features = () => (
 
             <div className="grid gap-3.5 lg:grid-cols-3 lg:gap-8">
                 {features.map((f, idx) => (
-                    <Reveal key={f.title} delay={idx * 0.1} className="h-full">
+                    <Reveal key={f.title} className="h-full">
                         <div className="h-full p-[26px] lg:p-[34px] rounded-3xl lg:rounded-[22px] glass glass-hover">
                             <div className="w-[54px] h-[54px] lg:w-16 lg:h-16 rounded-2xl lg:rounded-[18px] flex items-center justify-center mb-5 lg:mb-8 bg-[linear-gradient(150deg,rgba(52,211,153,0.24),rgba(36,104,81,0.08))] border border-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
                                 <f.icon className="w-[26px] h-[26px] lg:w-8 lg:h-8 text-brand" strokeWidth={1.9} />

@@ -45,9 +45,7 @@ export default async function Home() {
         </Reveal>
 
         {/* Phone: full-bleed swipe rail. Desktop: three featured cards. */}
-        <div className="lg:hidden -mx-[18px] px-[18px]">
-          <ProductCarousel products={products} />
-        </div>
+        <ProductCarousel products={products} />
         <div className="lg:hidden container-wide pt-5">
           <Link href="/products" className="btn-ghost w-full">
             VIEW ALL {products.length} LINES

@@ -26,7 +26,7 @@ const ProductGrid = ({ products, showFilter = false }: { products: Product[]; sh
         <div>
             {showFilter && industries.length > 0 && (
                 // Phone: a single-row scroller. Desktop: wraps.
-                <div className="flex lg:flex-wrap gap-2.5 lg:gap-2 overflow-x-auto lg:overflow-visible no-scrollbar pb-5 lg:pb-0 mb-2 lg:mb-10 -mx-[18px] px-[18px] lg:mx-0 lg:px-0">
+                <div className="-mx-[22px] lg:mx-0 flex lg:flex-wrap gap-2.5 lg:gap-2 overflow-x-auto lg:overflow-visible no-scrollbar px-[22px] lg:px-0 pb-5 lg:pb-0 mb-2 lg:mb-10">
                     {[null, ...industries].map((ind) => (
                         <button
                             key={ind ?? "all"}
@@ -44,7 +44,7 @@ const ProductGrid = ({ products, showFilter = false }: { products: Product[]; sh
 
             <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3 lg:gap-6">
                 {filtered.map((p, idx) => (
-                    <Reveal key={p.id} delay={(idx % 6) * 0.06} className="h-full">
+                    <Reveal key={p.id} className="h-full">
                         <ProductCard product={p} />
                     </Reveal>
                 ))}

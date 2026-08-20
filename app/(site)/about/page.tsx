@@ -66,7 +66,7 @@ export default function AboutPage() {
 
           <div className="grid gap-3 lg:grid-cols-4 lg:gap-6">
             {values.map((v, idx) => (
-              <Reveal key={v.num} delay={idx * 0.08} className="h-full">
+              <Reveal key={v.num} className="h-full">
                 <div className="h-full p-[22px] lg:p-[34px] rounded-[22px] glass glass-hover">
                   <p className="font-serif text-[28px] lg:text-[32px] font-bold leading-none text-brand/25 mb-3 lg:mb-4">
                     {v.num}
