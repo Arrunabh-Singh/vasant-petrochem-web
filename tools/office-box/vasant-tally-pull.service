@@ -1,0 +1,9 @@
+[Unit]
+Description=Vasant Hub — Tally delta pull
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/vasant-hub/office-box
+ExecStart=/usr/bin/node --env-file=.env tally-pull.mjs

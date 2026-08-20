@@ -8,6 +8,10 @@ const links = [
   { name: "Leads", href: "/admin" },
   { name: "Products", href: "/admin/products" },
   { name: "TDS Requests", href: "/admin/tds-requests" },
+  { name: "Documents", href: "/admin/documents" },
+  { name: "Compliance", href: "/admin/compliance" },
+  { name: "Approvals", href: "/admin/approvals" },
+  { name: "Security", href: "/admin/security" },
 ];
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

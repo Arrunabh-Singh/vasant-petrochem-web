@@ -15,7 +15,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <p className="text-slate-600 mb-10">
           An unexpected error occurred. Please try again, or contact us if the problem persists.
         </p>
-        <button onClick={reset} className="btn-primary px-10">
+        <button onClick={reset} className="btn-solid px-10">
           TRY AGAIN
         </button>
       </div>

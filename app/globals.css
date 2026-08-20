@@ -8,64 +8,288 @@
      bg-brand, text-brand-dark, border-brand-accent/20, etc. */
   --color-brand: #246851;        /* logo deep teal */
   --color-brand-dark: #1a4a3a;   /* headings, dark sections */
+  --color-brand-deep: #0f2e24;   /* deepest end of the dark gradients */
   --color-brand-light: #e6f0ed;  /* tinted backgrounds */
   --color-brand-accent: #34d399; /* emerald highlights */
-  --color-surface: #f8fafc;      /* alternating section background */
+  --color-brand-muted: #7e948b;  /* small caps on tinted ground */
+  --color-surface: #f6faf8;      /* ambient page ground */
+}
+
+/* ---------------------------------------------------------------------------
+   Motion. Named vp-* to match the design source; every one is used by a
+   .anim-* utility below rather than being applied inline.
+   --------------------------------------------------------------------------- */
+@keyframes vp-ping   { 75%, 100% { transform: scale(2); opacity: 0 } }
+@keyframes vp-float  { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+@keyframes vp-flow   { to { stroke-dashoffset: -80 } }
+@keyframes vp-rise   { 0%, 100% { opacity: 0.25 } 50% { opacity: 0.7 } }
+@keyframes vp-sheen  { 0% { transform: translateX(-130%) skewX(-18deg) } 55%, 100% { transform: translateX(240%) skewX(-18deg) } }
+@keyframes vp-beam   { 0%, 100% { opacity: 0.18 } 50% { opacity: 0.42 } }
+@keyframes vp-cue    { 0% { transform: translateY(-100%); opacity: 0 } 40% { opacity: 1 } 100% { transform: translateY(100%); opacity: 0 } }
+@keyframes vp-drift  {
+  0%, 100% { transform: translate3d(0,0,0) scale(1) }
+  33%      { transform: translate3d(5vw,-4vh,0) scale(1.14) }
+  66%      { transform: translate3d(-4vw,4vh,0) scale(0.92) }
+}
+@keyframes vp-drift-wide {
+  0%, 100% { transform: translate3d(0,0,0) scale(1) }
+  33%      { transform: translate3d(14vw,-8vh,0) scale(1.18) }
+  66%      { transform: translate3d(-12vw,7vh,0) scale(0.9) }
 }
 
 @layer base {
   html {
-    scroll-padding-top: 100px; /* Fix for fixed navbar overlap */
+    background: var(--color-surface);
+    scroll-behavior: smooth;
+    scroll-padding-top: 92px;
+    -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-white text-slate-800 antialiased overflow-x-hidden selection:bg-brand selection:text-white;
+    @apply bg-surface text-slate-800 antialiased overflow-x-hidden selection:bg-brand selection:text-white;
+  }
+  * {
+    -webkit-tap-highlight-color: rgba(36, 104, 81, 0.08);
+  }
+  /* 16px keeps iOS Safari from zooming the viewport on focus. */
+  input, select, textarea, button { font-family: inherit; font-size: 16px; }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: rgba(52, 211, 153, 0.6) !important;
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 @layer components {
   .container-wide {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: clamp(18px, 2.5vw, 32px);
   }
-  
+
+  /* --- Glass language -----------------------------------------------------
+     One card recipe, used by every light surface in the design. `.glass-hover`
+     opts a card into the lift; static panels leave it off. */
+  .glass {
+    background: linear-gradient(145deg, rgba(255,255,255,0.84), rgba(255,255,255,0.44));
+    backdrop-filter: blur(24px) saturate(1.6);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    border: 1px solid rgba(255,255,255,0.78);
+    box-shadow: 0 24px 60px -28px rgba(15,46,36,0.38), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .glass-hover {
+    transition: background 0.4s, border-color 0.4s, box-shadow 0.4s, transform 0.4s;
+  }
+  .glass-hover:hover {
+    background: linear-gradient(145deg, rgba(255,255,255,0.96), rgba(255,255,255,0.62));
+    border-color: rgba(255,255,255,0.96);
+    box-shadow: 0 40px 80px -30px rgba(15,46,36,0.45), inset 0 1px 0 rgba(255,255,255,1);
+    transform: translateY(-6px);
+  }
+  /* Light glass sitting on top of a dark panel. */
+  .glass-dark {
+    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.04));
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.17);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 24px 50px -26px rgba(0,0,0,0.6);
+  }
+  /* The solid dark slab: contact panel, TDS card, CTA blocks. */
+  .panel-deep {
+    background: linear-gradient(135deg, rgba(15,46,36,0.97), rgba(36,104,81,0.92));
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 50px 100px -50px rgba(15,46,36,0.8), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+
+  /* --- Section washes. Translucent so the ambient blobs read through. ------ */
+  .wash-top  { background: linear-gradient(180deg, rgba(255,255,255,0.50), rgba(230,240,237,0.32)); }
+  .wash-mid  { background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.38)); }
+  .wash-alt  { background: linear-gradient(180deg, rgba(230,240,237,0.42), rgba(255,255,255,0.50)); }
+  .wash-deep { background: linear-gradient(115deg, #0f2e24, #1a4a3a 52%, #246851); }
+
+  /* --- Type --------------------------------------------------------------- */
+  .eyebrow {
+    @apply font-bold uppercase text-brand-accent;
+    font-size: clamp(10.5px, 1vw, 12px);
+    letter-spacing: 0.22em;
+  }
+  .h-display {
+    @apply font-serif font-bold text-brand-dark;
+    line-height: 1.14;
+  }
   .h1-hero {
-    @apply font-serif text-5xl md:text-7xl font-bold tracking-tight text-brand-dark leading-tight;
+    @apply font-serif font-bold text-brand-dark;
+    font-size: clamp(38px, 5.2vw, 72px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
   }
-  
+  .h1-page {
+    @apply font-serif font-bold text-brand-dark;
+    font-size: clamp(34px, 4.4vw, 56px);
+    line-height: 1.12;
+  }
   .h2-section {
-    @apply font-serif text-3xl md:text-5xl font-bold text-brand mb-6 relative;
+    @apply font-serif font-bold text-brand-dark;
+    font-size: clamp(28px, 3.4vw, 44px);
+    line-height: 1.14;
   }
-  
-  /* Glassmorphism tuned for Green/Teal */
-  .glass-panel {
-    @apply bg-white/80 backdrop-blur-md border border-brand/10 shadow-xl;
-  }
-  
-  .glass-card {
-    @apply bg-white backdrop-blur-sm border border-slate-100 hover:border-brand/40 hover:bg-brand-light/50 transition-all duration-500 shadow-sm hover:shadow-lg;
-  }
-
-  /* Brand Buttons */
-  .btn-primary {
-    @apply inline-flex items-center justify-center px-8 py-4 
-    font-bold text-white transition-all duration-300 ease-out bg-brand rounded-sm
-    hover:bg-brand-dark hover:shadow-lg hover:-translate-y-1;
-  }
-  
-  /* Removed complex pseudo-element hover for cleaner interaction */
-  
-  .btn-outline-brand {
-    @apply relative inline-flex items-center justify-center px-8 py-4 font-bold text-brand transition-all duration-200 border-2 border-brand font-sans rounded-sm
-    hover:bg-brand hover:text-white;
-  }
-
-  /* Gradients */
   .text-gradient-brand {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-accent;
+    background: linear-gradient(105deg, #246851, #34d399);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
   }
-  
+  .spec-key {
+    @apply uppercase text-slate-400;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+  }
+  .spec-val {
+    @apply font-bold text-brand-dark text-right;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px;
+  }
+
+  /* --- Buttons. 56px+ tall on touch, per the mobile artboard. -------------- */
+  .btn-solid {
+    @apply inline-flex items-center justify-center gap-2.5 font-bold cursor-pointer;
+    letter-spacing: 0.04em;
+    font-size: 14px;
+    min-height: 56px;
+    padding-inline: 32px;
+    border-radius: 16px;
+    transition: background 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+    @apply text-white;
+    background: linear-gradient(135deg, #246851, #1a4a3a);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 26px 50px -22px rgba(15,46,36,0.8), inset 0 1px 0 rgba(255,255,255,0.28);
+  }
+  .btn-solid:hover {
+    background: linear-gradient(135deg, #1a4a3a, #0f2e24);
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 32px 60px -22px rgba(15,46,36,0.85), inset 0 1px 0 rgba(255,255,255,0.34);
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2.5 font-bold cursor-pointer;
+    letter-spacing: 0.04em;
+    font-size: 14px;
+    min-height: 56px;
+    padding-inline: 32px;
+    border-radius: 16px;
+    transition: background 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+    @apply text-brand-dark;
+    background: linear-gradient(145deg, rgba(255,255,255,0.86), rgba(255,255,255,0.42));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.86);
+    box-shadow: 0 18px 40px -26px rgba(15,46,36,0.45), inset 0 1px 0 rgba(255,255,255,0.95);
+  }
+  .btn-ghost:hover {
+    background: #246851;
+    color: #ffffff;
+    transform: translateY(-3px);
+  }
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2.5 font-bold cursor-pointer;
+    letter-spacing: 0.04em;
+    font-size: 14px;
+    min-height: 56px;
+    padding-inline: 32px;
+    border-radius: 16px;
+    transition: background 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+    background: #34d399;
+    color: #0f2e24;
+    border: 1px solid rgba(255,255,255,0.42);
+    box-shadow: 0 26px 50px -22px rgba(52,211,153,0.6), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .btn-accent:hover {
+    background: #ffffff;
+    color: #0f2e24;
+    transform: translateY(-3px);
+  }
+  /* Desktop artboard squares the corners off and turns the secondary button
+     into a 2px brand outline; mobile keeps the 16px glass pill. */
+  @media (min-width: 1024px) {
+    .btn-solid, .btn-ghost, .btn-accent { border-radius: 2px; }
+    .btn-ghost {
+      background: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: 2px solid #246851;
+      color: #246851;
+      box-shadow: none;
+    }
+    .btn-ghost:hover { background: #246851; color: #ffffff; transform: none; }
+  }
+  .btn-solid:disabled, .btn-ghost:disabled, .btn-accent:disabled {
+    @apply opacity-60 cursor-not-allowed;
+    transform: none;
+  }
+
+  /* Admin dashboard button — kept as-is so the admin UI is untouched. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-4 font-bold text-white bg-brand rounded-sm
+    transition-all duration-300 ease-out hover:bg-brand-dark hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* --- Form fields on the dark panel -------------------------------------- */
+  .field-label {
+    @apply font-bold uppercase text-brand-accent;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+  }
+  .field-input {
+    @apply w-full text-white;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 15px 16px;
+    font-size: 15px;
+  }
+  .field-input::placeholder { color: rgba(255,255,255,0.32); }
+
+  /* --- Chips -------------------------------------------------------------- */
+  .chip {
+    @apply inline-flex items-center font-bold uppercase text-brand-dark;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(52,211,153,0.16));
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* --- Utilities ---------------------------------------------------------- */
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-scrollbar::-webkit-scrollbar { width: 0; height: 0; }
+
   .bg-grid-pattern {
     background-size: 50px 50px;
     background-image: linear-gradient(to right, rgba(36, 104, 81, 0.05) 1px, transparent 1px),
                       linear-gradient(to bottom, rgba(36, 104, 81, 0.05) 1px, transparent 1px);
   }
 }
+
+@utility anim-drift      { animation: vp-drift 34s ease-in-out infinite; }
+@utility anim-drift-slow { animation: vp-drift 48s ease-in-out infinite reverse; }
+@utility anim-drift-wide { animation: vp-drift-wide 30s ease-in-out infinite; }
+@utility anim-ping       { animation: vp-ping 1.4s cubic-bezier(0,0,0.2,1) infinite; }
+@utility anim-float      { animation: vp-float 6s ease-in-out infinite; }
+@utility anim-flow       { animation: vp-flow 3s linear infinite; }
+@utility anim-rise       { animation: vp-rise 5s ease-in-out infinite; }
+@utility anim-sheen      { animation: vp-sheen 9s ease-in-out infinite; }
+@utility anim-beam       { animation: vp-beam 11s ease-in-out infinite; }
+@utility anim-cue        { animation: vp-cue 2.4s ease-in-out infinite; }

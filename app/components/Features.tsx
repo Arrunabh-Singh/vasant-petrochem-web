@@ -1,83 +1,49 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Droplets, Globe, ShieldCheck } from "lucide-react";
+import Reveal from "./Reveal";
 
-const Features = () => {
-    const features = [
-        {
-            icon: Droplets,
-            title: "Manufacturing & Trading",
-            desc: "We manufacture our own product lines and source branded lubricants from trusted suppliers to cover what we don't make ourselves.",
-            delay: 0
-        },
-        {
-            icon: Globe,
-            title: "Central India Coverage",
-            desc: "Based in Indore, serving industrial buyers across Madhya Pradesh and neighboring states.",
-            delay: 0.2
-        },
-        {
-            icon: ShieldCheck,
-            title: "Careful Handling",
-            desc: "Attentive storage and handling practices across our facility and supply chain.",
-            delay: 0.4
-        }
-    ];
+const features = [
+    {
+        icon: Droplets,
+        title: "Manufacturing & Trading",
+        body: "We manufacture our own product lines and source branded lubricants from trusted suppliers to cover what we don't make ourselves.",
+    },
+    {
+        icon: Globe,
+        title: "Central India Coverage",
+        body: "Based in Indore, serving industrial buyers across Madhya Pradesh and neighbouring states.",
+    },
+    {
+        icon: ShieldCheck,
+        title: "Careful Handling",
+        body: "Attentive storage and handling practices across our facility and supply chain.",
+    },
+];
 
-    return (
-        <section id="about" className="py-24 bg-white relative overflow-hidden">
-            {/* Subtle Background Pattern */}
-            <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none bg-[radial-gradient(var(--color-brand)_1px,transparent_1px)] [background-size:20px_20px]" />
+const Features = () => (
+    <section id="about" className="relative overflow-hidden wash-mid py-14 lg:py-[clamp(56px,9vw,96px)]">
+        <div aria-hidden className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#246851_1px,transparent_1px)] bg-[size:20px_20px]" />
 
-            <div className="container-wide relative z-10">
-                <div className="text-center max-w-2xl mx-auto mb-16">
-                    <motion.span
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-brand-accent font-bold tracking-[0.2em] uppercase text-xs"
-                    >
-                        Why Choose Vasant
-                    </motion.span>
-                    <motion.h2
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                        className="text-3xl md:text-4xl font-serif font-bold text-brand-dark mt-3"
-                    >
-                        Engineering Excellence
-                    </motion.h2>
-                </div>
+        <div className="container-wide relative z-10">
+            <Reveal className="lg:text-center lg:max-w-2xl lg:mx-auto mb-7 lg:mb-16">
+                <span className="eyebrow">Why Vasant</span>
+                <h2 className="h2-section mt-2.5 lg:mt-3">Engineering excellence</h2>
+            </Reveal>
 
-                <div className="grid md:grid-cols-3 gap-8">
-                    {features.map((f, idx) => (
-                        <motion.div
-                            key={idx}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: f.delay, duration: 0.5 }}
-                            whileHover={{ y: -5 }}
-                            className="group p-8 rounded-2xl bg-surface hover:bg-white border border-transparent hover:border-brand/10 hover:shadow-2xl transition-all duration-300 cursor-default relative overflow-hidden"
-                        >
-                            {/* Hover Gradient Background */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-brand/0 to-brand-accent/0 group-hover:from-brand/5 group-hover:to-brand-accent/10 transition-colors duration-500" />
-
-                            <div className="relative z-10">
-                                <div className="w-16 h-16 bg-brand/5 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-brand transition-all duration-300 shadow-sm group-hover:shadow-lg group-hover:shadow-brand/30">
-                                    <f.icon className="w-8 h-8 text-brand group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <h3 className="text-xl font-bold text-brand-dark mb-4">{f.title}</h3>
-                                <p className="text-slate-500 leading-relaxed text-sm group-hover:text-slate-600">{f.desc}</p>
+            <div className="grid gap-3.5 lg:grid-cols-3 lg:gap-8">
+                {features.map((f, idx) => (
+                    <Reveal key={f.title} delay={idx * 0.1} className="h-full">
+                        <div className="h-full p-[26px] lg:p-[34px] rounded-3xl lg:rounded-[22px] glass glass-hover">
+                            <div className="w-[54px] h-[54px] lg:w-16 lg:h-16 rounded-2xl lg:rounded-[18px] flex items-center justify-center mb-5 lg:mb-8 bg-[linear-gradient(150deg,rgba(52,211,153,0.24),rgba(36,104,81,0.08))] border border-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                                <f.icon className="w-[26px] h-[26px] lg:w-8 lg:h-8 text-brand" strokeWidth={1.9} />
                             </div>
-                        </motion.div>
-                    ))}
-                </div>
+                            <h3 className="text-[19px] lg:text-xl font-bold text-brand-dark mb-2.5 lg:mb-4">{f.title}</h3>
+                            <p className="text-[15px] lg:text-sm leading-[1.7] text-slate-500 text-pretty">{f.body}</p>
+                        </div>
+                    </Reveal>
+                ))}
             </div>
-        </section>
-    );
-};
+        </div>
+    </section>
+);
 
 export default Features;

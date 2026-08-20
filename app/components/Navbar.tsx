@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { nav } from "../content";
+import { contact, nav } from "../content";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,94 +15,121 @@ const Navbar = () => {
     const isActive = (href: string) =>
         href === "/" ? pathname === "/" : pathname.startsWith(href);
 
+    // Links in the sheet close it themselves; this covers the one route change
+    // they can't see — the browser back button while the sheet is open.
+    useEffect(() => {
+        const close = () => setIsOpen(false);
+        window.addEventListener("popstate", close);
+        return () => window.removeEventListener("popstate", close);
+    }, []);
+
+    // While the sheet is open the page behind it must not scroll.
+    useEffect(() => {
+        if (!isOpen) return;
+        const previous = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = previous;
+        };
+    }, [isOpen]);
+
     return (
-        <motion.nav
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-brand/10 supports-[backdrop-filter]:bg-white/60"
-        >
-            <div className="container-wide">
-                <div className="flex justify-between items-center h-24">
-                    {/* Logo */}
-                    <Link href="/" className="flex-shrink-0 flex items-center gap-6 group cursor-pointer">
-                        <div className="relative w-20 h-20 transition-transform duration-500 group-hover:scale-105">
-                            <Image src="/vasant_logo.png" alt="Vasant Petrochem Logo" fill className="object-contain" priority />
-                        </div>
-                        <div className="flex flex-col border-l border-brand/20 pl-6 h-12 justify-center">
-                            <span className="font-serif text-2xl font-bold text-brand-dark tracking-wide leading-none">VASANT</span>
-                            <span className="text-[10px] font-bold text-brand tracking-[0.3em] uppercase mt-1">Petrochem</span>
-                        </div>
-                    </Link>
-
-                    {/* Desktop Menu */}
-                    <div className="hidden md:flex space-x-10 items-center">
-                        {nav.map((item) => (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`text-xs font-bold transition-colors uppercase tracking-[0.15em] relative group ${
-                                    isActive(item.href) ? "text-brand" : "text-slate-500 hover:text-brand"
-                                }`}
-                            >
-                                {item.name}
-                                <span className={`absolute -bottom-1 left-0 h-0.5 bg-brand transition-all duration-300 ${
-                                    isActive(item.href) ? "w-full" : "w-0 group-hover:w-full"
-                                }`} />
-                            </Link>
-                        ))}
-                        <Link href="/contact" className="btn-primary text-[11px] px-8 py-3 tracking-widest rounded-sm shadow-lg shadow-brand/10 hover:shadow-brand/20">
-                            GET A FREE QUOTE
+        <>
+            <header className="fixed top-0 inset-x-0 z-60 h-[68px] lg:h-24 bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(255,255,255,0.56))] backdrop-blur-[26px] backdrop-saturate-[1.8] border-b border-white/75 shadow-[0_12px_40px_-24px_rgba(15,46,36,0.5)]">
+                <div className="container-wide h-full">
+                    <div className="flex h-full items-center justify-between gap-4">
+                        <Link href="/" className="flex items-center gap-3 lg:gap-6 min-w-0 group">
+                            <span className="relative block w-[42px] h-[42px] lg:w-[72px] lg:h-[72px] shrink-0 transition-transform duration-500 group-hover:scale-105">
+                                <Image src="/vasant_logo.png" alt="Vasant Petrochem" fill sizes="72px" className="object-contain" priority />
+                            </span>
+                            <span className="flex flex-col justify-center leading-none lg:h-12 lg:border-l lg:border-brand/20 lg:pl-6">
+                                <span className="font-serif text-[19px] lg:text-2xl font-bold text-brand-dark tracking-[0.02em] leading-none">VASANT</span>
+                                <span className="text-[8px] lg:text-[10px] font-bold text-brand tracking-[0.3em] uppercase mt-1">Petrochem</span>
+                            </span>
                         </Link>
-                    </div>
 
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center">
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="text-brand p-2 hover:bg-brand/5 rounded-lg transition-colors"
-                            aria-label="Toggle menu"
-                        >
-                            {isOpen ? <X size={28} /> : <Menu size={28} />}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Mobile Menu */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden absolute top-24 left-0 w-full bg-white border-b border-brand/10 shadow-xl overflow-hidden"
-                    >
-                        <div className="flex flex-col p-6 space-y-2">
+                        {/* Desktop rail */}
+                        <nav className="hidden lg:flex items-center gap-[clamp(20px,2.6vw,40px)]">
                             {nav.map((item) => (
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className={`text-lg font-bold py-3 border-b border-slate-50 pl-2 hover:bg-slate-50 transition-colors ${
+                                    className={`relative text-xs font-bold uppercase tracking-[0.15em] whitespace-nowrap py-1 transition-colors group ${
                                         isActive(item.href) ? "text-brand" : "text-brand-dark hover:text-brand"
                                     }`}
                                 >
                                     {item.name}
+                                    <span
+                                        className={`absolute left-0 -bottom-1 h-0.5 bg-brand transition-all duration-300 ${
+                                            isActive(item.href) ? "w-full" : "w-0 group-hover:w-full"
+                                        }`}
+                                    />
                                 </Link>
                             ))}
-                            <Link
-                                href="/contact"
-                                onClick={() => setIsOpen(false)}
-                                className="btn-primary text-center mt-6 w-full py-4 text-xs tracking-widest"
-                            >
+                            <Link href="/contact" className="btn-solid min-h-0 py-3 px-8 text-[11px] tracking-[0.1em]">
                                 GET A FREE QUOTE
                             </Link>
+                        </nav>
+
+                        {/* Mobile trigger */}
+                        <button
+                            type="button"
+                            onClick={() => setIsOpen((v) => !v)}
+                            aria-label={isOpen ? "Close menu" : "Open menu"}
+                            aria-expanded={isOpen}
+                            className="lg:hidden w-12 h-12 flex items-center justify-center rounded-[14px] text-brand-dark bg-[linear-gradient(145deg,rgba(255,255,255,0.7),rgba(255,255,255,0.3))] border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                                <path d={isOpen ? "M18 6 6 18" : "M4 7h16"} />
+                                <path d={isOpen ? "m6 6 12 12" : "M4 12h16"} />
+                                <path d={isOpen ? "M12 12h.01" : "M4 17h16"} />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        key="sheet"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.22 }}
+                        className="lg:hidden fixed inset-x-0 bottom-0 top-[68px] z-55 overflow-y-auto px-[22px] py-7 bg-[linear-gradient(170deg,rgba(255,255,255,0.92),rgba(230,240,237,0.86))] backdrop-blur-[30px] backdrop-saturate-[1.7]"
+                    >
+                        {nav.map((item, i) => (
+                            <motion.div
+                                key={item.name}
+                                initial={{ opacity: 0, y: 14 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.04 * i, duration: 0.3 }}
+                            >
+                                <Link
+                                    href={item.href}
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex items-center justify-between mb-3 px-5 py-[22px] rounded-[20px] bg-[linear-gradient(145deg,rgba(255,255,255,0.88),rgba(255,255,255,0.48))] border border-white/85 shadow-[0_16px_34px_-24px_rgba(15,46,36,0.4),inset_0_1px_0_rgba(255,255,255,0.95)]"
+                                >
+                                    <span className={`font-serif text-2xl font-bold ${isActive(item.href) ? "text-brand" : "text-brand-dark"}`}>
+                                        {item.name}
+                                    </span>
+                                    <ArrowRight size={20} className="text-brand" />
+                                </Link>
+                            </motion.div>
+                        ))}
+
+                        <div className="mt-[26px] p-6 rounded-[22px] panel-deep">
+                            <p className="eyebrow mb-1.5">Talk to the desk</p>
+                            <a href={contact.phoneHref} className="block font-serif text-[26px] font-bold text-white mb-1">
+                                {contact.phone}
+                            </a>
+                            <p className="text-[13px] text-slate-300">{contact.hours}</p>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </motion.nav>
+        </>
     );
 };
 

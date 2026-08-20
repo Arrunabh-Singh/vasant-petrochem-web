@@ -1,0 +1,10 @@
+[Unit]
+Description=Vasant Hub — Supabase keepalive ping
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/vasant-hub/office-box
+EnvironmentFile=/opt/vasant-hub/office-box/.env
+ExecStart=/bin/bash keepalive.sh

@@ -7,7 +7,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const product = await getProductByIdAdmin(id);
   if (!product) notFound();
 
-  const tdsUrl = product.tds_path ? await getAdminSignedTdsUrl(product.tds_path) : null;
+  const tdsUrl = product.tds_document_id ? await getAdminSignedTdsUrl(product.tds_document_id) : null;
 
   return (
     <div>

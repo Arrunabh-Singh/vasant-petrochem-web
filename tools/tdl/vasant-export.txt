@@ -1,0 +1,78 @@
+    ;; Vasant Hub — TDL fallback export
+    ;;
+    ;; blueprint decision "Tally export path": PRIMARY is the office box
+    ;; pulling from Tally server mode (see tools/office-box/tally-pull.mjs).
+    ;; This TDL add-on is the FALLBACK — it fires an export automatically
+    ;; when a company is closed in Tally, dropping a delta XML file into a
+    ;; local folder the office box's sweep watches, so a sync still
+    ;; happens even if the office box's HTTP pull couldn't reach Tally
+    ;; that day (Tally not in server mode, network blip, etc).
+    ;;
+    ;; UNTESTABLE WITHOUT REAL TALLY: written against Tally's documented
+    ;; TDL syntax (event hooks + Export Data action), not compiled or run
+    ;; against a real Tally Prime instance — this repo was built on
+    ;; macOS, where Tally doesn't run. Load it via Tally's TDL Management
+    ;; screen (Alt+G or Gateway of Tally > F12 loaded TCPs) on the office
+    ;; PC and confirm it actually fires and produces valid XML before
+    ;; relying on it — see tools/office-box/README.md's validation step,
+    ;; same caveat as the HTTP pull path.
+
+[#System: UDF]
+
+[System: Formula]
+    VasantExportFolder : "C:\VHExport"
+
+[System: Event]
+    On : Close Company : Vasant Export On Close
+
+[Event: Vasant Export On Close]
+    Action  : Export Data
+    Report  : Vasant Delta Export
+    Format  : XML (Data Interchange)
+    ;; File name includes a timestamp so the office box's folder sweep
+    ;; never collides with or overwrites a prior export.
+    Object  : $$String:$$SysDate + "_" + $$String:$$SysTime
+    Folder  : ##VasantExportFolder
+
+[Report: Vasant Delta Export]
+    Form            : Vasant Delta Export Form
+    ;; ALTERID watermark: only rows changed since the last successful
+    ;; sync go out, mirroring the office box's own delta logic. The
+    ;; actual last-synced value should be read from a small marker file
+    ;; the office box writes back into ##VasantExportFolder after each
+    ;; successful parse — wiring that hand-off up is part of the
+    ;; real-Tally validation pass, not guessable from documentation alone.
+    Variable        : Last Synced Alter ID
+
+[Form: Vasant Delta Export Form]
+    Part            : Vasant Delta Export Part
+
+[Part: Vasant Delta Export Part]
+    Line            : Vasant Voucher Line, Vasant Ledger Line, Vasant StockItem Line
+    Repeat          : Vasant Voucher Line : Voucher Collection
+    Repeat          : Vasant Ledger Line  : Ledger Collection
+    Repeat          : Vasant StockItem Line : StockItem Collection
+
+[Line: Vasant Voucher Line]
+    Field           : Vasant Field Voucher
+
+[Field: Vasant Field Voucher]
+    Set             : $$CollVoucherXML : $$Field
+
+[Collection: Voucher Collection]
+    Type            : Voucher
+    Fetch           : *
+    Filter          : Vasant Altered Since Last Sync
+
+[Collection: Ledger Collection]
+    Type            : Ledger
+    Fetch           : *
+    Filter          : Vasant Altered Since Last Sync
+
+[Collection: StockItem Collection]
+    Type            : StockItem
+    Fetch           : *
+    Filter          : Vasant Altered Since Last Sync
+
+[System: Formula]
+    Vasant Altered Since Last Sync : $AlterID > ##Last Synced Alter ID

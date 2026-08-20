@@ -14,6 +14,14 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      // audit.md C4: see lib/supabase/middleware.ts for why these are set
+      // explicitly on both clients.
+      cookieOptions: {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24, // 24h
+      },
       cookies: {
         getAll() {
           return cookieStore.getAll();

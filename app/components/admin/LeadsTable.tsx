@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { Download } from "lucide-react";
 import { updateLeadStatus } from "@/app/actions/leads";
+import { toCsvValue } from "@/lib/csv";
 import type { Lead, LeadStatus } from "@/lib/admin";
 
 const STATUSES: LeadStatus[] = ["new", "contacted", "quoted", "won", "lost"];
@@ -14,10 +15,6 @@ const STATUS_STYLES: Record<LeadStatus, string> = {
   won: "bg-emerald-100 text-emerald-700",
   lost: "bg-slate-200 text-slate-500",
 };
-
-function toCsvValue(value: string) {
-  return `"${value.replace(/"/g, '""')}"`;
-}
 
 export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
   const [leads, setLeads] = useState(initialLeads);
@@ -33,7 +30,8 @@ export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
         !q ||
         l.name.toLowerCase().includes(q) ||
         l.email.toLowerCase().includes(q) ||
-        (l.company ?? "").toLowerCase().includes(q);
+        (l.company ?? "").toLowerCase().includes(q) ||
+        (l.phone ?? "").toLowerCase().includes(q);
       return matchesStatus && matchesSearch;
     });
   }, [leads, search, statusFilter]);
@@ -49,10 +47,11 @@ export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
   };
 
   const exportCsv = () => {
-    const header = ["Name", "Email", "Company", "Product", "Quantity", "Message", "Status", "Received"];
+    const header = ["Name", "Email", "Phone", "Company", "Product", "Quantity", "Message", "Status", "Received"];
     const rows = filtered.map((l) => [
       l.name,
       l.email,
+      l.phone ?? "",
       l.company ?? "",
       l.product_label ?? "",
       l.quantity ?? "",
@@ -61,7 +60,7 @@ export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
       new Date(l.created_at).toLocaleString("en-IN"),
     ]);
     const csv = [header, ...rows].map((r) => r.map((c) => toCsvValue(String(c))).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -129,6 +128,9 @@ export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
                   <p className="font-bold text-brand-dark">{l.name}</p>
                   <a href={`mailto:${l.email}`} className="text-brand text-xs hover:underline">{l.email}</a>
                   {l.company && <p className="text-slate-400 text-xs">{l.company}</p>}
+                  {l.phone && (
+                    <a href={`tel:${l.phone}`} className="text-brand text-xs hover:underline">{l.phone}</a>
+                  )}
                   {l.message && <p className="text-slate-500 text-xs mt-1 max-w-xs">{l.message}</p>}
                 </td>
                 <td className="px-4 py-3 text-slate-600">{l.product_label || "—"}</td>

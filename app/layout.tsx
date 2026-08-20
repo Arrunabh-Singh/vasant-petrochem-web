@@ -121,7 +121,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} font-sans bg-white text-slate-900`}>
+      <body className={`${inter.variable} ${playfair.variable} font-sans bg-surface text-slate-800`}>
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

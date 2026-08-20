@@ -1,11 +1,12 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { FileText, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { requestTds, type TdsGateState } from "../actions/tds";
 
 const initialState: TdsGateState = { status: "idle" };
 
+/** Sits inside the dark "Technical data sheet" card, so it is styled for that ground. */
 const TdsGate = ({ productId, productLabel }: { productId: string; productLabel: string }) => {
     const boundAction = requestTds.bind(null, productId, productLabel);
     const [state, formAction, pending] = useActionState(boundAction, initialState);
@@ -21,8 +22,8 @@ const TdsGate = ({ productId, productLabel }: { productId: string; productLabel:
     if (state.status === "success" && state.url) {
         return (
             <div className="text-sm">
-                <p className="text-brand-accent font-bold mb-1">Your download opened in a new tab.</p>
-                <a href={state.url} target="_blank" rel="noopener noreferrer" className="text-brand underline text-xs">
+                <p className="font-bold text-brand-accent mb-1">Your download opened in a new tab.</p>
+                <a href={state.url} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-300 underline">
                     Didn&apos;t open? Click here.
                 </a>
             </div>
@@ -30,21 +31,22 @@ const TdsGate = ({ productId, productLabel }: { productId: string; productLabel:
     }
 
     return (
-        <form action={formAction} className="space-y-2">
+        <form action={formAction} className="flex flex-col gap-2.5">
             <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
-            <label htmlFor="tds-email" className="text-xs font-bold text-brand-dark uppercase tracking-widest block">
-                Email for instant TDS/SDS download
-            </label>
-            <div className="flex gap-2">
-                <input
-                    id="tds-email" type="email" name="email" required placeholder="you@company.com"
-                    className="flex-1 border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-brand outline-none min-w-0"
-                />
-                <button type="submit" disabled={pending} className="btn-primary px-4 py-2.5 text-xs shrink-0 disabled:opacity-60">
-                    {pending ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
-                </button>
-            </div>
-            {state.status === "error" && <p className="text-amber-600 text-xs">{state.message}</p>}
+            <label htmlFor="tds-email" className="field-label">Email for instant TDS/SDS download</label>
+            <input
+                id="tds-email"
+                type="email"
+                name="email"
+                required
+                autoComplete="email"
+                placeholder="you@company.com"
+                className="field-input"
+            />
+            <button type="submit" disabled={pending} className="btn-accent w-full">
+                {pending ? <Loader2 size={18} className="animate-spin" /> : "REQUEST THE TDS"}
+            </button>
+            {state.status === "error" && <p className="text-[13px] text-amber-300">{state.message}</p>}
         </form>
     );
 };

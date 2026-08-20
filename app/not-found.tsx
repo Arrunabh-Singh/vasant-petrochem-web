@@ -9,7 +9,7 @@ export default function NotFound() {
         <p className="text-slate-600 mb-10">
           The page you&apos;re looking for doesn&apos;t exist or may have moved.
         </p>
-        <Link href="/" className="btn-primary px-10">
+        <Link href="/" className="btn-solid px-10">
           BACK TO HOME
         </Link>
       </div>

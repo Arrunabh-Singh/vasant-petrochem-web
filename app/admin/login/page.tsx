@@ -1,10 +1,10 @@
 import { signInWithGoogle } from "@/app/actions/auth";
 import { site } from "@/app/content";
 
-const ERROR_MESSAGES: Record<string, string> = {
-  not_authorized: "That Google account isn't authorized for admin access.",
-  oauth_failed: "Google sign-in failed. Please try again.",
-};
+// audit.md H2 / I-18: distinct messages per error branch confirmed the
+// admin's email to anyone who tried signing in — one generic message for
+// every failure mode instead.
+const GENERIC_ERROR = "Sign-in failed. If you are the administrator, contact support.";
 
 export default async function LoginPage({
   searchParams,
@@ -12,7 +12,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
-  const message = error ? (ERROR_MESSAGES[error] ?? "Sign-in failed. Please try again.") : null;
+  const message = error ? GENERIC_ERROR : null;
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-brand-dark px-4">

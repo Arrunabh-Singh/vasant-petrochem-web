@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vasant Hub
 
-## Getting Started
+Vasant Petrochem's public website, admin back-office, document vault,
+and the foundation for the wider digital operations hub described in
+`docs/VASANT_HUB_BLUEPRINT.md`. Next.js (App Router) + Supabase
+(Postgres, Auth, Storage).
 
-First, run the development server:
+## What's here
+
+| Area | Where |
+|---|---|
+| Public site (catalog, quotes, TDS gate) | `app/(site)/`, `app/actions/{quote,tds}.ts` |
+| Admin back-office | `app/admin/`, gated by `lib/rbac.ts` + `proxy.ts` |
+| Document vault (encrypted classes, ACLs, retention) | `app/api/documents/`, `lib/{crypto,documents,document-policy}.ts` |
+| Compliance / maker-checker approvals / breach-mode | `app/admin/(dashboard)/{compliance,approvals,security}/` |
+| Hub data model (finance/inventory/production/iot/control) | `supabase/migrations/202608161200{16..22}_*.sql` |
+| Tally ETL (pull model — see blueprint decision 1) | `tools/office-box/`, `supabase/functions/parse-tally/` |
+| Telemetry + control-plane APIs | `app/api/telemetry/`, `app/api/control/` |
+| Read-only MCP server for AI queries | `app/api/mcp/`, `lib/mcp-tools.ts` |
+| All schema history | `supabase/migrations/` (applied in order; see `supabase/config.toml`) |
+
+Design docs (read before changing anything security- or architecture-
+related): `audit.md`, `docs/THREAT_MODEL.md`,
+`docs/document-storage-hardening.md`, `docs/VASANT_HUB_BLUEPRINT.md`,
+`docs/FEATURE_BACKLOG.md`.
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local   # fill in the values — see docs/OWNER_CHECKLIST.md
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Admin routes are
+under `/admin`, gated by Google OAuth + the `app_users` table (see
+`lib/rbac.ts`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Before the vault/telemetry/control/MCP routes will work locally**, set
+`SUPABASE_SERVICE_ROLE_KEY` in `.env.local` — see
+`docs/OWNER_CHECKLIST.md` item 2.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+```bash
+npm run dev         # dev server
+npm run build        # production build
+npm run lint          # eslint
+npm run typecheck   # tsc --noEmit
+npm test               # node --test (crypto, origin allowlist, retention math, etc.)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Database migrations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`supabase/migrations/` is the source of truth, applied to the live
+project in order. To add a new one, write the `.sql` file with the next
+timestamp and apply it via the Supabase MCP's `apply_migration` (or the
+Supabase CLI once linked). After any schema change, re-run the security
+advisor — this project hit three distinct default-privilege surprises
+during development (Supabase's default ACL over-granting new tables and
+functions, plus vanilla Postgres granting `EXECUTE` to `PUBLIC` on new
+functions); see the migration comments around
+`20260816120001_identity_and_rbac.sql` and
+`20260816120011_fix_function_default_privileges.sql` for the fix and why
+it's needed on every new schema.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Owner-only setup
 
-## Deploy on Vercel
+Everything that needs a human with account access (Google 2SV, DNS
+records, GitHub repo settings, the office box, backup keys, vendor
+accounts) is tracked in `docs/OWNER_CHECKLIST.md` — start there.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploying
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployed on Vercel. `vercel.json` declares the one cron job Vercel's
+Hobby plan allows (daily digest bridge — see
+`app/api/cron/daily-digest/route.ts`); everything sub-daily runs in
+`pg_cron` inside Postgres instead (`20260816120024_cron_jobs.sql`).

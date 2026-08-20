@@ -1,0 +1,53 @@
+name: Nightly encrypted backup
+
+# Free-tier Supabase has no automatic backups and no PITR — this dump *is*
+# the backup, not a supplement (docs/OWNER_CHECKLIST.md #7, #11). It also
+# doubles as the anti-idle keepalive: Supabase Free pauses a project after
+# 7 days with no activity.
+#
+# No-ops entirely until SUPABASE_DB_URL is added as a repo secret, so it is
+# safe to merge before the owner has provisioned anything. The `age`
+# public key lives in the AGE_PUBLIC_KEY secret — only the public half. A
+# compromised runner can encrypt garbage but can never decrypt a real dump;
+# the private key stays offline per docs/OWNER_CHECKLIST.md #7.
+
+on:
+  schedule:
+    - cron: "17 21 * * *" # 02:47 IST
+  workflow_dispatch: {}
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.SUPABASE_DB_URL != '' }}
+    steps:
+      - name: Install age
+        run: sudo apt-get update && sudo apt-get install -y age postgresql-client
+
+      - name: Dump and encrypt
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          AGE_PUBLIC_KEY: ${{ secrets.AGE_PUBLIC_KEY }}
+        run: |
+          set -euo pipefail
+          stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges \
+            | age -r "$AGE_PUBLIC_KEY" -o "vasant-hub-${stamp}.sql.age"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-db-dump
+          path: "vasant-hub-*.sql.age"
+          retention-days: 90
+
+      - name: Sync to Supabase Storage offsite bucket (optional)
+        if: ${{ secrets.SUPABASE_S3_ACCESS_KEY != '' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SUPABASE_S3_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SUPABASE_S3_SECRET_KEY }}
+          AWS_ENDPOINT_URL: ${{ secrets.SUPABASE_S3_ENDPOINT }}
+        run: |
+          set -euo pipefail
+          pip install --quiet awscli
+          aws --endpoint-url "$AWS_ENDPOINT_URL" s3 cp \
+            vasant-hub-*.sql.age "s3://backups/ci/" --only-show-errors

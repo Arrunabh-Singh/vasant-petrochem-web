@@ -1,113 +1,119 @@
 "use client";
 
-import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import RefineryVisual from "./RefineryVisual";
-
-// Animation Variants
-const fadeInUp: Variants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.8,
-            ease: "easeOut"
-        }
-    }
-};
-
-const staggerContainer: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.15,
-            delayChildren: 0.2
-        }
-    }
-};
 
 const Hero = ({ productCount }: { productCount: number }) => {
     const { scrollY } = useScroll();
     const y = useTransform(scrollY, [0, 500], [0, 100]);
     const opacity = useTransform(scrollY, [0, 500], [1, 0.5]);
 
+    // The artboards only park the visual on scroll at desktop widths; on a
+    // phone the same treatment fades the image out mid-read.
+    const [parallax, setParallax] = useState(false);
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 1024px)");
+        const sync = () => setParallax(mq.matches);
+        sync();
+        mq.addEventListener("change", sync);
+        return () => mq.removeEventListener("change", sync);
+    }, []);
+
     return (
-        <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-surface pt-32 pb-20">
-            {/* Brand Pattern Background */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-60 z-0" />
+        <section className="relative overflow-hidden wash-top pt-[108px] lg:pt-32 pb-14 lg:pb-20 lg:min-h-screen lg:flex lg:items-center">
+            <div aria-hidden className="absolute inset-0 z-0 bg-grid-pattern opacity-60" />
+            <div aria-hidden className="absolute -top-[6%] left-[30%] w-[70vw] lg:w-[34vw] h-[116%] lg:h-[130%] z-0 pointer-events-none rotate-[16deg] lg:rotate-[14deg] blur-[46px] lg:blur-[50px] anim-beam bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent)]" />
+            <div aria-hidden className="hidden lg:block absolute -top-[10%] left-[52%] w-[20vw] h-[130%] z-0 pointer-events-none rotate-[14deg] opacity-70 bg-[linear-gradient(90deg,transparent,rgba(52,211,153,0.26),transparent)]" />
+            <div aria-hidden className="hidden lg:block absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_50%_45%,transparent_42%,rgba(15,46,36,0.14)_100%)]" />
 
-            {/* Organic Shape Decoration */}
-            <div className="absolute top-0 right-0 w-[60vw] h-[60vw] bg-radial from-brand/10 to-transparent rounded-bl-full z-0 pointer-events-none blur-3xl opacity-60" />
-
-            <div className="container-wide relative z-10 flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+            <div className="container-wide relative z-10 w-full grid lg:grid-cols-2 items-center gap-12 lg:gap-[clamp(48px,6vw,96px)]">
                 <motion.div
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={staggerContainer}
-                    className="lg:w-1/2"
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
                 >
-                    <motion.div variants={fadeInUp} className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/80 backdrop-blur-md border border-brand/20 shadow-sm mb-10 w-fit">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+                    <div className="inline-flex items-center gap-2.5 lg:gap-3 px-[18px] lg:px-5 py-2.5 lg:py-2 rounded-full glass mb-7 lg:mb-10">
+                        <span className="relative flex w-2 h-2">
+                            <span className="absolute inline-flex w-full h-full rounded-full bg-brand opacity-75 anim-ping" />
+                            <span className="relative inline-flex w-2 h-2 rounded-full bg-brand" />
                         </span>
-                        <span className="text-brand-dark font-bold tracking-widest uppercase text-[10px] sm:text-[11px]">Industrial Excellence • Est. 2025</span>
-                    </motion.div>
+                        <span className="text-[10.5px] lg:text-[11px] font-bold uppercase tracking-[0.12em] lg:tracking-[0.1em] text-brand-dark">
+                            <span className="lg:hidden">Indore · Est. 2025</span>
+                            <span className="hidden lg:inline">Industrial Excellence • Est. 2025</span>
+                        </span>
+                    </div>
 
-                    <motion.h1 variants={fadeInUp} className="h1-hero mb-8 leading-[1.1]">
-                        Advanced <br />
+                    <h1 className="h1-hero mb-6 lg:mb-7 text-balance">
+                        Advanced <br className="hidden lg:block" />
                         <span className="text-gradient-brand">Petrochemical Solutions</span>
-                    </motion.h1>
+                    </h1>
 
-                    <motion.p variants={fadeInUp} className="text-slate-600 text-lg md:text-xl mb-12 leading-relaxed font-light max-w-xl">
-                        Vasant Petrochem manufactures and trades industrial oils, fuels, and lubricants from Indore, serving Central India&apos;s manufacturing sector with a reliable supply chain.
-                    </motion.p>
+                    <p className="text-[17px] lg:text-[clamp(16px,1.4vw,20px)] font-light leading-[1.72] lg:leading-[1.65] text-slate-600 mb-8 lg:mb-12 max-w-xl text-pretty">
+                        Vasant Petrochem manufactures and trades industrial oils, fuels and lubricants from
+                        Mangaliya, Indore — serving Central India&apos;s plants, road projects and blenders.
+                    </p>
 
-                    <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-5">
-                        <Link href="/contact" className="btn-primary px-10 shadow-xl shadow-brand/10 hover:shadow-brand/25">
+                    <div className="flex flex-col sm:flex-row gap-3 lg:gap-3.5">
+                        <Link href="/contact" className="btn-solid flex-1 sm:flex-none lg:px-10">
                             GET A FREE QUOTE
+                            <ArrowRight size={18} className="lg:hidden" />
                         </Link>
-                        <Link href="/products" className="btn-outline-brand px-10">
-                            VIEW CATALOG
+                        <Link href="/products" className="btn-ghost flex-1 sm:flex-none lg:px-10">
+                            <span className="lg:hidden">VIEW THE CATALOG</span>
+                            <span className="hidden lg:inline">VIEW CATALOG</span>
                         </Link>
-                    </motion.div>
-                </motion.div>
-
-                {/* Hero Visual */}
-                <motion.div
-                    style={{ y, opacity }}
-                    className="lg:w-1/2 relative w-full"
-                >
-                    <div className="relative w-full aspect-[4/3] max-w-[800px] mx-auto group perspective-1000">
-                        {/* Backing decorative element */}
-                        <div className="absolute -inset-4 border-2 border-brand/10 rounded-2xl z-0 transition-transform duration-700 group-hover:rotate-1"></div>
-
-                        <div className="relative h-full w-full rounded-xl overflow-hidden shadow-2xl z-10">
-                            <RefineryVisual />
-                            {/* Overlay Gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-brand-dark/40 to-transparent mix-blend-multiply opacity-60"></div>
-                        </div>
-
-                        {/* Floating Stat Card */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0, y: [0, -10, 0] }}
-                            transition={{
-                                opacity: { delay: 1, duration: 0.5 },
-                                x: { delay: 1, duration: 0.5 },
-                                y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-                            }}
-                            className="absolute -bottom-10 -left-4 sm:-left-10 bg-white/95 backdrop-blur-sm p-6 rounded-lg shadow-2xl border-l-4 border-l-brand max-w-[240px] z-20 hidden md:block"
-                        >
-                            <p className="text-3xl font-bold text-brand-dark mb-1">{productCount}+</p>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Product Lines</p>
-                            <p className="text-xs text-slate-500 mt-2 leading-relaxed">Manufactured and traded industrial oils, fuels &amp; lubricants.</p>
-                        </motion.div>
                     </div>
                 </motion.div>
+
+                <motion.div
+                    style={parallax ? { y, opacity } : undefined}
+                    className="relative w-full mt-10 lg:mt-0 lg:pb-[clamp(30px,5vw,48px)]"
+                >
+                    {/* Mobile: the frame is a glass tray with the stat row inside it.
+                        Desktop: a floating glass slab behind a bleeding stat card. */}
+                    <div className="relative w-full max-w-[800px] mx-auto p-3.5 lg:p-0 rounded-[28px] lg:rounded-none glass lg:bg-none lg:border-0 lg:shadow-none lg:backdrop-blur-none">
+                        <div aria-hidden className="hidden lg:block absolute -inset-[12%] rounded-full z-0 bg-[radial-gradient(circle,rgba(52,211,153,0.38),transparent_62%)]" />
+                        <div aria-hidden className="hidden lg:block absolute -inset-[22px] rounded-[26px] z-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.6),rgba(255,255,255,0.16))] backdrop-blur-[18px] backdrop-saturate-[1.5] border border-white/75 shadow-[0_50px_100px_-45px_rgba(15,46,36,0.6),inset_0_1px_0_rgba(255,255,255,0.95)]" />
+
+                        <div className="relative z-10 aspect-4/3 rounded-[18px] lg:rounded-xl overflow-hidden shadow-[0_20px_40px_-22px_rgba(15,46,36,0.6)] lg:shadow-[0_25px_50px_-12px_rgba(15,46,36,0.35)]">
+                            <RefineryVisual />
+                            <div aria-hidden className="hidden lg:block absolute inset-0 bg-linear-to-tr from-brand-dark/45 to-transparent mix-blend-multiply opacity-60" />
+                            <div aria-hidden className="absolute inset-0 pointer-events-none shadow-[inset_0_1px_0_rgba(255,255,255,0.38),inset_0_0_80px_rgba(0,0,0,0.35)]" />
+                            <div aria-hidden className="absolute inset-y-0 w-1/2 pointer-events-none anim-sheen bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)]" />
+                        </div>
+
+                        {/* Mobile stat row */}
+                        <div className="lg:hidden flex items-center justify-between gap-3.5 px-2 pt-5 pb-1.5">
+                            <div>
+                                <p className="font-serif text-[30px] font-bold text-brand-dark leading-none mb-0.5">{productCount}+</p>
+                                <p className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-brand-muted">Product lines</p>
+                            </div>
+                            <p className="max-w-[190px] text-[12.5px] leading-[1.6] text-slate-500 text-right">
+                                Manufactured and traded oils, fuels &amp; lubricants.
+                            </p>
+                        </div>
+
+                        {/* Desktop floating stat card */}
+                        <div className="hidden lg:block absolute -bottom-10 left-0 z-20 p-[clamp(20px,3vw,26px)] rounded-[20px] border-l-4 border-l-brand max-w-[250px] glass anim-float">
+                            <p className="text-[30px] font-bold text-brand-dark mb-1">{productCount}+</p>
+                            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Product Lines</p>
+                            <p className="text-xs leading-relaxed text-slate-500 mt-2">
+                                Manufactured and traded industrial oils, fuels &amp; lubricants.
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Scroll cue — phone artboard only */}
+            <div className="lg:hidden flex flex-col items-center gap-2 mt-9">
+                <span className="text-[9.5px] font-bold uppercase tracking-[0.3em] text-brand-muted">Scroll</span>
+                <span className="block w-px h-11 bg-brand/20 overflow-hidden">
+                    <span className="block w-full h-[40%] bg-brand anim-cue" />
+                </span>
             </div>
         </section>
     );

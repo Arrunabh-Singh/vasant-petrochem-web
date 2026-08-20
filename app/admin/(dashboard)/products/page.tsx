@@ -30,7 +30,7 @@ export default async function AdminProductsPage() {
                     <span className="text-slate-400 font-bold text-xs uppercase">Hidden</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-slate-500 text-xs">{p.tds_path ? "Uploaded" : "—"}</td>
+                <td className="px-4 py-3 text-slate-500 text-xs">{p.tds_document_id ? "Uploaded" : "—"}</td>
                 <td className="px-4 py-3 text-right">
                   <Link href={`/admin/products/${p.id}`} className="text-brand font-bold text-xs uppercase tracking-wider hover:text-brand-accent">
                     Edit
