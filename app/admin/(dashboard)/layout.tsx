@@ -12,6 +12,7 @@ const links = [
   { name: "Vehicles", href: "/admin/logistics/vehicles" },
   { name: "Sanctions", href: "/admin/logistics/sanctions" },
   { name: "Benchmarks", href: "/admin/market/benchmarks" },
+  { name: "Tally", href: "/admin/accounts/tally" },
   { name: "Documents", href: "/admin/documents" },
   { name: "Compliance", href: "/admin/compliance" },
   { name: "Approvals", href: "/admin/approvals" },
