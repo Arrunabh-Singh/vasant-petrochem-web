@@ -95,3 +95,72 @@ export async function getSanctionsAdmin(): Promise<SanctionRow[]> {
   }
   return data as SanctionRow[];
 }
+
+export type ShipmentAlert = {
+  id: number;
+  shipment_no: string;
+  alert_type: "eway_expiry" | "overdue";
+  detail: string;
+  severity: "warning" | "critical";
+};
+
+const EWAY_WINDOW_DAYS = 3;
+
+/**
+ * At-risk shipments for the alert dashboard: e-way expiring within 3 days
+ * (or already expired) and deliveries past ETA that are not yet delivered.
+ * Pure computation on `logistics.shipment` — no external calls.
+ */
+export async function getShipmentAlertsAdmin(): Promise<ShipmentAlert[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("logistics.shipment")
+    .select("id, shipment_no, eway_expiry, eta, status")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("getShipmentAlertsAdmin failed:", error.message);
+    return [];
+  }
+
+  const now = Date.now();
+  const windowMs = EWAY_WINDOW_DAYS * 86_400_000;
+  const alerts: ShipmentAlert[] = [];
+
+  for (const r of data as Array<{
+    id: number;
+    shipment_no: string;
+    eway_expiry: string | null;
+    eta: string | null;
+    status: string;
+  }>) {
+    if (r.eway_expiry) {
+      const e = new Date(r.eway_expiry).getTime();
+      if (e <= now + windowMs) {
+        const days = Math.ceil((e - now) / 86_400_000);
+        alerts.push({
+          id: r.id,
+          shipment_no: r.shipment_no,
+          alert_type: "eway_expiry",
+          detail: `e-way ${days < 0 ? "expired" : `expires in ${days}d`} (${r.eway_expiry})`,
+          severity: days < 0 ? "critical" : "warning",
+        });
+      }
+    }
+    if (r.status && !["delivered", "returned"].includes(r.status) && r.eta) {
+      const eta = new Date(r.eta).getTime();
+      if (eta < now) {
+        const days = Math.floor((now - eta) / 86_400_000);
+        alerts.push({
+          id: r.id,
+          shipment_no: r.shipment_no,
+          alert_type: "overdue",
+          detail: `delivery overdue by ${days}d (ETA ${r.eta})`,
+          severity: "critical",
+        });
+      }
+    }
+  }
+
+  return alerts;
+}

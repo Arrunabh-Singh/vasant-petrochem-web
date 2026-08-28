@@ -1,8 +1,8 @@
-import { getAllShipmentsAdmin } from "@/lib/logistics";
+import { getAllShipmentsAdmin, getShipmentAlertsAdmin } from "@/lib/logistics";
 import { createShipment } from "@/app/actions/shipment";
 
 export default async function ShipmentsPage() {
-  const rows = await getAllShipmentsAdmin();
+  const [rows, alerts] = await Promise.all([getAllShipmentsAdmin(), getShipmentAlertsAdmin()]);
 
   return (
     <div className="space-y-8">
@@ -10,9 +10,32 @@ export default async function ShipmentsPage() {
         <h1 className="text-2xl font-bold text-brand-dark">Shipments</h1>
         <p className="mt-1 text-sm text-brand-charcoal/70">
           Road-tanker movements first. E-way expiry and ETA are watched by the
-          Mac Hub logistics_watch agent.
+          Mac Hub logistics_watch agent and the daily alert check.
         </p>
       </div>
+
+      {alerts.length > 0 && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+          <h2 className="mb-2 text-sm font-bold uppercase tracking-wider text-red-700">
+            Logistics alerts ({alerts.length})
+          </h2>
+          <ul className="space-y-1 text-sm">
+            {alerts.map((a) => (
+              <li key={`${a.alert_type}-${a.id}`} className="flex items-center gap-2">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-bold uppercase ${
+                    a.severity === "critical" ? "bg-red-600 text-white" : "bg-amber-400 text-red-900"
+                  }`}
+                >
+                  {a.alert_type === "eway_expiry" ? "e-way" : "overdue"}
+                </span>
+                <span className="font-medium text-red-900">{a.shipment_no}</span>
+                <span className="text-red-800/80">{a.detail}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-xl border border-brand-gray bg-white">
         <table className="min-w-full text-sm">

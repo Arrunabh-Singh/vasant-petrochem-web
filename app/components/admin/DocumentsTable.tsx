@@ -25,7 +25,7 @@ function formatSize(bytes: number) {
 
 const initialState: DocumentFormState = { status: "idle" };
 
-export default function DocumentsTable({ documents }: { documents: VaultDocument[] }) {
+export default function DocumentsTable({ documents, q = "" }: { documents: VaultDocument[]; q?: string }) {
   const [classFilter, setClassFilter] = useState<DocClass | "all">("all");
   const [state, formAction, pending] = useActionState(uploadDocument, initialState);
 
@@ -62,6 +62,24 @@ export default function DocumentsTable({ documents }: { documents: VaultDocument
         {state.status === "success" && <p className="text-brand-accent text-xs mt-2 font-bold">Uploaded.</p>}
       </div>
 
+      <form method="get" action="/admin/documents" className="flex flex-wrap items-end gap-2 mb-4">
+        <input
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder="Search name or document text (OCR)…"
+          className="w-full sm:w-80 border border-slate-200 rounded-lg px-3 py-2 text-sm"
+        />
+        <button type="submit" className="text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-lg bg-brand-dark text-white hover:bg-brand transition-colors">
+          Search
+        </button>
+        {q && (
+          <Link href="/admin/documents" className="text-xs text-slate-500 underline px-2 py-2">
+            clear
+          </Link>
+        )}
+      </form>
+
       <div className="flex flex-wrap gap-2 mb-4">
         <button
           onClick={() => setClassFilter("all")}
@@ -95,7 +113,14 @@ export default function DocumentsTable({ documents }: { documents: VaultDocument
           <tbody>
             {filtered.map((d) => (
               <tr key={d.id} className="border-t border-slate-100">
-                <td className="px-4 py-3 font-bold text-brand-dark">{d.logical_name}</td>
+                <td className="px-4 py-3 font-bold text-brand-dark">
+                  {d.logical_name}
+                  {d.has_ocr && (
+                    <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500" title="Full-text indexed (OCR)">
+                      OCR
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3 font-mono text-xs text-slate-500">{d.doc_class}</td>
                 <td className="px-4 py-3">
                   <span className={`text-xs font-bold uppercase tracking-wider rounded-full px-3 py-1 ${STATUS_STYLES[d.status] ?? "bg-slate-100 text-slate-500"}`}>

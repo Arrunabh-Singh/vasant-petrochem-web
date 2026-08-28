@@ -105,20 +105,58 @@ export type VaultDocument = {
   retention_until: string;
   created_by: string;
   created_at: string;
+  has_ocr: boolean;
 };
 
-export async function getAllDocuments(): Promise<VaultDocument[]> {
+export async function getAllDocuments(q?: string): Promise<VaultDocument[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("documents")
-    .select("id, doc_class, logical_name, status, legal_hold, encrypted, version, size_bytes, retention_until, created_by, created_at")
+    .select("id, doc_class, logical_name, status, legal_hold, encrypted, version, size_bytes, retention_until, created_by, created_at, extracted_text")
     .order("created_at", { ascending: false });
+
+  const term = q?.trim();
+  if (term) {
+    const t = `%${term}%`;
+    query = query.or(`logical_name.ilike.${t},extracted_text.ilike.${t}`);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("getAllDocuments failed:", error.message);
     return [];
   }
-  return data as VaultDocument[];
+
+  const rows = data as Array<{
+    id: string;
+    doc_class: DocClass;
+    logical_name: string;
+    status: string;
+    legal_hold: boolean;
+    encrypted: boolean;
+    version: number;
+    size_bytes: number;
+    retention_until: string;
+    created_by: string;
+    created_at: string;
+    extracted_text: string | null;
+  }>;
+
+  return rows.map((d) => ({
+    id: d.id,
+    doc_class: d.doc_class,
+    logical_name: d.logical_name,
+    status: d.status,
+    legal_hold: d.legal_hold,
+    encrypted: d.encrypted,
+    version: d.version,
+    size_bytes: d.size_bytes,
+    retention_until: d.retention_until,
+    created_by: d.created_by,
+    created_at: d.created_at,
+    has_ocr: Boolean(d.extracted_text),
+  }));
 }
 
 export async function getDocument(docId: string): Promise<VaultDocument | null> {

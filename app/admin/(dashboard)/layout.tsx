@@ -11,6 +11,7 @@ const links = [
   { name: "Shipments", href: "/admin/logistics/shipments" },
   { name: "Vehicles", href: "/admin/logistics/vehicles" },
   { name: "Sanctions", href: "/admin/logistics/sanctions" },
+  { name: "Benchmarks", href: "/admin/market/benchmarks" },
   { name: "Documents", href: "/admin/documents" },
   { name: "Compliance", href: "/admin/compliance" },
   { name: "Approvals", href: "/admin/approvals" },

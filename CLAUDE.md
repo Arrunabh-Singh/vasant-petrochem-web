@@ -114,6 +114,12 @@ Closes the gaps vs ETRM / fleet-intelligence peers. Road-tanker first; sea-ready
 6. **Mac Hub AI capture**: extend `inbox_process.sh` to emit `shipment_capture` / `vessel_capture` cards (AI already classifies); add demurrage/ETA alert type to `logistics_watch.sh`.
 7. **Sea mode**: when vessels move crude/products, add charter-party + laytime/demurrage fields + AIS feed.
 
+### Delivered 2026-08-28 (next wave, all ₹0)
+- **Shipment alerts**: `lib/logistics.ts → getShipmentAlertsAdmin()` computes e-way-expiry (≤3d) + overdue-delivery risks; rendered as a red panel on `/admin/logistics/shipments`. Push: Supabase Edge Function `supabase/functions/logistics-alert` (Deno, no deps) queries `logistics.shipment` via service role and sends a Telegram alert; scheduled daily by `pg_cron` (`logistics-alert-daily`, 01:30 UTC). Telegram is env-gated (set `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` as function secrets) and degrades to a no-op otherwise — mirrored on `lib/notify.ts`.
+- **Benchmarks + margin calculator**: `/admin/market/benchmarks` (nav: "Benchmarks") lists `market.price_benchmark` and has a manual entry form (`app/actions/market.ts`); `MarginCalculator` client component does a what-if unit/gross margin.
+- **Document vault OCR search**: `documents.extracted_text` (migration `20260828130000`) is populated at upload time from PDFs via `unpdf` in `lib/documents.ts` (best-effort, never blocks upload). `getAllDocuments(q)` does `ilike` over name + OCR text; `DocumentsTable` has a search box; OCR'd rows get an "OCR" badge.
+- **Maker-checker**: already built — `/admin/approvals` + `ApprovalsTable` (request, approve/reject, self-approval blocked in DB). No new work needed.
+
 ---
 
 ## 8. Conventions (do this or the audit advisor will yell)

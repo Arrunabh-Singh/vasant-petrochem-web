@@ -48,6 +48,20 @@ export async function uploadDocumentVersion(params: UploadDocumentParams): Promi
   const checksum = sha256Hex(plaintext);
   const admin = createAdminClient();
 
+  // Feature 3: best-effort OCR of PDFs for in-app full-text search.
+  // Never blocks the upload — a failure just leaves extracted_text null.
+  let extractedText: string | null = null;
+  if (detectedType === "application/pdf") {
+    try {
+      const { extractText } = await import("unpdf");
+      const out = await extractText(new Uint8Array(plaintext));
+      const text = Array.isArray(out.text) ? out.text.join("\n") : String(out.text ?? "");
+      extractedText = text.trim() || null;
+    } catch (ocrErr) {
+      console.error("document OCR (pdf) failed:", (ocrErr as Error).message);
+    }
+  }
+
   let docId: string;
   let version: number;
   let isNewDoc: boolean;
@@ -91,6 +105,7 @@ export async function uploadDocumentVersion(params: UploadDocumentParams): Promi
       version,
       retention_until: retention,
       created_by: uploaderEmail,
+      extracted_text: extractedText,
     });
     if (docErr) {
       console.error("document insert failed:", docErr.message);
@@ -134,7 +149,7 @@ export async function uploadDocumentVersion(params: UploadDocumentParams): Promi
     return { ok: false, status: 502, error: "storage upload failed" };
   }
 
-  await admin.from("documents").update({ status: "active", version }).eq("id", docId);
+  await admin.from("documents").update({ status: "active", version, extracted_text: extractedText }).eq("id", docId);
 
   await admin.rpc("log_event", {
     p_action: "upload",
