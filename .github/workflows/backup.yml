@@ -16,15 +16,32 @@ on:
     - cron: "17 21 * * *" # 02:47 IST
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 jobs:
   dump:
     runs-on: ubuntu-latest
-    if: ${{ secrets.SUPABASE_DB_URL != '' }}
     steps:
+      # The `secrets` context is not available in any `if:` (job or step), so
+      # the guards below read secrets through `env` and publish booleans as
+      # step outputs. The previous job-level `if: secrets...` made GitHub
+      # reject the whole workflow ("Unrecognized named-value: 'secrets'"),
+      # which showed up as an instant-red run on every push.
+      - id: guard
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          S3_KEY: ${{ secrets.SUPABASE_S3_ACCESS_KEY }}
+        run: |
+          echo "configured=$([ -n "$DB_URL" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "s3=$([ -n "$S3_KEY" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
       - name: Install age
+        if: steps.guard.outputs.configured == 'true'
         run: sudo apt-get update && sudo apt-get install -y age postgresql-client
 
       - name: Dump and encrypt
+        if: steps.guard.outputs.configured == 'true'
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           AGE_PUBLIC_KEY: ${{ secrets.AGE_PUBLIC_KEY }}
@@ -35,13 +52,14 @@ jobs:
             | age -r "$AGE_PUBLIC_KEY" -o "vasant-hub-${stamp}.sql.age"
 
       - uses: actions/upload-artifact@v4
+        if: steps.guard.outputs.configured == 'true'
         with:
           name: encrypted-db-dump
           path: "vasant-hub-*.sql.age"
           retention-days: 90
 
       - name: Sync to Supabase Storage offsite bucket (optional)
-        if: ${{ secrets.SUPABASE_S3_ACCESS_KEY != '' }}
+        if: steps.guard.outputs.configured == 'true' && steps.guard.outputs.s3 == 'true'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SUPABASE_S3_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SUPABASE_S3_SECRET_KEY }}
