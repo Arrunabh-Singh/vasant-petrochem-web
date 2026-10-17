@@ -108,6 +108,11 @@ const Contact = ({
                                 <div className="flex flex-col items-center text-center gap-4 py-6">
                                     <CheckCircle2 className="text-brand-accent" size={46} strokeWidth={1.8} />
                                     <h2 className="font-serif text-[26px] lg:text-xl font-bold text-white">Request received</h2>
+                                    {state.reference && (
+                                        <p className="text-sm text-slate-300">
+                                            Your reference: <span className="font-mono font-bold text-white">{state.reference}</span>
+                                        </p>
+                                    )}
                                     <p className="max-w-sm text-[14.5px] leading-[1.7] text-slate-300">
                                         Thank you — our team will reach out within 24 hours on business days. For anything
                                         urgent, call {contact.phone}.
