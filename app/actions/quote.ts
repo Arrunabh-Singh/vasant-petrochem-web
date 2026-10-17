@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { createPublicClient } from "@/lib/supabase/public";
 import { parseQuoteForm, QUOTE_FIELDS } from "@/lib/validate";
 import { botCheck } from "@/lib/bot-defence";
+import { clientIp } from "@/lib/client-ip";
 
 export type QuoteFormState = {
   status: "idle" | "success" | "error";
@@ -64,8 +65,7 @@ export async function submitQuoteRequest(
     }
   }
 
-  const headersList = await headers();
-  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  const ip = clientIp(await headers());
 
   const { error } = await supabase.from("quote_requests").insert({
     name,
@@ -81,6 +81,11 @@ export async function submitQuoteRequest(
   });
 
   if (error) {
+    // VP-SEC-003: the prevent_spam() trigger rejected this submission.
+    if (error.message.includes("rate limit exceeded")) {
+      console.warn("rate-limit: quote_requests submission rejected", { ip });
+      return { status: "error", message: "Too many enquiries from your connection. Please try again later or call us." };
+    }
     console.error("quote_requests insert failed:", error.message);
     return { status: "error", message: "Something went wrong. Please try again or call us directly." };
   }
