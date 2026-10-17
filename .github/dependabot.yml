@@ -1,0 +1,17 @@
+# VP-SEC-007. Security advisories open their own PRs immediately regardless
+# of grouping; the group only batches routine bumps into one PR a week.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
