@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { contact, site, addressLine, nav } from "../content";
 import { getProductsSafe } from "@/lib/products";
+import { copyrightYears } from "@/lib/company";
 
 const industries = [
     "Road Construction",
@@ -14,6 +15,7 @@ const industries = [
 
 const Footer = async () => {
     const products = await getProductsSafe();
+    const years = copyrightYears(site.foundedYear);
 
     return (
         <footer className="relative z-1 pt-11 lg:pt-[clamp(56px,9vw,96px)] pb-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.44),rgba(230,240,237,0.66))] backdrop-blur-[18px] backdrop-saturate-[1.4] border-t border-white/75">
@@ -52,7 +54,7 @@ const Footer = async () => {
                         </a>
                     </div>
                     <p className="pt-[22px] border-t border-brand/15 text-[10.5px] font-bold uppercase tracking-[0.12em] text-slate-400">
-                        &copy; {site.foundedYear} {site.name}. All rights reserved.
+                        &copy; {years} {site.name}. All rights reserved.
                     </p>
                 </div>
 
@@ -113,7 +115,7 @@ const Footer = async () => {
 
                     <div className="border-t border-slate-200 pt-8 flex flex-wrap justify-between items-center gap-4">
                         <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">
-                            &copy; {site.foundedYear} {site.name}. All Rights Reserved.
+                            &copy; {years} {site.name}. All Rights Reserved.
                         </p>
                         <p className="text-[10px] text-slate-300">
                             {contact.address.street}, {contact.address.city}, {contact.address.region}, India

@@ -7,6 +7,11 @@
  * render nothing while they are null (a placeholder must not reach a
  * production render, MNC §11.3).
  */
+/** "2025" in the founding year, "2025–2026" after. VP-LEG-006. */
+export function copyrightYears(founded: number, now: number = new Date().getFullYear()): string {
+  return now > founded ? `${founded}–${now}` : `${founded}`;
+}
+
 export const company = Object.freeze({
   tradeName: "Vasant Petrochem",
   foundedYear: 2025,
