@@ -1,4 +1,5 @@
 import { createAdminClient } from "./supabase/admin.ts";
+import { company } from "./company.ts";
 
 export type NotifySeverity = "info" | "warning" | "critical";
 
@@ -36,7 +37,7 @@ export async function notify(severity: NotifySeverity, title: string, body: stri
         headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           from: "Vasant Hub Alerts <alerts@vasantpetrochem.com>",
-          to: [process.env.ALERT_EMAIL_TO ?? "vasantpetrochem@gmail.com"],
+          to: [process.env.ALERT_EMAIL_TO ?? company.email],
           subject: `[${severity}] ${title}`,
           text: body,
         }),

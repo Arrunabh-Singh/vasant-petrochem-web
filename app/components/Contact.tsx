@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { AlertCircle, CheckCircle2, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { contact, addressLine } from "../content";
+import { company } from "@/lib/company";
 import { submitQuoteRequest, type QuoteFormState } from "../actions/quote";
 import WhatsAppIcon from "./WhatsAppIcon";
 import type { Product } from "@/lib/products";
@@ -191,8 +192,8 @@ const Contact = ({
                         {contact.address.city}, {contact.address.region} {contact.address.postalCode}
                     </p>
                     <div className="flex justify-between gap-4 pt-4 border-t border-brand/10 text-sm">
-                        <span className="text-slate-500">Mon — Sat</span>
-                        <span className="font-semibold text-brand-dark">9:00 AM — 6:00 PM</span>
+                        <span className="text-slate-500">{company.hours.days}</span>
+                        <span className="font-semibold text-brand-dark">{company.hours.time}</span>
                     </div>
                     <div className="flex justify-between gap-4 pt-3 text-sm">
                         <span className="text-slate-500">Email</span>

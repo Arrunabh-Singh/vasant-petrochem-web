@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { site, contact } from "./content";
+import { company } from "@/lib/company";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -100,9 +101,9 @@ const jsonLd = {
       },
       openingHoursSpecification: {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        opens: "09:00",
-        closes: "18:00",
+        dayOfWeek: company.hours.dayOfWeek,
+        opens: company.hours.opens,
+        closes: company.hours.closes,
       },
       priceRange: "$$",
     },
