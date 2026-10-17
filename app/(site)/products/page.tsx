@@ -3,7 +3,7 @@ import ProductGrid from "@/app/components/ProductGrid";
 import Reveal from "@/app/components/Reveal";
 import { getCatalog } from "@/lib/products";
 import CatalogUnavailable from "@/app/components/CatalogUnavailable";
-import { contact } from "@/app/content";
+import { contact, site } from "@/app/content";
 
 export const revalidate = 3600;
 
@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: "Product Catalog",
   description:
     "Base oils, bitumen, industrial fuel oil, rubber process oil, mineral turpentine, and light diesel oil — manufactured and traded by Vasant Petrochem, Indore.",
+  // Without this the page inherits the root layout's canonical and tells
+  // search engines /products is a duplicate of the homepage (VP-SEO-003).
+  alternates: { canonical: `${site.url}/products` },
 };
 
 const waHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(

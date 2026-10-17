@@ -10,7 +10,10 @@
 import { company } from "../lib/company.ts";
 
 export const site = {
-  url: "https://vasantpetrochem.com",
+  // VP-SEO-003: the canonical host is www — it is the host the site is served
+  // from, and the apex 301s to it. Every canonical, OG URL, JSON-LD @id,
+  // sitemap/robots URL and the OAuth origin allowlist derive from this.
+  url: "https://www.vasantpetrochem.com",
   name: company.tradeName,
   legalName: company.legalName ?? company.tradeName,
   tagline: "Manufacturing and trading industrial oils, fuels & lubricants across Central India.",
