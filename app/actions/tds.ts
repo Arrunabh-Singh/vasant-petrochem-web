@@ -5,6 +5,7 @@ import { createPublicClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseEmail } from "@/lib/validate";
 import { botCheck } from "@/lib/bot-defence";
+import { clientIp } from "@/lib/client-ip";
 
 export type TdsGateState = { status: "idle" | "success" | "error"; message?: string; url?: string };
 
@@ -40,10 +41,19 @@ export async function requestTds(
     .eq("published", true)
     .maybeSingle();
 
-  const headersList = await headers();
-  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  const ip = clientIp(await headers());
 
-  await supabase.from("tds_requests").insert({ email, product_id: productId, product_label: productLabel, ip });
+  const { error: logError } = await supabase
+    .from("tds_requests")
+    .insert({ email, product_id: productId, product_label: productLabel, ip });
+  if (logError) {
+    // VP-SEC-003: a rate-limited request must not still get a download link.
+    if (logError.message.includes("rate limit exceeded")) {
+      console.warn("rate-limit: tds_requests request rejected", { ip });
+      return { status: "error", message: "Too many requests from your connection. Please try again later or call us." };
+    }
+    console.error("tds_requests insert failed:", logError.message);
+  }
 
   if (!product?.tds_document_id) {
     return {
