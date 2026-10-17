@@ -12,10 +12,16 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
+          // VP-SEC-001. Vercel only adds a bare `max-age` HSTS; set the full
+          // policy here so it does not depend on the host. includeSubDomains
+          // forces HTTPS on every subdomain, so any future subdomain must
+          // serve TLS. `preload` only declares eligibility — listing on
+          // hstspreload.org is a separate, hard-to-undo owner decision.
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
           {
             key: "Content-Security-Policy",
