@@ -24,6 +24,16 @@
 .DS_Store
 *.pem
 
+# VP-SEC-006: key material, credential exports and database dumps never belong
+# in git. (Encrypted `age` dumps are still customer data.)
+*.key
+*.p12
+*.pfx
+*.sql.age
+*.dump
+*DO_NOT_SHARE*
+service-account*.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
