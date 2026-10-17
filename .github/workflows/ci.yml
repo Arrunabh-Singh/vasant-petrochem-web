@@ -4,7 +4,11 @@ on:
   pull_request:
   push:
     branches: [main]
-  # Manual run also performs the full-history secret scan (VP-SEC-006).
+  # Scheduled and manual runs scan the *entire* git history for secrets
+  # (gitleaks-action only scans the pushed/PR commit range on push and PR
+  # events). VP-SEC-006.
+  schedule:
+    - cron: "23 3 * * 1" # Mondays 08:53 IST
   workflow_dispatch: {}
 
 permissions:
