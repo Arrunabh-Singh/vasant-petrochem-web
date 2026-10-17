@@ -6,6 +6,7 @@ import { contact, addressLine } from "../content";
 import { company } from "@/lib/company";
 import { submitQuoteRequest, type QuoteFormState } from "../actions/quote";
 import WhatsAppIcon from "./WhatsAppIcon";
+import BotCheck from "./BotCheck";
 import type { Product } from "@/lib/products";
 
 const initialState: QuoteFormState = { status: "idle" };
@@ -163,6 +164,8 @@ const Contact = ({
                                         <label htmlFor="message" className="field-label">Additional details</label>
                                         <textarea id="message" name="message" rows={3} placeholder="Delivery city, timeline, packaging preference…" className="field-input resize-none" />
                                     </div>
+
+                                    <BotCheck resetOn={state} />
 
                                     {state.status === "error" && (
                                         <div className="flex items-center gap-2.5 px-4 py-3.5 rounded-[14px] text-[13.5px] text-red-300 bg-red-500/10 border border-red-500/25">

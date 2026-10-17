@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { createPublicClient } from "@/lib/supabase/public";
 import { parseQuoteForm, QUOTE_FIELDS } from "@/lib/validate";
+import { botCheck } from "@/lib/bot-defence";
 
 export type QuoteFormState = {
   status: "idle" | "success" | "error";
@@ -30,6 +31,12 @@ export async function submitQuoteRequest(
 ): Promise<QuoteFormState> {
   if (formData.get("website")) {
     return { status: "success" };
+  }
+
+  // VP-SEC-004: time-to-submit + Turnstile, verified on the server.
+  const blocked = await botCheck(formData);
+  if (blocked) {
+    return { status: "error", message: blocked };
   }
 
   const sourcePageRaw = String(formData.get("sourcePage") ?? "").trim();
