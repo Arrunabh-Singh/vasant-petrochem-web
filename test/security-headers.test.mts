@@ -27,3 +27,13 @@ test("MIME sniffing, referrer, clickjacking and device-permission headers are se
     assert.match(h["permissions-policy"], new RegExp(`${feature}=\\(\\)`));
   }
 });
+
+test("CSP allows exactly the Turnstile origin it needs (VP-SEC-004) and no wildcard", async () => {
+  const csp = (await headerMap())["content-security-policy"];
+  for (const directive of ["script-src", "frame-src", "connect-src"]) {
+    const value = new RegExp(`${directive}[^;]*`).exec(csp)?.[0] ?? "";
+    assert.match(value, /https:\/\/challenges\.cloudflare\.com/, directive);
+    assert.doesNotMatch(value, /\*/, directive);
+  }
+  assert.match(/connect-src[^;]*/.exec(csp)![0], /'self'/);
+});

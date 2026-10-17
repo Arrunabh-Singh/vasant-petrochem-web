@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseEmail } from "@/lib/validate";
+import { botCheck } from "@/lib/bot-defence";
 
 export type TdsGateState = { status: "idle" | "success" | "error"; message?: string; url?: string };
 
@@ -15,6 +16,11 @@ export async function requestTds(
 ): Promise<TdsGateState> {
   // Honeypot — bots that fill every field get silently dropped, no signal back.
   if (formData.get("website")) return { status: "success" };
+
+  const blocked = await botCheck(formData);
+  if (blocked) {
+    return { status: "error", message: blocked };
+  }
 
   const parsedEmail = parseEmail(formData.get("email") ?? "");
   if (!parsedEmail.ok) {

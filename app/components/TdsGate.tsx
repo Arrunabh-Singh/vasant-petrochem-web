@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { requestTds, type TdsGateState } from "../actions/tds";
+import BotCheck from "./BotCheck";
 
 const initialState: TdsGateState = { status: "idle" };
 
@@ -43,6 +44,7 @@ const TdsGate = ({ productId, productLabel }: { productId: string; productLabel:
                 placeholder="you@company.com"
                 className="field-input"
             />
+            <BotCheck resetOn={state} />
             <button type="submit" disabled={pending} className="btn-accent w-full">
                 {pending ? <Loader2 size={18} className="animate-spin" /> : "REQUEST THE TDS"}
             </button>
