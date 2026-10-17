@@ -4,10 +4,23 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Scheduled and manual runs scan the *entire* git history for secrets
+  # (gitleaks-action only scans the pushed/PR commit range on push and PR
+  # events). VP-SEC-006.
+  schedule:
+    - cron: "23 3 * * 1" # Mondays 08:53 IST
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # CI has no database, so the build must not need one: placeholders on purpose.
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,7 +31,35 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      # Production dependencies only. The remaining findings are in the
+      # dev-only lint chain (eslint-config-next); npm's sole offered fix is a
+      # downgrade to v14. See the VP-SEC-007 PR.
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm run build
+      # Warn-only until VP-PERF-004 turns these into enforced budgets.
+      # continue-on-error so a tooling hiccup cannot block merges meanwhile.
+      - name: Lighthouse (report only)
+        continue-on-error: true
+        run: npx --yes @lhci/cli@0.15.1 autorun --config=lighthouserc.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-report
+          path: .lighthouseci
+          if-no-files-found: ignore
+          retention-days: 14
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Pinned by version tag, not commit SHA: the pinning environment could
+      # not resolve the SHA. Dependabot (github-actions) tracks updates.
+      - uses: gitleaks/gitleaks-action@v2
         env:
-          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
