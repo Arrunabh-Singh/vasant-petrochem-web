@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { createPublicClient } from "@/lib/supabase/public";
+import { parseQuoteForm, QUOTE_FIELDS } from "@/lib/validate";
 
 export type QuoteFormState = {
   status: "idle" | "success" | "error";
@@ -18,9 +19,6 @@ function isAllowedSourcePage(value: string): boolean {
   return ALLOWED_SOURCE_PAGES.some((re) => re.test(value));
 }
 
-// Rejects control characters/newlines in addition to the basic shape check.
-const EMAIL_RE = /^[^\s@\x00-\x1f]+@[^\s@\x00-\x1f]+\.[^\s@\x00-\x1f]+$/;
-
 /**
  * honeypot: hidden field named "website" — real visitors never fill it in,
  * bots that auto-fill every field do. Silently drop the submission instead
@@ -34,22 +32,15 @@ export async function submitQuoteRequest(
     return { status: "success" };
   }
 
-  const name = String(formData.get("name") ?? "").trim().slice(0, 200);
-  const email = String(formData.get("email") ?? "").trim().slice(0, 320);
-  const company = String(formData.get("company") ?? "").trim().slice(0, 200);
-  const phone = String(formData.get("phone") ?? "").trim().slice(0, 40);
-  const productLabel = String(formData.get("product") ?? "").trim().slice(0, 200);
-  const quantity = String(formData.get("quantity") ?? "").trim().slice(0, 100);
-  const message = String(formData.get("message") ?? "").trim().slice(0, 5000);
   const sourcePageRaw = String(formData.get("sourcePage") ?? "").trim();
   const sourcePage = isAllowedSourcePage(sourcePageRaw) ? sourcePageRaw : "/contact";
 
-  if (!name || !email) {
-    return { status: "error", message: "Name and email are required." };
+  // VP-SEC-005: every field is validated here, never trusted from the browser.
+  const parsed = parseQuoteForm(Object.fromEntries(QUOTE_FIELDS.map((k) => [k, formData.get(k) ?? ""])));
+  if (!parsed.ok) {
+    return { status: "error", message: parsed.message };
   }
-  if (!EMAIL_RE.test(email)) {
-    return { status: "error", message: "Enter a valid email address." };
-  }
+  const { name, email, company, phone, product: productLabel, quantity, message } = parsed.data;
 
   const supabase = createPublicClient();
 
@@ -60,6 +51,10 @@ export async function submitQuoteRequest(
       .select("id, name, code")
       .eq("published", true);
     productId = match?.find((p) => `${p.name} (${p.code})` === productLabel)?.id ?? null;
+    // Only a published product (or "Other") is a valid choice.
+    if (!productId) {
+      return { status: "error", message: "Select a product from the list." };
+    }
   }
 
   const headersList = await headers();

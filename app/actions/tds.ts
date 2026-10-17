@@ -3,10 +3,9 @@
 import { headers } from "next/headers";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { parseEmail } from "@/lib/validate";
 
 export type TdsGateState = { status: "idle" | "success" | "error"; message?: string; url?: string };
-
-const EMAIL_RE = /^[^\s@\x00-\x1f]+@[^\s@\x00-\x1f]+\.[^\s@\x00-\x1f]+$/;
 
 export async function requestTds(
   productId: string,
@@ -17,10 +16,11 @@ export async function requestTds(
   // Honeypot — bots that fill every field get silently dropped, no signal back.
   if (formData.get("website")) return { status: "success" };
 
-  const email = String(formData.get("email") ?? "").trim();
-  if (!EMAIL_RE.test(email)) {
-    return { status: "error", message: "Enter a valid email address." };
+  const parsedEmail = parseEmail(formData.get("email") ?? "");
+  if (!parsedEmail.ok) {
+    return { status: "error", message: parsedEmail.message };
   }
+  const email = parsedEmail.email;
 
   const supabase = createPublicClient();
   // audit.md M19: tds_document_id used to be a raw storage path selected
