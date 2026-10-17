@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import ProductGrid from "@/app/components/ProductGrid";
 import Reveal from "@/app/components/Reveal";
-import { getProducts } from "@/lib/products";
+import { getCatalog } from "@/lib/products";
+import CatalogUnavailable from "@/app/components/CatalogUnavailable";
 import { contact } from "@/app/content";
 
 export const revalidate = 3600;
@@ -17,7 +18,7 @@ const waHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(
 )}`;
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const { products, degraded } = await getCatalog();
 
   return (
     <section className="wash-top pt-[100px] lg:pt-[clamp(120px,14vw,176px)] pb-14 lg:pb-24 min-h-dvh">
@@ -32,7 +33,7 @@ export default async function ProductsPage() {
           </p>
         </div>
 
-        <ProductGrid products={products} showFilter />
+        {degraded ? <CatalogUnavailable /> : <ProductGrid products={products} showFilter />}
 
         <Reveal className="mt-10 lg:mt-14">
           <div className="flex flex-wrap items-center justify-between gap-6 p-6 lg:p-[clamp(28px,3.5vw,48px)] rounded-[26px] glass">

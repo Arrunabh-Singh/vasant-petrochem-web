@@ -82,8 +82,14 @@ it originally.
     are set, alerts land as `security_alerts` rows (visible on
     `/admin/security`) and console logs only — nothing crashes.
 14. **`CRON_SECRET`** in Vercel, matching Vercel's own convention, so
-    `/api/cron/daily-digest` only responds to Vercel Cron. Optional —
-    the route works without it, just less strictly gated.
+    `/api/cron/daily-digest` only responds to Vercel Cron. **Required, not
+    optional** — the route now refuses to run without it (401) rather than
+    running unauthenticated. It was previously gated by
+    `if (CRON_SECRET && ...)`, which meant that until this variable was
+    set the endpoint was open to the whole internet: any anonymous caller
+    could read back the unacked `security_alerts` queue and fire the
+    owner's Telegram and email channels on demand. Until you set it, the
+    daily digest simply does not send.
 
 ## Answer before Tally/IoT/control work goes further
 

@@ -8,10 +8,11 @@ import ProductGrid from "@/app/components/ProductGrid";
 import ProductCarousel from "@/app/components/ProductCarousel";
 import TradingLines from "@/app/components/TradingLines";
 import Reveal from "@/app/components/Reveal";
-import { getProducts } from "@/lib/products";
+import { getCatalog } from "@/lib/products";
+import CatalogUnavailable from "@/app/components/CatalogUnavailable";
 
 export default async function Home() {
-  const products = await getProducts();
+  const { products, degraded } = await getCatalog();
   const featured = products.slice(0, 3);
 
   return (
@@ -44,17 +45,25 @@ export default async function Home() {
           </div>
         </Reveal>
 
-        {/* Phone: full-bleed swipe rail. Desktop: three featured cards. */}
-        <ProductCarousel products={products} />
-        <div className="lg:hidden container-wide pt-5">
-          <Link href="/products" className="btn-ghost w-full">
-            VIEW ALL {products.length} LINES
-            <ArrowRight size={17} />
-          </Link>
-        </div>
-        <div className="hidden lg:block container-wide">
-          <ProductGrid products={featured} />
-        </div>
+        {degraded ? (
+          <div className="container-wide">
+            <CatalogUnavailable />
+          </div>
+        ) : (
+          <>
+            {/* Phone: full-bleed swipe rail. Desktop: three featured cards. */}
+            <ProductCarousel products={products} />
+            <div className="lg:hidden container-wide pt-5">
+              <Link href="/products" className="btn-ghost w-full">
+                VIEW ALL {products.length} LINES
+                <ArrowRight size={17} />
+              </Link>
+            </div>
+            <div className="hidden lg:block container-wide">
+              <ProductGrid products={featured} />
+            </div>
+          </>
+        )}
       </section>
 
       <div className="order-2 lg:order-1">

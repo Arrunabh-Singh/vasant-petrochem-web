@@ -112,7 +112,11 @@ export async function getAllDocuments(q?: string): Promise<VaultDocument[]> {
   const supabase = await createClient();
   let query = supabase
     .from("documents")
-    .select("id, doc_class, logical_name, status, legal_hold, encrypted, version, size_bytes, retention_until, created_by, created_at, extracted_text")
+    // has_ocr is a generated column (migration 20260828130000) so the badge
+    // costs a boolean instead of every document's full OCR text. The search
+    // below still filters on extracted_text — that runs in Postgres, so the
+    // text never has to cross the wire.
+    .select("id, doc_class, logical_name, status, legal_hold, encrypted, version, size_bytes, retention_until, created_by, created_at, has_ocr")
     .order("created_at", { ascending: false });
 
   const term = q?.trim();
@@ -140,7 +144,7 @@ export async function getAllDocuments(q?: string): Promise<VaultDocument[]> {
     retention_until: string;
     created_by: string;
     created_at: string;
-    extracted_text: string | null;
+    has_ocr: boolean;
   }>;
 
   return rows.map((d) => ({
@@ -155,7 +159,7 @@ export async function getAllDocuments(q?: string): Promise<VaultDocument[]> {
     retention_until: d.retention_until,
     created_by: d.created_by,
     created_at: d.created_at,
-    has_ocr: Boolean(d.extracted_text),
+    has_ocr: d.has_ocr,
   }));
 }
 
@@ -163,7 +167,10 @@ export async function getDocument(docId: string): Promise<VaultDocument | null> 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("documents")
-    .select("id, doc_class, logical_name, status, legal_hold, encrypted, version, size_bytes, retention_until, created_by, created_at")
+    // has_ocr included so the `as VaultDocument` cast below is honest — the
+    // type has always required it while this select omitted it, leaving the
+    // field undefined at runtime.
+    .select("id, doc_class, logical_name, status, legal_hold, encrypted, version, size_bytes, retention_until, created_by, created_at, has_ocr")
     .eq("id", docId)
     .maybeSingle();
 

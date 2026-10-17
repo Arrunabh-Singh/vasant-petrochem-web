@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...except the names-only template. It holds no values, and the project's
+# conventions (CLAUDE.md §2, §8) require it to be tracked.
+!.env.example
 
 # vercel
 .vercel
