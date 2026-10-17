@@ -26,3 +26,20 @@ test("returns null for nothing or for text that is not an IP address", () => {
 test("a junk preferred header falls through to a valid one instead of poisoning the key", () => {
   assert.equal(clientIp(h({ "cf-connecting-ip": "not-an-ip", "x-real-ip": "198.51.100.6" })), "198.51.100.6");
 });
+
+import { hashIp } from "../lib/client-ip.ts";
+
+test("hashIp is a stable keyed hash that does not contain the address", () => {
+  const a = hashIp("203.0.113.9", "key-one");
+  assert.match(a!, /^[0-9a-f]{64}$/);
+  assert.equal(a, hashIp("203.0.113.9", "key-one"));
+  assert.notEqual(a, hashIp("203.0.113.10", "key-one"));
+  assert.notEqual(a, hashIp("203.0.113.9", "key-two"));
+  assert.ok(!a!.includes("203"));
+});
+
+test("hashIp returns null without an address or a key (caller falls back to the raw address)", () => {
+  assert.equal(hashIp(null, "key"), null);
+  assert.equal(hashIp("203.0.113.9", undefined), null);
+  assert.equal(hashIp("203.0.113.9", ""), null);
+});
