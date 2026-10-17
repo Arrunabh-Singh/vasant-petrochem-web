@@ -12,8 +12,20 @@ import WhatsAppIcon from "@/app/components/WhatsAppIcon";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const products = await getProducts();
-  return products.map((p) => ({ slug: p.slug }));
+  // getProducts() throws on any Supabase error (audit.md M20, deliberate:
+  // a live outage must surface at request time rather than render an empty
+  // catalog). At *build* time that same throw is wrong — it aborts the
+  // whole production build whenever the DB is unreachable, which is the
+  // normal case in CI and during a first Vercel deploy. Prerender nothing
+  // and let `revalidate` fill the cache on first request instead; the
+  // page's own getProductBySlug() still throws for a genuine outage.
+  try {
+    const products = await getProducts();
+    return products.map((p) => ({ slug: p.slug }));
+  } catch (err) {
+    console.warn("generateStaticParams: catalog unreachable at build time, deferring to ISR:", err);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

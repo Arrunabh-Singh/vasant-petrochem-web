@@ -2,7 +2,7 @@ import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { contact, site, addressLine, nav } from "../content";
-import { getProducts } from "@/lib/products";
+import { getProductsSafe } from "@/lib/products";
 
 const industries = [
     "Road Construction",
@@ -13,7 +13,7 @@ const industries = [
 ];
 
 const Footer = async () => {
-    const products = await getProducts();
+    const products = await getProductsSafe();
 
     return (
         <footer className="relative z-1 pt-11 lg:pt-[clamp(56px,9vw,96px)] pb-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.44),rgba(230,240,237,0.66))] backdrop-blur-[18px] backdrop-saturate-[1.4] border-t border-white/75">

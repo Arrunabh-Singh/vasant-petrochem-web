@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notify } from "@/lib/notify";
@@ -12,8 +13,22 @@ export const runtime = "nodejs";
  * an actual Telegram/email push via lib/notify.ts.
  */
 export async function GET(req: NextRequest) {
+  // Fail closed. The guard used to be `if (CRON_SECRET && ...)`, so an
+  // unset CRON_SECRET — the default state until the owner sets it in
+  // Vercel — left this route open to the internet. It reads every
+  // unacked security_alerts row and pushes their contents to Telegram
+  // and email, so an anonymous caller could both exfiltrate the alert
+  // queue's detail text and flood the owner's channels on demand.
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    console.error("daily-digest: CRON_SECRET is not set; refusing to run.");
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
   const auth = req.headers.get("authorization");
-  if (process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  const expected = `Bearer ${secret}`;
+  const a = Buffer.from(auth ?? "");
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

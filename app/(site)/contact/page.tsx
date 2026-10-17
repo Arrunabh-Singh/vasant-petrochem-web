@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Contact from "@/app/components/Contact";
-import { getProducts } from "@/lib/products";
+import { getProductsSafe } from "@/lib/products";
 import { site } from "@/app/content";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export default async function ContactPage({
 }: {
   searchParams: Promise<{ product?: string }>;
 }) {
-  const [products, params] = await Promise.all([getProducts(), searchParams]);
+  const [products, params] = await Promise.all([getProductsSafe(), searchParams]);
 
   return <Contact products={products} sourcePage="/contact" defaultProduct={params.product ?? ""} />;
 }
