@@ -3,35 +3,31 @@
  *
  * The product catalog lives in Supabase (see lib/products.ts) so it can be
  * edited from /admin without a deploy. This file covers everything else
- * duplicated across components: contact details, nav, JSON-LD identity.
+ * duplicated across components. Company identity and contact facts are
+ * defined once in lib/company.ts; `site`/`contact` here are views of it.
  */
+
+import { company } from "../lib/company.ts";
 
 export const site = {
   url: "https://vasantpetrochem.com",
-  name: "Vasant Petrochem",
-  legalName: "Vasant Petrochem",
+  name: company.tradeName,
+  legalName: company.legalName ?? company.tradeName,
   tagline: "Manufacturing and trading industrial oils, fuels & lubricants across Central India.",
-  foundedYear: 2025,
+  foundedYear: company.foundedYear,
 } as const;
 
+/** View of `company` in the shape the page components already consume. */
 export const contact = {
-  phone: "+91 94250 58496",
-  phoneHref: "tel:+919425058496",
-  whatsapp: "919425058496",
-  email: "vasantpetrochem@gmail.com",
-  address: {
-    street: "Industrial Area, Mangaliya",
-    city: "Indore",
-    region: "Madhya Pradesh",
-    postalCode: "453771",
-    country: "IN",
-    lat: 22.6569,
-    lng: 75.7898,
-  },
-  hours: "Mon — Sat: 9:00 AM — 6:00 PM IST",
+  phone: company.phone.display,
+  phoneHref: company.phone.href,
+  whatsapp: company.phone.whatsapp,
+  email: company.email,
+  address: company.works,
+  hours: company.hours.label,
 } as const;
 
-/** "Industrial Area, Mangaliya, Indore, MP 453771" */
+/** One-line works address, e.g. for the footer and the mobile menu. */
 export const addressLine = `${contact.address.street}, ${contact.address.city}, MP ${contact.address.postalCode}`;
 
 export const nav = [
