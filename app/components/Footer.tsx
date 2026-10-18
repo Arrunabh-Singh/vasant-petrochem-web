@@ -56,6 +56,10 @@ const Footer = async () => {
                     <p className="pt-[22px] border-t border-brand/15 text-[10.5px] font-bold uppercase tracking-[0.12em] text-slate-400">
                         &copy; {years} {site.name}. All rights reserved.
                     </p>
+                    <p className="mt-3 flex gap-5 text-[11px] font-semibold text-slate-500">
+                        <Link href="/privacy" className="underline">Privacy</Link>
+                        <Link href="/terms" className="underline">Terms</Link>
+                    </p>
                 </div>
 
                 {/* Desktop footer */}
@@ -116,6 +120,10 @@ const Footer = async () => {
                     <div className="border-t border-slate-200 pt-8 flex flex-wrap justify-between items-center gap-4">
                         <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">
                             &copy; {years} {site.name}. All Rights Reserved.
+                        </p>
+                        <p className="flex gap-5 text-xs font-medium text-slate-500">
+                            <Link href="/privacy" className="transition-colors hover:text-brand">Privacy</Link>
+                            <Link href="/terms" className="transition-colors hover:text-brand">Terms</Link>
                         </p>
                         <p className="text-[10px] text-slate-300">
                             {contact.address.street}, {contact.address.city}, {contact.address.region}, India
