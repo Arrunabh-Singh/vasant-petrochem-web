@@ -42,7 +42,6 @@ revoke execute on function public.assign_enquiry_reference() from public;
 
 -- Trigger names sort before quote_requests_rate_limit, so a rejected
 -- submission is rolled back together with its counter increment.
-drop trigger if exists quote_requests_assign_reference on public.quote_requests;
-create trigger quote_requests_assign_reference
+create or replace trigger quote_requests_assign_reference
   before insert on public.quote_requests
   for each row execute function public.assign_enquiry_reference();
