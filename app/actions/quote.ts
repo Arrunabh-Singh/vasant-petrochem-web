@@ -2,9 +2,10 @@
 
 import { headers } from "next/headers";
 import { createPublicClient } from "@/lib/supabase/public";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { parseQuoteForm, QUOTE_FIELDS } from "@/lib/validate";
 import { botCheck } from "@/lib/bot-defence";
-import { clientIp } from "@/lib/client-ip";
+import { clientIp, hashIp } from "@/lib/client-ip";
 
 export type QuoteFormState = {
   status: "idle" | "success" | "error";
@@ -65,9 +66,16 @@ export async function submitQuoteRequest(
     }
   }
 
-  const ip = clientIp(await headers());
+  const requestHeaders = await headers();
+  const ip = clientIp(requestHeaders);
+  // Writes go through the service-role client (server-only) once its key is
+  // configured; until then the anon insert policy keeps enquiries flowing.
+  // The address is stored as a keyed hash when a key exists, raw otherwise.
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const ipHash = hashIp(ip, serviceKey);
+  const writer = serviceKey ? createAdminClient() : supabase;
 
-  const { error } = await supabase.from("quote_requests").insert({
+  const { error } = await writer.from("quote_requests").insert({
     name,
     email,
     company: company || null,
@@ -77,7 +85,9 @@ export async function submitQuoteRequest(
     quantity: quantity || null,
     message: message || null,
     source_page: sourcePage,
-    ip,
+    ip: ipHash ? null : ip,
+    ip_hash: ipHash,
+    user_agent: requestHeaders.get("user-agent")?.slice(0, 400) ?? null,
   });
 
   if (error) {
