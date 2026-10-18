@@ -7,6 +7,10 @@
 -- change rolls back with it, so rejected submissions do not burn numbers.
 -- The month is the Indian calendar month (the business and its buyers are in
 -- IST), not UTC.
+--
+-- Applied to production 2026-10-18 through the Supabase connector, where it is
+-- recorded as version 20261018xxxxxx "enquiry_reference" (the tool stamps its own
+-- timestamp); this file's version is the repo ordering.
 
 create table if not exists public.enquiry_counters (
   period     text primary key check (period ~ '^[0-9]{6}$'),
