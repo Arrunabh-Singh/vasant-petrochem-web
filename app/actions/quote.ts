@@ -10,6 +10,8 @@ import { clientIp, hashIp } from "@/lib/client-ip";
 export type QuoteFormState = {
   status: "idle" | "success" | "error";
   message?: string;
+  /** VP-ENQ-YYYYMM-####, present once the service-role key is configured. */
+  reference?: string;
 };
 
 // audit.md M21: sourcePage/product were persisted verbatim from
@@ -75,7 +77,9 @@ export async function submitQuoteRequest(
   const ipHash = hashIp(ip, serviceKey);
   const writer = serviceKey ? createAdminClient() : supabase;
 
-  const { error } = await writer.from("quote_requests").insert({
+  // Reading the new row back (to show its reference) needs SELECT, which only
+  // the service role has; the anon fallback can insert but not read.
+  const insert = writer.from("quote_requests").insert({
     name,
     email,
     company: company || null,
@@ -89,6 +93,15 @@ export async function submitQuoteRequest(
     ip_hash: ipHash,
     user_agent: requestHeaders.get("user-agent")?.slice(0, 400) ?? null,
   });
+  let reference: string | undefined;
+  let error;
+  if (serviceKey) {
+    const result = await insert.select("reference").single();
+    error = result.error;
+    reference = result.data?.reference ?? undefined;
+  } else {
+    error = (await insert).error;
+  }
 
   if (error) {
     // VP-SEC-003: the prevent_spam() trigger rejected this submission.
@@ -100,5 +113,5 @@ export async function submitQuoteRequest(
     return { status: "error", message: "Something went wrong. Please try again or call us directly." };
   }
 
-  return { status: "success" };
+  return { status: "success", reference };
 }
