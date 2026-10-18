@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { site } from "./app/content.ts";
 
 // audit.md H4 / I-16 / I-17: production had no CSP, no clickjacking
 // protection, and no MIME-sniffing protection. script-src keeps
@@ -7,6 +8,20 @@ import type { NextConfig } from "next";
 // framer-motion needs it in some browsers; tighten further only after
 // confirming the Google OAuth redirect and framer-motion still work.
 const nextConfig: NextConfig = {
+  // VP-SEO-003: the *.vercel.app production alias serves a full copy of the
+  // site. Its canonicals already point at www; this makes it a permanent
+  // redirect too. Only that exact host — preview deployments use other
+  // hostnames and are unaffected.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "vasant-petrochem-web.vercel.app" }],
+        destination: `${site.url}/:path*`,
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
