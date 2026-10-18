@@ -1,11 +1,13 @@
 "use server";
 
 import { headers } from "next/headers";
+import { after } from "next/server";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseQuoteForm, QUOTE_FIELDS } from "@/lib/validate";
 import { botCheck } from "@/lib/bot-defence";
 import { clientIp, hashIp } from "@/lib/client-ip";
+import { salesDeskEmail, sendEmail } from "@/lib/mail";
 
 export type QuoteFormState = {
   status: "idle" | "success" | "error";
@@ -112,6 +114,15 @@ export async function submitQuoteRequest(
     console.error("quote_requests insert failed:", error.message);
     return { status: "error", message: "Something went wrong. Please try again or call us directly." };
   }
+
+  // VP-LEAD-005: alert the sales desk. Runs after the response is sent and
+  // never fails the enquiry: it is already saved.
+  after(async () => {
+    const result = await sendEmail(
+      salesDeskEmail({ reference, name, email, company, phone, product: productLabel, quantity, message, sourcePage }),
+    );
+    if (!result.ok) console.warn("sales-desk notification not sent:", result.reason);
+  });
 
   return { status: "success", reference };
 }
