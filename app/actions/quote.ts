@@ -119,12 +119,16 @@ export async function submitQuoteRequest(
   // Runs after the response is sent and never fails the enquiry: it is
   // already saved. The two sends are independent.
   after(async () => {
+    // The acknowledgement goes to whatever address the form carries, so it is
+    // only sent once Turnstile is enforcing: otherwise a bot could make us mail
+    // arbitrary addresses and burn the free-tier quota the sales-desk alert needs.
+    const acknowledge = Boolean(process.env.TURNSTILE_SECRET_KEY);
     const [desk, ack] = await Promise.all([
       sendEmail(salesDeskEmail({ reference, name, email, company, phone, product: productLabel, quantity, message, sourcePage })),
-      sendEmail(acknowledgementEmail(email, reference)),
+      acknowledge ? sendEmail(acknowledgementEmail(email, reference)) : Promise.resolve(null),
     ]);
     if (!desk.ok) console.warn("sales-desk notification not sent:", desk.reason);
-    if (!ack.ok) console.warn("buyer acknowledgement not sent:", ack.reason);
+    if (ack && !ack.ok) console.warn("buyer acknowledgement not sent:", ack.reason);
   });
 
   return { status: "success", reference };
