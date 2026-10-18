@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { sendEmail, salesDeskEmail, oneLine, type Enquiry } from "../lib/mail.ts";
+import { sendEmail, salesDeskEmail, acknowledgementEmail, oneLine, type Enquiry } from "../lib/mail.ts";
 
 const enquiry: Enquiry = {
   reference: "VP-ENQ-202610-0007",
@@ -60,4 +60,21 @@ test("sendEmail posts the right payload to Resend and reports success/failure", 
   assert.deepEqual(await sendEmail({ to: "a@b.co", subject: "s", text: "t" }, { apiKey: "k", from: "f@y.co", fetchImpl: fail }), { ok: false, reason: "Resend HTTP 422" });
   const down = (async () => { throw new Error("network"); }) as unknown as typeof fetch;
   assert.equal((await sendEmail({ to: "a@b.co", subject: "s", text: "t" }, { apiKey: "k", from: "f@y.co", fetchImpl: down })).ok, false);
+});
+
+test("acknowledgement carries the reference but never anything the visitor typed", () => {
+  const typed = { name: "ZZ-NAME", company: "ZZ-COMPANY", phone: "ZZ-PHONE", quantity: "ZZ-QTY", message: "ZZ-MESSAGE visit evil.example" };
+  const m = acknowledgementEmail("buyer@example.com", "VP-ENQ-202610-0007");
+  assert.equal(m.to, "buyer@example.com");
+  assert.equal(m.subject, "We have received your enquiry VP-ENQ-202610-0007");
+  assert.ok(m.text.includes("VP-ENQ-202610-0007"));
+  // The function only receives (address, reference); prove the typed fields cannot appear.
+  for (const v of Object.values(typed)) assert.ok(!m.text.includes(v) && !m.subject.includes(v));
+  assert.match(m.text, /24 hours on business days/);
+});
+
+test("acknowledgement without a reference still reads correctly", () => {
+  const m = acknowledgementEmail("buyer@example.com");
+  assert.equal(m.subject, "We have received your enquiry");
+  assert.ok(!m.text.includes("recorded it as"));
 });

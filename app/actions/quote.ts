@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { parseQuoteForm, QUOTE_FIELDS } from "@/lib/validate";
 import { botCheck } from "@/lib/bot-defence";
 import { clientIp, hashIp } from "@/lib/client-ip";
-import { salesDeskEmail, sendEmail } from "@/lib/mail";
+import { acknowledgementEmail, salesDeskEmail, sendEmail } from "@/lib/mail";
 
 export type QuoteFormState = {
   status: "idle" | "success" | "error";
@@ -115,13 +115,20 @@ export async function submitQuoteRequest(
     return { status: "error", message: "Something went wrong. Please try again or call us directly." };
   }
 
-  // VP-LEAD-005: alert the sales desk. Runs after the response is sent and
-  // never fails the enquiry: it is already saved.
+  // VP-LEAD-005 / VP-LEAD-002: alert the sales desk and acknowledge the buyer.
+  // Runs after the response is sent and never fails the enquiry: it is
+  // already saved. The two sends are independent.
   after(async () => {
-    const result = await sendEmail(
-      salesDeskEmail({ reference, name, email, company, phone, product: productLabel, quantity, message, sourcePage }),
-    );
-    if (!result.ok) console.warn("sales-desk notification not sent:", result.reason);
+    // The acknowledgement goes to whatever address the form carries, so it is
+    // only sent once Turnstile is enforcing: otherwise a bot could make us mail
+    // arbitrary addresses and burn the free-tier quota the sales-desk alert needs.
+    const acknowledge = Boolean(process.env.TURNSTILE_SECRET_KEY);
+    const [desk, ack] = await Promise.all([
+      sendEmail(salesDeskEmail({ reference, name, email, company, phone, product: productLabel, quantity, message, sourcePage })),
+      acknowledge ? sendEmail(acknowledgementEmail(email, reference)) : Promise.resolve(null),
+    ]);
+    if (!desk.ok) console.warn("sales-desk notification not sent:", desk.reason);
+    if (ack && !ack.ok) console.warn("buyer acknowledgement not sent:", ack.reason);
   });
 
   return { status: "success", reference };

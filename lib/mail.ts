@@ -79,3 +79,31 @@ export function salesDeskEmail(e: Enquiry): Mail {
     ].join("\n"),
   };
 }
+
+/**
+ * VP-LEAD-002: acknowledgement to the buyer. Fixed text plus the reference,
+ * nothing the visitor typed — so the form cannot be used to make us send an
+ * arbitrary message to an arbitrary address. Only sent for a submission that
+ * already passed validation, bot checks and the rate limits (the per-email cap
+ * in prevent_spam() bounds how often one address can receive it).
+ */
+export function acknowledgementEmail(to: string, reference?: string): Mail {
+  return {
+    to,
+    replyTo: company.email,
+    subject: `We have received your enquiry${reference ? ` ${reference}` : ""}`,
+    text: [
+      "Hello,",
+      "",
+      `Thank you for contacting ${company.tradeName}. We have received your enquiry${reference ? ` and recorded it as ${reference}` : ""}.`,
+      "",
+      "Our team will reply within 24 hours on business days. Please quote the reference above in any follow-up.",
+      "",
+      `For anything urgent, call ${company.phone.display} (${company.hours.label}).`,
+      "",
+      `${company.tradeName}`,
+      "",
+      "This is an automatic acknowledgement. If you did not make this enquiry, you can ignore this email.",
+    ].join("\n"),
+  };
+}
