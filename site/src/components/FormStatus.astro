@@ -1,0 +1,23 @@
+---
+/** The error banner and the success panel a public form swaps to (filled by islands/form.ts). */
+import { t } from "../lib/ui.ts";
+import Icon from "./Icon.astro";
+
+interface Props {
+  /** What arrived, e.g. "Request received". */
+  title?: string;
+}
+const { title = t("form.sent") } = Astro.props;
+---
+<div class="vp-alert" role="alert" data-form-error hidden>
+  <Icon name="alert" />
+  <span data-form-error-text>{t("form.error")}</span>
+</div>
+<template data-form-success>
+  <div class="vp-form vp-form-done" role="status" tabindex="-1">
+    <span class="vp-done-icon"><Icon name="check" size={26} stroke={2.5} /></span>
+    <h3 class="vp-form-title">{title}</h3>
+    <p>{t("form.reference")}: <span class="vp-mono" data-reference></span></p>
+    <p>{t("form.reply")}</p>
+  </div>
+</template>

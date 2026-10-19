@@ -1,0 +1,56 @@
+---
+import Base from "../layouts/Base.astro";
+import Field from "../components/Field.astro";
+import FormGuard from "../components/FormGuard.astro";
+import FormStatus from "../components/FormStatus.astro";
+import { claim } from "../lib/claims.ts";
+import { page } from "../lib/page.ts";
+import { t } from "../lib/ui.ts";
+
+const copy = await page("source");
+const pricing = await claim("pricing-24h");
+const units = ["MT", "kL", "L", "kg", "drums", "pails"].map((u) => ({ value: u, label: u }));
+---
+<Base title={copy.title} description={copy.description}>
+  <section class="vp-section-tight">
+    <div class="vp-container vp-split">
+      <form class="vp-form" method="post" action="/api/rfq" data-vp-form aria-labelledby="source-title">
+        <div class="vp-stack">
+          <h1 class="vp-h-page" id="source-title">{copy.headline}</h1>
+          <p class="vp-small">{copy.lead}</p>
+        </div>
+        <input type="hidden" name="type" value="source" />
+        <Field name="product_text" label="Product or grade" required maxlength={200} placeholder="For example: white mineral oil, light liquid paraffin" />
+        <Field name="spec" label="Specification" type="textarea" maxlength={2000} hint="Key properties, the standard it must meet, or a supplier reference." />
+        <div class="vp-form-row">
+          <Field name="qty" label="Quantity" inputmode="decimal" maxlength={10} />
+          <Field name="unit" label="Unit" type="select" options={units} value="MT" />
+        </div>
+        <div class="vp-form-row">
+          <Field name="delivery_city" label="Delivery city and state" autocomplete="address-level2" maxlength={120} />
+          <Field name="required_by" label="Needed by" type="date" />
+        </div>
+        <div class="vp-form-row">
+          <Field name="name" label="Your name" required autocomplete="name" maxlength={120} />
+          <Field name="company" label="Company" autocomplete="organization" maxlength={160} />
+        </div>
+        <div class="vp-form-row">
+          <Field name="email" label="Work email" type="email" required autocomplete="email" maxlength={254} />
+          <Field name="phone" label="Phone or WhatsApp" type="tel" autocomplete="tel" maxlength={20} />
+        </div>
+        <FormGuard id="source" />
+        <FormStatus />
+        <p class="vp-caption">We use these details only to reply to your enquiry.</p>
+        <button class="vp-btn vp-btn-primary vp-btn-touch" type="submit">{t("cta.send")}</button>
+      </form>
+      <aside class="vp-stack">
+        <p class="vp-eyebrow">What happens next</p>
+        <h2 class="vp-h-section">{pricing}</h2>
+        <p class="vp-lead">The sales desk checks availability against your specification and replies with what it can supply, the packaging and a price.</p>
+      </aside>
+    </div>
+  </section>
+</Base>
+<script>
+  import "../islands/form.ts";
+</script>

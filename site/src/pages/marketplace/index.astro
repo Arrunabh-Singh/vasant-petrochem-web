@@ -1,0 +1,121 @@
+---
+import { getEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { getFamilies, getIndustries, getProducts } from "../../lib/catalog.ts";
+import { abs } from "../../lib/seo.ts";
+import { t } from "../../lib/ui.ts";
+
+const page = (await getEntry("pages", "marketplace"))!.data;
+const products = await getProducts();
+const families = (await getFamilies()).filter((f) => products.some((p) => p.data.family === f.id));
+const industries = (await getIndustries()).filter((i) => products.some((p) => p.data.industries.includes(i.id)));
+const familyName = new Map(families.map((f) => [f.id, f.data.name]));
+const packs = [...new Set(products.flatMap((p) => p.data.packaging.map((k) => k.type)))];
+const hasSds = products.some((p) => p.data.documents.sds.length > 0);
+const hasTds = products.some((p) => p.data.documents.tds);
+const count = (pred: (p: (typeof products)[number]) => boolean) => products.filter(pred).length;
+
+const structured = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Vasant Petrochem marketplace",
+    itemListElement: products.map((p, i) => ({ "@type": "ListItem", position: i + 1, url: abs(`/products/${p.id}`), name: p.data.name })),
+  },
+];
+---
+<Base title={page.title} description={page.description} structured={structured}>
+  <section class="vp-section-tight">
+    <div class="vp-container">
+      <div class="vp-head-row">
+        <div class="vp-head">
+          <h1 class="vp-h-page">{page.headline}</h1>
+          <p class="vp-lead">{page.lead}</p>
+        </div>
+        <div class="vp-actions">
+          <a class="vp-btn vp-btn-secondary" href="/marketplace/offers"><Icon name="clock" />Live offers</a>
+          <a class="vp-btn vp-btn-secondary" href="/source"><Icon name="search" />{t("cta.source")}</a>
+        </div>
+      </div>
+
+      <div class="vp-market" data-market>
+        <form class="vp-filters" role="search" aria-label="Filter products" data-filters hidden>
+          <div class="vp-search-field">
+            <label class="vp-sr" for="market-q">Search the marketplace</label>
+            <Icon name="search" />
+            <input id="market-q" class="vp-input" type="search" name="q" placeholder="Grade, code or use" autocomplete="off" />
+          </div>
+          <details open>
+            <summary>Product family <Icon name="chevron" size={18} /></summary>
+            <ul class="vp-chips">
+              {families.map((f) => (
+                <li><button class="vp-chip" type="button" data-facet="family" data-value={f.id} aria-pressed="false">{f.data.name} <span class="vp-chip-count">{count((p) => p.data.family === f.id)}</span></button></li>
+              ))}
+            </ul>
+          </details>
+          <details open>
+            <summary>Industry <Icon name="chevron" size={18} /></summary>
+            <ul class="vp-chips">
+              {industries.map((i) => (
+                <li><button class="vp-chip" type="button" data-facet="industry" data-value={i.id} aria-pressed="false">{i.data.name} <span class="vp-chip-count">{count((p) => p.data.industries.includes(i.id))}</span></button></li>
+              ))}
+            </ul>
+          </details>
+          <details>
+            <summary>Packaging <Icon name="chevron" size={18} /></summary>
+            <ul class="vp-chips">
+              {packs.map((k) => (
+                <li><button class="vp-chip" type="button" data-facet="pack" data-value={k} aria-pressed="false">{k} <span class="vp-chip-count">{count((p) => p.data.packaging.some((x) => x.type === k))}</span></button></li>
+              ))}
+            </ul>
+          </details>
+          {
+            (hasSds || hasTds) && (
+              <details>
+                <summary>Documents <Icon name="chevron" size={18} /></summary>
+                <ul class="vp-chips">
+                  {hasSds && <li><button class="vp-chip" type="button" data-facet="docs" data-value="sds" aria-pressed="false">SDS available</button></li>}
+                  {hasTds && <li><button class="vp-chip" type="button" data-facet="docs" data-value="tds" aria-pressed="false">TDS available</button></li>}
+                </ul>
+              </details>
+            )
+          }
+          <button class="vp-link" type="reset" data-clear>Clear all filters</button>
+        </form>
+
+        <div class="vp-stack">
+          <p class="vp-results-bar" aria-live="polite"><span data-count>{products.length} products</span></p>
+          <ul class="vp-grid" role="list" data-results>
+            {products.map((p) => <li><ProductCard product={p} family={familyName.get(p.data.family) ?? ""} actions headingLevel="h2" /></li>)}
+          </ul>
+          <div class="vp-empty" data-empty hidden>
+            <h2 class="vp-h-title">No grades match those filters</h2>
+            <p class="vp-small">Clear a filter, or tell us the grade you need and we will source it.</p>
+            <div class="vp-actions">
+              <button class="vp-btn vp-btn-secondary" type="button" data-clear>Clear filters</button>
+              <a class="vp-btn vp-btn-primary" href="/source">{t("cta.source")}</a>
+            </div>
+          </div>
+          <aside class="vp-panel vp-panel-row" aria-label="Source any grade">
+            <div class="vp-stack">
+              <h2 class="vp-h-title">Need a grade that is not listed?</h2>
+              <p class="vp-small">Send the specification and quantity. We source industrial oils, fuels and lubricants beyond this list.</p>
+            </div>
+            <a class="vp-btn vp-btn-primary" href="/source">{t("cta.source")}</a>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="vp-tray" data-tray hidden>
+    <span data-tray-text></span>
+    <a class="vp-btn vp-btn-primary vp-btn-small" href="/marketplace/compare" data-tray-go><Icon name="compare" size={18} />{t("cta.compare")}</a>
+  </div>
+</Base>
+<script>
+  import "../../islands/add.ts";
+  import "../../islands/market.ts";
+</script>

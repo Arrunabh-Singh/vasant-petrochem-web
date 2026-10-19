@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { company, whatsappHref } from "../lib/company.ts";
+---
+<Base title="Enquiry not sent" description="Your enquiry could not be sent. Call or message the Vasant Petrochem sales desk." noindex>
+  <section class="vp-section">
+    <div class="vp-container vp-measure vp-stack">
+      <h1 class="vp-h-page">We could not send your enquiry</h1>
+      <p class="vp-lead">Go back and check the form, or reach the sales desk directly. Nothing you typed was stored.</p>
+      <div class="vp-actions">
+        <a class="vp-btn vp-btn-primary" href={company.phone.href}><Icon name="phone" />Call {company.phone.display}</a>
+        <a class="vp-btn vp-btn-secondary" href={whatsappHref("Hello, I tried to send an enquiry from your website.")} target="_blank" rel="noopener"><Icon name="whatsapp" />Chat on WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</Base>

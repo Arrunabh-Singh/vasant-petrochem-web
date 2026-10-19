@@ -1,0 +1,55 @@
+---
+/** A printable A4 datasheet built from the same data as the product page, so the two can never drift (VP-DOC-001). */
+import Base from "../../../layouts/Base.astro";
+import Breadcrumbs from "../../../components/Breadcrumbs.astro";
+import Icon from "../../../components/Icon.astro";
+import SpecTable from "../../../components/SpecTable.astro";
+import { familyName, getProducts, type ProductEntry } from "../../../lib/catalog.ts";
+import { addressLine, company, salesEmail } from "../../../lib/company.ts";
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map((product) => ({ params: { slug: product.id }, props: { product } }));
+}
+
+interface Props {
+  product: ProductEntry;
+}
+const { product } = Astro.props;
+const p = product.data;
+const family = await familyName(p.family);
+const issued = new Date().toISOString().slice(0, 10);
+---
+<Base
+  title={`${p.name} (${p.code}) datasheet`}
+  description={`Printable datasheet for ${p.name} (${p.code}): typical properties, packaging and applications.`}
+  path={`/products/${product.id}`}
+  noindex
+>
+  <Breadcrumbs items={[{ name: "Marketplace", href: "/marketplace" }, { name: p.name, href: `/products/${product.id}` }, { name: "Datasheet", href: `/products/${product.id}/datasheet` }]} />
+  <article class="vp-sheet">
+    <header class="vp-sheet-head">
+      <img src="/brand/vasant-logo.png" alt="Vasant Petrochem" width="734" height="345" />
+      <p class="vp-sheet-meta">
+        Product datasheet<br />
+        {p.code} · issued {issued}<br />
+        {p.data === "verified" ? `Source: ${p.source}` : "Indicative values"}
+      </p>
+    </header>
+    <h1>{p.name}</h1>
+    <p class="vp-small">{family} · {product.body ?? p.summary}</p>
+    <h2>Typical properties</h2>
+    <SpecTable product={product} />
+    <h2>Applications</h2>
+    <p class="vp-small">{p.applications.join(" · ")}</p>
+    <footer class="vp-sheet-foot">
+      {company.legalName ?? company.tradeName} · {addressLine} · {company.phone.display} · {salesEmail}
+    </footer>
+  </article>
+  <div class="vp-container vp-noprint vp-section-tight">
+    <button class="vp-btn vp-btn-primary" type="button" data-print><Icon name="download" />Print or save as PDF</button>
+  </div>
+</Base>
+<script>
+  for (const b of document.querySelectorAll("[data-print]")) b.addEventListener("click", () => print());
+</script>

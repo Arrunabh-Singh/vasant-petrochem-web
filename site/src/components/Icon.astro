@@ -1,0 +1,38 @@
+---
+/** An inline icon: Lucide geometry (src/lib/icons.ts), or the filled WhatsApp glyph. Decorative unless `label` is set. */
+import { ICONS, WHATSAPP, type IconName } from "../lib/icons.ts";
+
+interface Props {
+  name: IconName;
+  size?: number;
+  stroke?: number;
+  label?: string;
+}
+const { name, size = 20, stroke = 2, label } = Astro.props;
+const a11y = label ? { role: "img", "aria-label": label } : { "aria-hidden": "true", focusable: "false" };
+---
+{
+  name === "whatsapp" ? (
+    <svg class="vp-icon" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" {...a11y}>
+      {WHATSAPP.map((d) => <path d={d} />)}
+    </svg>
+  ) : (
+    <svg
+      class="vp-icon"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width={stroke}
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      {...a11y}
+    >
+      {ICONS[name].map(([tag, attrs]) => {
+        const Tag = tag;
+        return <Tag {...attrs} />;
+      })}
+    </svg>
+  )
+}

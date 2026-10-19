@@ -1,0 +1,50 @@
+{
+  "title": "Vasant Petrochem · Industrial oils, fuels and lubricants from Indore",
+  "description": "Base oils, bitumen, fuel oils, process oils and solvents from Mangaliya, Indore. Browse the marketplace, compare grades and get pricing within 24 hours.",
+  "status": "published",
+  "headline": "Industrial oils, fuels and lubricants from Indore.",
+  "lead": "Base oils, bitumen, fuel oils, process oils and solvents, in drums or bulk tankers. Send your grade and quantity, and get pricing within 24 hours.",
+  "blocks": {
+    "find": {
+      "eyebrow": "Marketplace",
+      "heading": "Find your grade",
+      "body": "Search by grade, code or use, or start from a product family."
+    },
+    "offers": {
+      "eyebrow": "Available now",
+      "heading": "Live offers",
+      "body": "Lots ready to move, approved by the sales desk. Prices on request."
+    },
+    "how": {
+      "eyebrow": "How we work",
+      "heading": "From enquiry to dispatch",
+      "items": [
+        { "title": "Send your requirement", "body": "Grade, quantity, packaging and where it needs to go. Several products in one request." },
+        { "title": "Get your price", "claim": "pricing-24h" },
+        { "title": "Dispatch", "claim": "from-mangaliya" },
+        { "title": "Documents", "claim": "test-reports-on-request" }
+      ]
+    },
+    "industries": {
+      "eyebrow": "Industries",
+      "heading": "Where our products go to work"
+    },
+    "supply": {
+      "items": [
+        { "title": "Drums or bulk", "claim": "drums-or-bulk" },
+        { "title": "Pricing", "claim": "pricing-24h" },
+        { "title": "One contact", "claim": "one-contact" },
+        { "title": "Central India", "claim": "from-mangaliya" }
+      ]
+    },
+    "trading": {
+      "eyebrow": "Also trading",
+      "heading": "Branded lubricants and specialty oils",
+      "items": [{ "title": "Branded lubricants", "claim": "branded-lubricants" }]
+    },
+    "cta": {
+      "heading": "Can't find your grade?",
+      "body": "Tell us the specification and quantity. We source industrial oils, fuels and lubricants beyond this catalogue."
+    }
+  }
+}

@@ -1,0 +1,16 @@
+---
+import Icon from "./Icon.astro";
+---
+<dialog id="vp-search" class="vp-search-dialog" aria-labelledby="vp-search-label">
+  <form method="dialog" role="search">
+    <label id="vp-search-label" class="vp-sr" for="vp-search-input">Search products, industries and pages</label>
+    <div class="vp-search-field">
+      <Icon name="search" />
+      <input id="vp-search-input" class="vp-input" type="search" name="q" placeholder="Search grades, uses or pages" autocomplete="off" />
+    </div>
+  </form>
+  <ul class="vp-search-results" id="vp-search-results" aria-live="polite"></ul>
+</dialog>
+<script>
+  import "../islands/search.ts";
+</script>

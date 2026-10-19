@@ -1,0 +1,20 @@
+---
+/** Phone: call, WhatsApp and quote in a bar within thumb reach. Laptop: a WhatsApp pill. */
+import { company, whatsappHref } from "../lib/company.ts";
+import { t } from "../lib/ui.ts";
+import Icon from "./Icon.astro";
+
+interface Props {
+  /** The WhatsApp message, prefilled with what the page is about. */
+  message: string;
+  quoteHref?: string;
+}
+const { message, quoteHref = "/quote" } = Astro.props;
+const wa = whatsappHref(message);
+---
+<nav class="vp-actionbar" aria-label="Contact the sales desk">
+  <a class="vp-btn vp-btn-secondary vp-icon-btn" href={company.phone.href} aria-label={t("cta.call")}><Icon name="phone" /></a>
+  <a class="vp-btn vp-btn-secondary vp-icon-btn" href={wa} target="_blank" rel="noopener" aria-label={t("cta.whatsapp")}><Icon name="whatsapp" /></a>
+  <a class="vp-btn vp-btn-primary vp-btn-touch" href={quoteHref}>{t("cta.quote")}<Icon name="arrow" size={18} /></a>
+</nav>
+<a class="vp-wa-pill" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t("cta.whatsapp")}</a>

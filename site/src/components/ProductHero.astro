@@ -1,0 +1,43 @@
+---
+import type { ProductEntry } from "../lib/catalog.ts";
+import { packagingLine } from "../lib/catalog.ts";
+import { t } from "../lib/ui.ts";
+import AtAGlance from "./AtAGlance.astro";
+import Drop from "./Drop.astro";
+import GradeChip from "./GradeChip.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  product: ProductEntry;
+  industries: string[];
+}
+const { product, industries } = Astro.props;
+const p = product.data;
+---
+<section class="vp-phero" id="overview" aria-labelledby="product-name">
+  <div class="vp-container vp-phero-grid">
+    <div class="vp-phero-copy">
+      <p class="vp-eyebrow vp-eyebrow-product">{industries.join(" · ")}</p>
+      <div class="vp-phero-title">
+        <h1 class="vp-h-page" id="product-name">{p.name}</h1>
+        <GradeChip code={p.code} />
+      </div>
+      <p class="vp-lead">{product.body ?? p.summary}</p>
+      <div class="vp-actions">
+        <button class="vp-btn vp-btn-primary vp-btn-touch" type="button" data-add={product.id} data-go="/quote" aria-pressed="false">
+          <Icon name="plus" />
+          <span data-label-off>{t("cta.add")}</span>
+          <span data-label-on hidden>{t("cta.added")}</span>
+        </button>
+        <a class="vp-btn vp-btn-secondary vp-btn-touch" href={`/quote?add=${product.id}&type=sample`}><Icon name="sample" />{t("cta.sample")}</a>
+      </div>
+    </div>
+    <div class="vp-stage">
+      <Drop tint={p.tint} size="xl" animate title={`${p.name}, illustrated`} vt={`drop-${product.id}`} />
+      <p class="vp-stage-caption">Supplied in <strong>{packagingLine(product)}</strong></p>
+    </div>
+  </div>
+  <div class="vp-container">
+    <AtAGlance product={product} />
+  </div>
+</section>

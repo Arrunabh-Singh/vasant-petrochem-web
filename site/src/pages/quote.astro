@@ -1,0 +1,153 @@
+---
+import Base from "../layouts/Base.astro";
+import Field from "../components/Field.astro";
+import FormGuard from "../components/FormGuard.astro";
+import FormStatus from "../components/FormStatus.astro";
+import Icon from "../components/Icon.astro";
+import { getProducts, packText } from "../lib/catalog.ts";
+import { claim } from "../lib/claims.ts";
+import { company } from "../lib/company.ts";
+import { page } from "../lib/page.ts";
+import { t } from "../lib/ui.ts";
+
+const copy = await page("quote");
+const products = await getProducts();
+const pricing = await claim("pricing-24h");
+// What the quote list needs to draw a line: never prices, only catalogue facts.
+const catalog = products.map((p) => ({
+  slug: p.id,
+  name: p.data.name,
+  code: p.data.code,
+  packs: p.data.packaging.map(packText),
+  density: p.data.density,
+}));
+const units = ["MT", "kL", "L", "kg", "drums", "pails"];
+const types = [
+  ["quote", "Price quote"],
+  ["sample", "Sample"],
+  ["contract", "Contract supply"],
+  ["document", "Documents only"],
+] as const;
+---
+<Base title={copy.title} description={copy.description}>
+  <section class="vp-section-tight">
+    <div class="vp-container vp-split">
+      <form class="vp-form" id="quote" method="post" action="/api/rfq" data-vp-form data-quote aria-labelledby="quote-title">
+        <div class="vp-stack">
+          <h1 class="vp-h-page" id="quote-title">{copy.headline}</h1>
+          <p class="vp-small">{copy.lead}</p>
+        </div>
+
+        <fieldset class="vp-fieldset">
+          <legend class="vp-legend">What do you need?</legend>
+          <div class="vp-radios">
+            {types.map(([value, label], i) => (
+              <label><input type="radio" name="type" value={value} checked={i === 0} /><span>{label}</span></label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div class="vp-stack" aria-labelledby="lines-title">
+          <h2 class="vp-legend" id="lines-title">Products</h2>
+          <ul class="vp-lines" data-lines aria-live="polite"></ul>
+          <div class="vp-empty" data-lines-empty hidden>
+            <p class="vp-small">Your quote list is empty. Add products here, or from the marketplace.</p>
+          </div>
+          <div class="vp-field" data-add-wrap hidden>
+            <label for="add-product">Add a product</label>
+            <div class="vp-select">
+              <select id="add-product" class="vp-input" data-add-product>
+                <option value="">Choose a product</option>
+                {products.map((p) => <option value={p.id}>{p.data.name} ({p.data.code})</option>)}
+              </select>
+              <Icon name="chevron" size={18} />
+            </div>
+          </div>
+          <Field name="products_text" label="Other products or details" type="textarea" maxlength={2000} hint="Grades not in the catalogue, specifications, or quantities if you prefer to type them." />
+        </div>
+
+        <div class="vp-form-row" data-contract hidden>
+          <Field name="monthly_volume" label="Monthly volume" maxlength={60} placeholder="For example 50 MT a month" />
+          <Field name="contract_months" label="For how many months" type="text" inputmode="numeric" maxlength={3} />
+        </div>
+
+        <div class="vp-form-row">
+          <Field name="delivery_city" label="Delivery city and state" autocomplete="address-level2" maxlength={120} />
+          <Field name="required_by" label="Needed by" type="date" />
+        </div>
+        {
+          company.exports && (
+            <div class="vp-form-row">
+              <Field name="delivery_country" label="Destination country" autocomplete="country-name" maxlength={60} />
+              <Field name="delivery_port" label="Port of discharge" maxlength={80} />
+            </div>
+          )
+        }
+
+        <fieldset class="vp-fieldset">
+          <legend class="vp-legend">Documents you need <span class="vp-req">(optional)</span></legend>
+          <label class="vp-check"><input type="checkbox" name="docs" value="coa" />Certificate of analysis for the consignment</label>
+          <label class="vp-check"><input type="checkbox" name="docs" value="tds" />Technical data sheet</label>
+          <label class="vp-check"><input type="checkbox" name="docs" value="sds" />Safety data sheet</label>
+        </fieldset>
+
+        <div class="vp-form-row">
+          <Field name="name" label="Your name" required autocomplete="name" maxlength={120} />
+          <Field name="company" label="Company" autocomplete="organization" maxlength={160} />
+        </div>
+        <div class="vp-form-row">
+          <Field name="email" label="Work email" type="email" required autocomplete="email" maxlength={254} />
+          <Field name="phone" label="Phone or WhatsApp" type="tel" autocomplete="tel" maxlength={20} />
+        </div>
+        <Field name="message" label="Anything else" type="textarea" maxlength={2000} />
+        <input type="hidden" name="offer_ref" data-offer-ref />
+        <FormGuard id="quote" />
+        <FormStatus />
+        <p class="vp-caption">We use these details only to reply to your enquiry.</p>
+        <div class="vp-actions">
+          <button class="vp-btn vp-btn-primary vp-btn-touch" type="submit">{t("cta.send")}</button>
+          <button class="vp-btn vp-btn-secondary vp-btn-touch" type="button" data-share hidden><Icon name="share" />Copy a link to this list</button>
+        </div>
+        <p class="vp-caption" data-share-status aria-live="polite"></p>
+      </form>
+
+      <aside class="vp-stack">
+        <p class="vp-eyebrow">The sales desk</p>
+        <h2 class="vp-h-section">{pricing}</h2>
+        <p class="vp-lead">Prefer to talk? Call or message the desk, and send this list on WhatsApp in one tap.</p>
+        <div class="vp-actions">
+          <a class="vp-btn vp-btn-secondary" href={company.phone.href}><Icon name="phone" />{company.phone.display}</a>
+          <a class="vp-btn vp-btn-secondary" href={`https://wa.me/${company.phone.whatsapp}`} target="_blank" rel="noopener" data-wa-list><Icon name="whatsapp" />Send on WhatsApp</a>
+        </div>
+        <p class="vp-small">{company.hours.label}</p>
+      </aside>
+    </div>
+  </section>
+
+  <template data-line-template>
+    <li class="vp-line">
+      <div class="vp-line-head">
+        <p class="vp-line-name"><span data-line-name></span> <span class="vp-grade vp-grade-quiet" data-line-code></span></p>
+        <button class="vp-btn vp-btn-secondary vp-btn-small" type="button" data-line-remove><Icon name="trash" size={18} /><span class="vp-sr">Remove</span></button>
+      </div>
+      <div class="vp-line-fields">
+        <div class="vp-field"><label data-for="qty">Quantity</label><input class="vp-input" data-field="qty" inputmode="decimal" maxlength="11" /></div>
+        <div class="vp-field">
+          <label data-for="unit">Unit</label>
+          <div class="vp-select"><select class="vp-input" data-field="unit">{units.map((u) => <option value={u}>{u}</option>)}</select><Icon name="chevron" size={18} /></div>
+        </div>
+        <div class="vp-field">
+          <label data-for="pack">Packaging</label>
+          <div class="vp-select"><select class="vp-input" data-field="pack"><option value="">Any</option></select><Icon name="chevron" size={18} /></div>
+        </div>
+        <div class="vp-field"><label data-for="notes">Notes</label><input class="vp-input" data-field="notes" maxlength="200" /></div>
+      </div>
+      <p class="vp-convert" data-convert hidden></p>
+    </li>
+  </template>
+  <script type="application/json" id="vp-catalog" is:inline set:html={JSON.stringify(catalog).replace(/</g, "\\u003c")} />
+</Base>
+<script>
+  import "../islands/quote.ts";
+  import "../islands/form.ts";
+</script>

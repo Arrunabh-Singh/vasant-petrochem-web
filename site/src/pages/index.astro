@@ -1,0 +1,159 @@
+---
+import Base from "../layouts/Base.astro";
+import Drop from "../components/Drop.astro";
+import Icon from "../components/Icon.astro";
+import { getFamilies, getIndustries, getProducts } from "../lib/catalog.ts";
+import { company, whatsappHref } from "../lib/company.ts";
+import { itemText, page } from "../lib/page.ts";
+import { localBusiness } from "../lib/seo.ts";
+import { t } from "../lib/ui.ts";
+
+const home = await page("home");
+const b = home.blocks;
+const products = await getProducts();
+const families = (await getFamilies()).filter((f) => products.some((p) => p.data.family === f.id));
+const industries = await getIndustries();
+const how = await Promise.all((b.how?.items ?? []).map(async (i) => ({ title: i.title, text: await itemText(i) })));
+const supply = await Promise.all((b.supply?.items ?? []).map(async (i) => ({ title: i.title, text: await itemText(i) })));
+const trading = b.trading?.items?.[0] ? await itemText(b.trading.items[0]) : null;
+const supplyIcons = ["package", "clock", "phone", "pin"] as const;
+---
+<Base title={home.title} description={home.description} fullTitle structured={[localBusiness()]}>
+  <section class="vp-hero" aria-labelledby="hero-title">
+    <div class="vp-container">
+      <p class="vp-eyebrow">{company.works.street.split(", ").at(-1)}, {company.works.city} · Est. {company.foundedYear}</p>
+      <h1 class="vp-h-hero vp-measure" id="hero-title">{home.headline}</h1>
+      <p class="vp-lead">{home.lead}</p>
+      <div class="vp-actions">
+        <a class="vp-btn vp-btn-primary vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
+        <a class="vp-btn vp-btn-secondary vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+      </div>
+      <ul class="vp-lineup" aria-label="Our range">
+        {products.map((p) => (
+          <li>
+            <a href={`/products/${p.id}`}>
+              <Drop tint={p.data.tint} size="m" vt={`drop-${p.id}`} />
+              <span class="vp-lineup-name">{p.data.name}</span>
+              <span class="vp-lineup-code">{p.data.code}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="vp-section vp-band-parchment" aria-labelledby="find-title">
+    <div class="vp-container vp-split">
+      <div class="vp-head">
+        <p class="vp-eyebrow">{b.find?.eyebrow}</p>
+        <h2 class="vp-h-section" id="find-title">{b.find?.heading}</h2>
+        <p class="vp-lead">{b.find?.body}</p>
+      </div>
+      <div class="vp-stack">
+        <form class="vp-search-field" action="/marketplace" method="get" role="search">
+          <label class="vp-sr" for="home-q">Search the marketplace</label>
+          <Icon name="search" />
+          <input id="home-q" class="vp-input" type="search" name="q" placeholder="Grade, code or use" />
+        </form>
+        <ul class="vp-chips" aria-label="Product families">
+          {families.map((f) => <li><a class="vp-chip" href={`/marketplace?family=${f.id}`}>{f.data.name}</a></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="vp-section" aria-labelledby="offers-title" data-offers-teaser hidden>
+    <div class="vp-container">
+      <div class="vp-head-row">
+        <div class="vp-head">
+          <p class="vp-eyebrow"><span class="vp-tag vp-tag-live">{b.offers?.eyebrow}</span></p>
+          <h2 class="vp-h-section" id="offers-title">{b.offers?.heading}</h2>
+          <p class="vp-lead">{b.offers?.body}</p>
+        </div>
+        <a class="vp-link" href="/marketplace/offers">All live offers <Icon name="arrow" size={16} /></a>
+      </div>
+      <ul class="vp-offers" data-offers-list></ul>
+    </div>
+  </section>
+
+  <section class="vp-section" aria-labelledby="how-title">
+    <div class="vp-container">
+      <div class="vp-head">
+        <p class="vp-eyebrow">{b.how?.eyebrow}</p>
+        <h2 class="vp-h-section" id="how-title">{b.how?.heading}</h2>
+      </div>
+      <ol class="vp-how">
+        {how.map((s) => <li><h3>{s.title}</h3><p>{s.text}</p></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="vp-section vp-band-parchment" aria-labelledby="ind-title">
+    <div class="vp-container">
+      <div class="vp-head-row">
+        <div class="vp-head">
+          <p class="vp-eyebrow">{b.industries?.eyebrow}</p>
+          <h2 class="vp-h-section" id="ind-title">{b.industries?.heading}</h2>
+        </div>
+        <a class="vp-link" href="/industries">All industries <Icon name="arrow" size={16} /></a>
+      </div>
+      <ul class="vp-ind">
+        {industries.map((i) => {
+          const inds = products.filter((p) => p.data.industries.includes(i.id));
+          return (
+            <li>
+              <h3><a href={`/industries/${i.id}`}>{i.data.name}</a></h3>
+              <p>{i.data.summary}</p>
+              <ul class="vp-chips">
+                {inds.map((p) => <li><a class="vp-chip" href={`/products/${p.id}`}>{p.data.name}</a></li>)}
+              </ul>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+
+  <section class="vp-section-tight" aria-label="Supply">
+    <div class="vp-container">
+      <ul class="vp-facts">
+        {supply.map((s, i) => <li><Icon name={supplyIcons[i] ?? "check"} size={18} /><span>{s.text}</span></li>)}
+      </ul>
+    </div>
+  </section>
+
+  {
+    trading && (
+      <section class="vp-section-tight" aria-labelledby="trading-title">
+        <div class="vp-container">
+          <div class="vp-panel vp-panel-row">
+            <div class="vp-stack">
+              <p class="vp-eyebrow">{b.trading?.eyebrow}</p>
+              <h2 class="vp-h-title" id="trading-title">{b.trading?.heading}</h2>
+              <p class="vp-small">{trading}</p>
+            </div>
+            <a class="vp-btn vp-btn-secondary" href={whatsappHref("Hello, I am looking for a branded industrial lubricant or specialty oil. Can you check current stock?")} target="_blank" rel="noopener"><Icon name="whatsapp" />Ask on WhatsApp</a>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="vp-section" aria-labelledby="cta-title">
+    <div class="vp-container">
+      <div class="vp-cta-band">
+        <div class="vp-stack">
+          <h2 class="vp-h-section" id="cta-title">{b.cta?.heading}</h2>
+          <p>{b.cta?.body}</p>
+        </div>
+        <div class="vp-actions">
+          <a class="vp-btn vp-btn-on-deep vp-btn-touch" href="/source">{t("cta.source")}</a>
+          <a class="vp-btn vp-btn-outline-on-deep vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+<script>
+  import "../islands/offers-teaser.ts";
+</script>

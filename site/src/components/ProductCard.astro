@@ -1,0 +1,69 @@
+---
+import type { ProductEntry } from "../lib/catalog.ts";
+import { keySpecs, specText, packagingLine } from "../lib/catalog.ts";
+import { t } from "../lib/ui.ts";
+import Drop from "./Drop.astro";
+import GradeChip from "./GradeChip.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  product: ProductEntry;
+  family: string;
+  /** Show the add-to-quote and compare controls (marketplace). */
+  actions?: boolean;
+  headingLevel?: "h2" | "h3";
+}
+const { product, family, actions = false, headingLevel: H = "h3" } = Astro.props;
+const p = product.data;
+const href = `/products/${product.id}`;
+---
+<article
+  class="vp-card"
+  data-product={product.id}
+  data-family={p.family}
+  data-industries={p.industries.join(" ")}
+  data-packaging={p.packaging.map((k) => k.type).join("|")}
+  data-docs={[p.documents.sds.length > 0 && "sds", p.documents.tds && "tds"].filter(Boolean).join(" ")}
+  data-search={`${p.name} ${p.code} ${family} ${p.applications.join(" ")} ${p.summary}`.toLowerCase()}
+>
+  <div class="vp-card-top">
+    <Drop tint={p.tint} size="s" vt={`drop-${product.id}`} />
+    <GradeChip code={p.code} />
+  </div>
+  <div>
+    <p class="vp-card-family">{family}</p>
+    <H class="vp-card-title"><a href={href}>{p.name}</a></H>
+  </div>
+  <p class="vp-card-desc">{p.summary}</p>
+  <dl class="vp-card-specs">
+    {keySpecs(product).map((s) => (
+      <div class="vp-card-spec">
+        <dt>{s.property}</dt>
+        <dd>{specText(s)}</dd>
+      </div>
+    ))}
+  </dl>
+  <div class="vp-card-foot">
+    <span>{packagingLine(product)}</span>
+    {
+      actions ? (
+        <div class="vp-card-actions">
+          <button class="vp-btn vp-btn-secondary vp-btn-small" type="button" data-add={product.id} aria-pressed="false">
+            <Icon name="plus" size={18} />
+            <span data-label-off>{t("cta.add")}</span>
+            <span data-label-on hidden>{t("cta.added")}</span>
+          </button>
+          <label class="vp-check vp-noprint">
+            <input type="checkbox" data-compare={product.id} />
+            {t("cta.compare")}
+          </label>
+        </div>
+      ) : (
+        <span class="vp-link" aria-hidden="true">
+          {t("cta.view")}
+          <Icon name="arrow" size={16} />
+        </span>
+      )
+    }
+  </div>
+</article>

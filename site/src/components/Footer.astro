@@ -1,0 +1,74 @@
+---
+import { getEntry } from "astro:content";
+import { company, copyrightYears, addressLine, salesEmail } from "../lib/company.ts";
+import { claim } from "../lib/claims.ts";
+import { footerColumns } from "../lib/nav.ts";
+import { showDrafts } from "../lib/catalog.ts";
+
+const columns = await footerColumns();
+const about = await claim("manufacturing-and-trading");
+// Legal links appear once their pages are published (privacy and terms wait on legal review, VP-LEG-003/004).
+const legal = (
+  await Promise.all(
+    [
+      ["privacy", "Privacy"],
+      ["terms", "Terms of use"],
+    ].map(async ([id, label]) => {
+      const page = await getEntry("pages", id!);
+      return page && (page.data.status === "published" || showDrafts) ? { href: `/${id}`, label: label! } : null;
+    }),
+  )
+).filter((l) => l !== null);
+// VP-LEG-001: the legal block shows only the identifiers the owner has supplied.
+const ids = [
+  company.gstin && `GSTIN ${company.gstin}`,
+  company.udyam && `Udyam ${company.udyam}`,
+  company.cin && `CIN ${company.cin}`,
+  company.iec && `IEC ${company.iec}`,
+].filter(Boolean);
+---
+<footer class="vp-footer">
+  <div class="vp-footer-inner">
+    <div class="vp-footer-brand">
+      <img class="vp-footer-logo" src="/brand/vasant-logo.png" alt="Vasant Petrochem" width="734" height="345" loading="lazy" decoding="async" />
+      <p>{about}</p>
+      <p>
+        {addressLine}<br />
+        <a href={company.phone.href}>{company.phone.display}</a> · <a href={`mailto:${salesEmail}`}>{salesEmail}</a><br />
+        {company.hours.label}
+      </p>
+    </div>
+    {
+      columns.map((col) => (
+        <nav aria-labelledby={`f-${col.heading}`}>
+          <h2 id={`f-${col.heading}`}>{col.heading}</h2>
+          <ul>
+            {col.links.map((l) => (
+              <li>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+    <div class="vp-footer-legal">
+      <p>
+        © {copyrightYears()} {company.legalName ?? company.tradeName}
+        {company.registeredOffice && <>. Registered office: {company.registeredOffice}</>}
+        {ids.length > 0 && <>. {ids.join(" · ")}</>}
+      </p>
+      {
+        legal.length > 0 && (
+          <ul>
+            {legal.map((l) => (
+              <li>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</footer>

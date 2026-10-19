@@ -27,6 +27,14 @@
       "note": "Replaces batch-test-report-every-consignment: the owner said it depends on the consignment."
     },
     {
+      "id": "spec-disclaimer",
+      "text": "Typical values, not a guarantee of specification. Test reports are available on request.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "VP-LEG-007: the one disclaimer, used verbatim under every spec table and on every datasheet and TDS."
+    },
+    {
       "id": "drums-or-bulk",
       "text": "Drums or bulk tanker.",
       "status": "owner-asserted",

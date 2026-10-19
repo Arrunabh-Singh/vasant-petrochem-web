@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vasant-site",
+  "compatibility_date": "2026-09-15",
+  "observability": { "enabled": true },
+  "assets": {
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  // Secrets are set in the Cloudflare dashboard, never here:
+  // PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY, SITE_TOKEN,
+  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, RESEND_API_KEY, IP_HASH_SECRET.
+  "vars": {
+    "RFQ_DRY_RUN": "0"
+  }
+}

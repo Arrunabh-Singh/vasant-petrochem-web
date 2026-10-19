@@ -1,0 +1,152 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import DocumentsCard from "../../components/DocumentsCard.astro";
+import Icon from "../../components/Icon.astro";
+import LocalNav from "../../components/LocalNav.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import ProductEnquiry from "../../components/ProductEnquiry.astro";
+import ProductHero from "../../components/ProductHero.astro";
+import SpecTable from "../../components/SpecTable.astro";
+import { familyName, getIndustries, getProducts, packagingLine, related, specText, type ProductEntry } from "../../lib/catalog.ts";
+import { claim } from "../../lib/claims.ts";
+import { company, whatsappHref } from "../../lib/company.ts";
+import { abs, breadcrumbs, faqPage } from "../../lib/seo.ts";
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map((product) => ({ params: { slug: product.id }, props: { product, all: products } }));
+}
+
+interface Props {
+  product: ProductEntry;
+  all: ProductEntry[];
+}
+const { product, all } = Astro.props;
+const p = product.data;
+const family = await familyName(p.family);
+const allIndustries = await getIndustries();
+const industries = p.industries.map((slug) => allIndustries.find((i) => i.id === slug)).filter((i) => i !== undefined);
+const others = related(product, all, 3);
+const otherFamilies = await Promise.all(others.map((o) => familyName(o.data.family)));
+const [pricing, dispatch, reports] = await Promise.all([claim("pricing-24h"), claim("from-mangaliya"), claim("test-reports-on-request")]);
+
+const path = `/products/${product.id}`;
+const description = p.seo?.description ?? `${p.name} (${p.code}): ${p.summary} Typical properties, packaging and documents from ${company.tradeName}.`.slice(0, 170);
+const structured = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: p.name,
+    sku: p.code,
+    description: product.body ?? p.summary,
+    category: family,
+    url: abs(path),
+    image: abs(`/og/products/${product.id}.png`),
+    additionalProperty: p.specs.map((s) => ({ "@type": "PropertyValue", name: s.property, value: specText(s) })),
+  },
+  breadcrumbs([
+    { name: "Marketplace", path: "/marketplace" },
+    { name: family, path: `/marketplace?family=${p.family}` },
+    { name: p.name, path },
+  ]),
+  ...(p.faq.length > 0 ? [faqPage(p.faq)] : []),
+];
+---
+<Base
+  title={p.seo?.title ?? `${p.name} (${p.code})`}
+  description={description}
+  path={path}
+  ogImage={`/og/products/${product.id}.png`}
+  structured={structured}
+  draft={p.status === "draft"}
+  waMessage={`Hello, I am interested in ${p.name} (${p.code}).`}
+  quoteHref="#enquiry"
+>
+  <LocalNav slot="local" name={p.name} code={p.code} />
+  <Breadcrumbs items={[{ name: "Marketplace", href: "/marketplace" }, { name: family, href: `/marketplace?family=${p.family}` }, { name: p.name, href: path }]} />
+  <ProductHero product={product} industries={industries.map((i) => i.data.name)} />
+
+  <section class="vp-section vp-band-parchment" aria-label="Specifications and uses">
+    <div class="vp-container vp-split">
+      <div id="specs">
+        <SpecTable product={product} />
+      </div>
+      <div class="vp-stack" id="uses">
+        <p class="vp-eyebrow">Where it is used</p>
+        <h2 class="vp-h-section">Applications</h2>
+        <ul class="vp-supply">
+          {p.applications.map((a) => <li><Icon name="check" size={18} /><span>{a}</span></li>)}
+        </ul>
+        <h3 class="vp-h-title">Industries</h3>
+        <ul class="vp-chips">
+          {industries.map((i) => <li><a class="vp-chip" href={`/industries/${i.id}`}>{i.data.name}</a></li>)}
+        </ul>
+        <h3 class="vp-h-title">Supply</h3>
+        <ul class="vp-supply">
+          <li><Icon name="package" size={18} /><span><strong>Packaging:</strong> {packagingLine(product)}</span></li>
+          <li><Icon name="supply" size={18} /><span>{dispatch}</span></li>
+          <li><Icon name="clock" size={18} /><span>{pricing}</span></li>
+          <li><Icon name="doc" size={18} /><span>{reports}</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="vp-section" aria-label="Documents">
+    <div class="vp-container">
+      <DocumentsCard product={product} />
+    </div>
+  </section>
+
+  {
+    p.faq.length > 0 && (
+      <section class="vp-section vp-band-parchment" aria-labelledby="faq-title">
+        <div class="vp-container vp-measure vp-stack">
+          <h2 class="vp-h-section" id="faq-title">Questions buyers ask</h2>
+          {p.faq.map((f) => (
+            <details class="vp-faq">
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="vp-section vp-band-parchment" aria-label="Enquiry">
+    <div class="vp-container vp-split">
+      <ProductEnquiry product={product} />
+      <div class="vp-stack">
+        <p class="vp-eyebrow">Talk to the sales desk</p>
+        <h2 class="vp-h-section">{pricing}</h2>
+        <p class="vp-lead">Send the grade and quantity, or call or message the desk directly. The person who quotes you tracks your dispatch.</p>
+        <div class="vp-actions">
+          <a class="vp-btn vp-btn-secondary" href={company.phone.href}><Icon name="phone" />{company.phone.display}</a>
+          <a class="vp-btn vp-btn-secondary" href={whatsappHref(`Hello, I am interested in ${p.name} (${p.code}).`)} target="_blank" rel="noopener"><Icon name="whatsapp" />Chat on WhatsApp</a>
+        </div>
+        <p class="vp-small">{company.hours.label}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vp-section" aria-labelledby="related-title">
+    <div class="vp-container">
+      <div class="vp-head-row">
+        <div class="vp-head">
+          <p class="vp-eyebrow">Also in the marketplace</p>
+          <h2 class="vp-h-section" id="related-title">Related grades</h2>
+        </div>
+        <a class="vp-link" href="/marketplace">All products <Icon name="arrow" size={16} /></a>
+      </div>
+      <div class="vp-grid">
+        {others.map((o, i) => <ProductCard product={o} family={otherFamilies[i] ?? ""} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+<script>
+  import "../../islands/add.ts";
+  import "../../islands/form.ts";
+</script>
