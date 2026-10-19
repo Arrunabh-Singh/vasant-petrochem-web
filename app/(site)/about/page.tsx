@@ -23,8 +23,8 @@ const values = [
   },
   {
     num: "03",
-    title: "Batch test reports",
-    body: "Viscosity, flash point, pour point and density recorded per batch and issued with the consignment.",
+    title: "Test reports on request",
+    body: "Ask for the test report for your consignment: viscosity, flash point, pour point and density.",
   },
   {
     num: "04",

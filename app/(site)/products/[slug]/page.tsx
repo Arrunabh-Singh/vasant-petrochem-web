@@ -145,8 +145,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </div>
                 )}
                 <p className="mt-4 text-[11px] leading-[1.6] text-slate-400">
-                  Typical values, not a guarantee of specification. A batch test report is issued with every
-                  consignment.
+                  Typical values, not a guarantee of specification. Test reports are available on request.
                 </p>
               </div>
             </div>
