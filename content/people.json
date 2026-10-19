@@ -1,0 +1,5 @@
+{
+  "$schema": "./_schemas/people.schema.json",
+  "_note": "TODO(VP-CORP-001): real names, roles and photographs, with each person's consent. Feeds /leadership and the business cards.",
+  "people": []
+}

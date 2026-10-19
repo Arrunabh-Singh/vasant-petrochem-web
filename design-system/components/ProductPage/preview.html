@@ -1,0 +1,92 @@
+<!-- @dsCard group="Pages" height=2400 page subtitle="Every product, on phone and laptop" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Product page — preview</title>
+<style>
+  .pp-controls { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-4); }
+  .pp-picks { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6); }
+  .pp-picks .vp-drop { width: 14px !important; }
+  .pp-story { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); align-items: start; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+
+  function Page(p) {
+    var pr = p.product, rel = V.related(pr, 3);
+    return h('div', null,
+      h(V.GlobalNav, { active: 'Products' }),
+      h(V.LocalNav, { product: pr, active: 'Overview' }),
+      h(V.ProductHero, { product: pr }),
+      h('section', { className: 'vp-section vp-band-parchment', id: 'specs' },
+        h('div', { className: 'vp-container vp-split' },
+          h(V.SpecTable, { product: pr }),
+          h('div', null,
+            h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Supply'), h('h2', { className: 'vp-h-section' }, 'How it reaches you')),
+            h('ul', { className: 'vp-supply' },
+              h('li', null, h(V.Icon, { name: 'check' }), h('span', null, h('strong', null, pr.packaging))),
+              h('li', null, h(V.Icon, { name: 'pin' }), h('span', null, 'Dispatched from Mangaliya, Indore, across Central India.')),
+              h('li', null, h(V.Icon, { name: 'doc' }), h('span', null, 'Test reports available on request.')),
+              h('li', null, h(V.Icon, { name: 'check' }), h('span', null, 'Pricing within 24 hours.')))))),
+      h('section', { className: 'vp-section', id: 'uses' },
+        h('div', { className: 'vp-container vp-split' },
+          h('div', null,
+            h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Applications'), h('h2', { className: 'vp-h-section' }, 'Where it is used')),
+            h('ul', { className: 'vp-ticks' }, pr.applications.map(function (a) { return h('li', { key: a }, h(V.Icon, { name: 'check' }), a); }))),
+          h('div', null,
+            h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Industries')),
+            h('div', { className: 'vp-chips' }, pr.industries.map(function (i) { return h(V.Chip, { key: i, href: '#industries' }, i); }))))),
+      h('section', { className: 'vp-section', style: { paddingTop: 0 } }, h('div', { className: 'vp-container' }, h(V.DocumentsCard, { product: pr }))),
+      h('section', { className: 'vp-section vp-band-parchment', id: 'enquiry' },
+        h('div', { className: 'vp-container vp-split' },
+          h(V.EnquiryForm, { defaultProduct: pr.name + ' (' + pr.code + ')', title: 'Request a quote for ' + pr.name }),
+          h('div', null,
+            h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Talk to the desk'), h('h2', { className: 'vp-h-section' }, 'Pricing within 24 hours')),
+            h('p', { className: 'vp-small', style: { marginBottom: 'var(--space-5)' } }, 'Send the grade and quantity. The person who quotes you is the person who tracks your dispatch.'),
+            h(V.Button, { variant: 'secondary', icon: 'whatsapp', size: 'touch' }, 'Chat on WhatsApp')))),
+      h('section', { className: 'vp-section' },
+        h('div', { className: 'vp-container' },
+          h('div', { className: 'vp-head' }, h('h2', { className: 'vp-h-section' }, 'Related products')),
+          h('div', { className: 'vp-rail' }, rel.map(function (o) { return h(V.ProductCard, { key: o.slug, product: o }); })))),
+      h(V.Footer),
+      p.phone ? h(V.MobileActionBar) : null);
+  }
+
+  function Story(p) {
+    var st = React.useState(0), H = st[0], setH = st[1];
+    var ref = React.useRef(null);
+    React.useLayoutEffect(function () {
+      var el = ref.current; if (!el) return;
+      var ro = new ResizeObserver(function () { setH(el.offsetHeight); });
+      ro.observe(el); return function () { ro.disconnect(); };
+    }, []);
+    var seg = H ? Math.ceil(H / 3) : 1800;
+    return h('div', { className: 'pp-story' }, [0, 1, 2].map(function (k) {
+      return h(V.Frame, { key: k, width: 390, clip: [k * seg, seg], label: 'Phone · ' + (k + 1) + ' of 3' },
+        h('div', { ref: k === 0 ? ref : null }, h(Page, { product: p.product, phone: true })));
+    }));
+  }
+
+  function App() {
+    var a = React.useState('laptop'), view = a[0], setView = a[1];
+    var b = React.useState('base-oil-sn500'), slug = b[0], setSlug = b[1];
+    var pr = V.product(slug);
+    return h('div', { className: 'vp-demo' },
+      h('div', { className: 'pp-controls' },
+        h('div', { className: 'vp-switch', role: 'group', 'aria-label': 'Width' },
+          h('button', { type: 'button', 'aria-pressed': view === 'laptop', onClick: function () { setView('laptop'); } }, 'Laptop'),
+          h('button', { type: 'button', 'aria-pressed': view === 'phone', onClick: function () { setView('phone'); } }, 'Phone'))),
+      h('div', { className: 'pp-picks', role: 'group', 'aria-label': 'Product' }, V.catalog.map(function (p) {
+        return h('button', { key: p.slug, type: 'button', className: 'vp-pick', 'aria-pressed': slug === p.slug, onClick: function () { setSlug(p.slug); } },
+          h(V.Droplet, { slug: p.slug, size: 14 }), p.name);
+      })),
+      view === 'laptop'
+        ? h(V.Frame, { key: 'l' + slug, width: 1280, label: 'Laptop · 1280px · /products/' + slug }, h(Page, { product: pr }))
+        : h(Story, { key: 'p' + slug, product: pr }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

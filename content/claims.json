@@ -1,0 +1,110 @@
+{
+  "$schema": "./_schemas/claims.schema.json",
+  "_note": "Claims register (MNC VP-GOV-001). Pages state these claims by id, so the wording lives only here. `verified` cites an evidence document held by the company; `owner-asserted` is the owner's word, recorded with the date; `retired` claims must not appear on the site. Certifications, standards, capacities, client names and third-party brands need a claim here before any page may mention them.",
+  "claims": [
+    {
+      "id": "pricing-24h",
+      "text": "Pricing within 24 hours.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2025",
+      "note": "On the site since launch. The About page adds that the price includes freight."
+    },
+    {
+      "id": "pricing-freight-included",
+      "text": "Send the grade and quantity and you get pricing back the next business day, freight included.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2025",
+      "note": "Long form of pricing-24h, from the About page."
+    },
+    {
+      "id": "test-reports-on-request",
+      "text": "Test reports available on request.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Replaces batch-test-report-every-consignment: the owner said it depends on the consignment."
+    },
+    {
+      "id": "drums-or-bulk",
+      "text": "Drums or bulk tanker.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2025",
+      "note": "Use the product's own packaging line where there is room."
+    },
+    {
+      "id": "one-contact",
+      "text": "One point of contact, quote to dispatch.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2025",
+      "note": "Long form on the About page: the person who quotes you is the person who tracks your dispatch."
+    },
+    {
+      "id": "from-mangaliya",
+      "text": "From Mangaliya, Indore, across Central India.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Owner confirmed the dispatch point is unchanged."
+    },
+    {
+      "id": "central-india-coverage",
+      "text": "Based in Indore, serving industrial buyers across Madhya Pradesh and neighbouring states.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2025",
+      "note": null
+    },
+    {
+      "id": "manufacturing-and-trading",
+      "text": "Manufacturing and trading industrial oils, fuels and lubricants.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Owner decision 2026-10-19: keep the manufacturing and Mangaliya wording as it is."
+    },
+    {
+      "id": "blending-and-storage",
+      "text": "Our Mangaliya facility handles blending and storage for our manufactured lines.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Owner decision 2026-10-19: unchanged. Covers the About page facility section."
+    },
+    {
+      "id": "branded-lubricants",
+      "text": "Beyond our own manufactured lines, we source and supply branded industrial lubricants and specialty oils based on what you need.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2025",
+      "note": "The live site named one third-party brand here; it stays off until the owner confirms the supply relationship in writing."
+    },
+    {
+      "id": "batch-test-report-every-consignment",
+      "text": "Batch test report with every consignment.",
+      "status": "retired",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Retired: the owner said it depends on the consignment. See test-reports-on-request."
+    },
+    {
+      "id": "pharmacopoeia-grade",
+      "text": "Petroleum jelly and white oils meeting pharmacopoeia-grade standards.",
+      "status": "retired",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Retired until a certificate of analysis against IP, BP or USP is on file."
+    },
+    {
+      "id": "third-party-brand-kluber",
+      "text": "Klüber Cassida-series products.",
+      "status": "retired",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Retired until the owner confirms the supply relationship in writing."
+    }
+  ]
+}

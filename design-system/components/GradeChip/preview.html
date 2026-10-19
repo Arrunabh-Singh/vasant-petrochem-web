@@ -1,0 +1,19 @@
+<!-- @dsCard group="Product" height=120 subtitle="Every grade in the catalog" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>GradeChip — preview</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  function App() {
+    return h('div', { className: 'vp-demo vp-demo-stack' },
+      h('div', { className: 'vp-demo-row' }, V.catalog.map(function (p) { return h(V.GradeChip, { key: p.slug, code: p.code }); })),
+      h('div', { className: 'vp-demo-row' },
+        h('span', { className: 'vp-demo-note' }, 'Quiet, for tables and the local nav:'),
+        h(V.GradeChip, { code: 'SN-500', tone: 'quiet' }), h(V.GradeChip, { code: 'VG-30', tone: 'quiet' })));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

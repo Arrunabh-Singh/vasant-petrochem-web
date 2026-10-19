@@ -1,0 +1,18 @@
+<!-- @dsCard group="Product" height=440 subtitle="The TDS request on the deep band" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>DocumentsCard — preview</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  function pad(children) { return h('div', { style: { padding: '24px 0' } }, h('div', { className: 'vp-container' }, children)); }
+  function App() {
+    return h('div', { className: 'vp-demo vp-demo-pair' },
+      h(V.Frame, { width: 390, label: 'Phone · 390px' }, pad(h(V.DocumentsCard, { product: V.product('mineral-turpentine-oil') }))),
+      h(V.Frame, { width: 1280, label: 'Laptop · 1280px' }, pad(h(V.DocumentsCard, { product: V.product('base-oil-sn500') }))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
