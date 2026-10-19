@@ -88,7 +88,7 @@ const structured = [
         <div class="vp-stack">
           <p class="vp-results-bar" aria-live="polite"><span data-count>{products.length} products</span></p>
           <ul class="vp-grid" role="list" data-results>
-            {products.map((p) => <li><ProductCard product={p} family={familyName.get(p.data.family) ?? ""} actions headingLevel="h2" /></li>)}
+            {products.map((p) => <li><ProductCard product={p} family={familyName.get(p.data.family) ?? ""} actions compare headingLevel="h2" /></li>)}
           </ul>
           <div class="vp-empty" data-empty hidden>
             <h2 class="vp-h-title">No grades match those filters</h2>

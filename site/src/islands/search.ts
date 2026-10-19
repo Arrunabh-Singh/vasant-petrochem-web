@@ -75,3 +75,5 @@ input?.addEventListener("input", render);
 dialog?.addEventListener("click", (e) => {
   if (e.target === dialog) dialog.close();
 });
+
+export {};

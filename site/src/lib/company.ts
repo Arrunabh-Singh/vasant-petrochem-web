@@ -17,7 +17,7 @@ export function copyrightYears(founded: number = company.foundedYear, now: numbe
   return now > founded ? `${founded}–${now}` : `${founded}`;
 }
 
-/** One-line works address, e.g. "Industrial Area, Mangaliya, Indore, MP 453771". */
+/** One-line works address: street, city, state code and PIN code. */
 export const addressLine = `${company.works.street}, ${company.works.city}, ${company.works.regionCode} ${company.works.postalCode}`;
 
 /** A wa.me link to the sales desk with a prefilled message. */

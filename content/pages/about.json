@@ -1,0 +1,28 @@
+{
+  "title": "About us",
+  "description": "Vasant Petrochem manufactures and trades base oils, bitumen, fuel oils, process oils and solvents from Mangaliya, Indore, serving Central India.",
+  "status": "published",
+  "headline": "Manufacturing and trading, est. 2025",
+  "lead": "Vasant Petrochem is based in Mangaliya, Indore. We manufacture our own line of base oils, bitumen, industrial fuel oil, rubber process oil, mineral turpentine and light diesel oil, and we source and supply a wide range of branded industrial lubricants and specialty oils to match customer requirements, across Central India.",
+  "blocks": {
+    "facility": {
+      "eyebrow": "Our facility",
+      "heading": "Manufacturing infrastructure",
+      "items": [
+        { "title": "Blending and storage", "claim": "blending-and-storage" },
+        { "title": "Automated processing", "claim": "computer-controlled-blending" },
+        { "title": "Quality checks", "claim": "in-house-batch-testing" }
+      ]
+    },
+    "values": {
+      "eyebrow": "How we work",
+      "heading": "What you can expect",
+      "items": [
+        { "title": "Quotes within 24 hours", "claim": "pricing-freight-included" },
+        { "title": "One point of contact", "body": "The person who quotes you is the person who tracks your dispatch. No ticket queue." },
+        { "title": "Test reports on request", "body": "Ask for the test report for your consignment: viscosity, flash point, pour point and density." },
+        { "title": "Drums or bulk", "body": "210 L and 155 kg packs, or bulk tanker loads, whatever suits your storage and offloading." }
+      ]
+    }
+  }
+}

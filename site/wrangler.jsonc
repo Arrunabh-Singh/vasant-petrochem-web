@@ -4,12 +4,13 @@
   "compatibility_date": "2026-09-15",
   "observability": { "enabled": true },
   "assets": {
-    "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page"
+    // No not_found_handling: with it, a browser navigation to a Worker-rendered
+    // page (/marketplace/offers) is answered with the static 404 page instead.
+    // Unknown paths reach the Worker, which serves the prerendered 404.
+    "html_handling": "auto-trailing-slash"
   },
-  // Secrets are set in the Cloudflare dashboard, never here:
-  // PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY, SITE_TOKEN,
-  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, RESEND_API_KEY, IP_HASH_SECRET.
+  // Secrets are set in the Cloudflare dashboard (or .dev.vars locally), never
+  // here; their names are the env schema in astro.config.mjs.
   "vars": {
     "RFQ_DRY_RUN": "0"
   }

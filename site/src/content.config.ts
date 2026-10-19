@@ -2,6 +2,7 @@ import { defineCollection } from "astro:content";
 import { file, glob } from "astro/loaders";
 import {
   certificationSchema,
+  corporateSchema,
   claimSchema,
   familySchema,
   industrySchema,
@@ -19,6 +20,7 @@ export const collections = {
   products: defineCollection({ loader: glob({ base: content("products"), pattern: "*.md" }), schema: productSchema }),
   industries: defineCollection({ loader: glob({ base: content("industries"), pattern: "*.md" }), schema: industrySchema }),
   insights: defineCollection({ loader: glob({ base: content("insights"), pattern: "*.md" }), schema: insightSchema }),
+  corporate: defineCollection({ loader: glob({ base: content("corporate"), pattern: "*.md" }), schema: corporateSchema }),
   pages: defineCollection({ loader: glob({ base: content("pages"), pattern: "*.json" }), schema: pageSchema }),
   families: defineCollection({
     loader: file(content("families.json"), {

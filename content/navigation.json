@@ -15,6 +15,7 @@
         { "label": "Live offers", "href": "/marketplace/offers" },
         { "label": "Compare grades", "href": "/marketplace/compare" },
         { "label": "Source any grade", "href": "/source" },
+        { "label": "Export enquiries", "href": "/export" },
         { "label": "Get a quote", "href": "/quote" }
       ]
     },
@@ -22,9 +23,13 @@
       "heading": "Company",
       "links": [
         { "label": "About", "href": "/about" },
+        { "label": "Leadership", "href": "/leadership" },
         { "label": "Industries", "href": "/industries" },
         { "label": "Supply and logistics", "href": "/supply" },
+        { "label": "Quality", "href": "/quality" },
         { "label": "Certifications", "href": "/certifications" },
+        { "label": "Compliance", "href": "/compliance" },
+        { "label": "Careers", "href": "/careers" },
         { "label": "Contact", "href": "/contact" }
       ]
     },

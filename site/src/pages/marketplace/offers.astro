@@ -10,29 +10,28 @@ import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import Drop from "../../components/Drop.astro";
 import Icon from "../../components/Icon.astro";
 import { getProducts } from "../../lib/catalog.ts";
+import { page } from "../../lib/page.ts";
 import { rpc } from "../../server/supabase.ts";
 
 export const prerender = false;
 
 type Offer = { id: string; product_slug: string; title: string; quantity: number; uom: string; location: string; basis: string; valid_until: string; notes: string | null };
 
+const copy = await page("offers");
 const result = await rpc<Offer[]>("list_offers", {}, { url: SUPABASE_URL, key: SUPABASE_PUBLISHABLE_KEY });
 const offers = result.ok && Array.isArray(result.data) ? result.data : [];
 const products = new Map((await getProducts()).map((p) => [p.id, p]));
 const date = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
 Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
 ---
-<Base
-  title="Live offers"
-  description="Lots of industrial oils, fuels and bitumen ready to move from Vasant Petrochem, approved by the sales desk. Prices on request."
->
-  <Breadcrumbs items={[{ name: "Marketplace", href: "/marketplace" }, { name: "Live offers", href: "/marketplace/offers" }]} />
+<Base title={copy.title} description={copy.description}>
+  <Breadcrumbs items={[{ name: "Marketplace", href: "/marketplace" }, { name: copy.title, href: "/marketplace/offers" }]} />
   <section class="vp-section-tight">
     <div class="vp-container vp-stack">
       <div class="vp-head">
         <p class="vp-eyebrow"><span class="vp-tag vp-tag-live">Available now</span></p>
-        <h1 class="vp-h-page">Live offers</h1>
-        <p class="vp-lead">Lots ready to move, each approved by the sales desk and valid until the date shown. Prices on request.</p>
+        <h1 class="vp-h-page">{copy.headline}</h1>
+        <p class="vp-lead">{copy.lead}</p>
       </div>
       {
         offers.length > 0 ? (
@@ -61,8 +60,8 @@ Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
           </ul>
         ) : (
           <div class="vp-empty">
-            <h2 class="vp-h-title">No open lots right now</h2>
-            <p class="vp-small">New lots are posted here as they become available. Tell us what you need and the sales desk will source it.</p>
+            <h2 class="vp-h-title">{copy.blocks.empty?.heading}</h2>
+            <p class="vp-small">{copy.blocks.empty?.body}</p>
             <div class="vp-actions">
               <a class="vp-btn vp-btn-primary" href="/source">Source any grade</a>
               <a class="vp-btn vp-btn-secondary" href="/marketplace"><Icon name="arrow" />Browse the marketplace</a>

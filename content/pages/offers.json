@@ -1,0 +1,13 @@
+{
+  "title": "Live offers",
+  "description": "Lots of industrial oils, fuels and bitumen ready to move from Vasant Petrochem, approved by the sales desk. Prices on request.",
+  "status": "published",
+  "headline": "Live offers",
+  "lead": "Lots ready to move, each approved by the sales desk and valid until the date shown. Prices on request.",
+  "blocks": {
+    "empty": {
+      "heading": "No open lots right now",
+      "body": "New lots are posted here as they become available. Tell us what you need and the sales desk will source it."
+    }
+  }
+}

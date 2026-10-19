@@ -34,6 +34,11 @@ export default defineConfig({
   },
   compressHTML: true,
   devToolbar: { enabled: false },
-  // content/ and design-system/ live beside the app, one level up.
-  vite: { server: { fs: { allow: [".."] } } },
+  vite: {
+    // content/ and design-system/ live beside the app, one level up.
+    server: { fs: { allow: [".."] } },
+    // Never inline scripts or assets into the page: the strict CSP allows
+    // only files from this origin (src/server/headers.ts).
+    build: { assetsInlineLimit: 0 },
+  },
 });

@@ -145,6 +145,22 @@ export const pageSchema = z.object({
   blocks: z.record(z.string(), blockSchema).default({}),
 });
 
+export const corporateSchema = z
+  .object({
+    title: text(2, 70),
+    description: text(40, 170),
+    status: z.enum(["draft", "published"]),
+    /** Date the published text took effect; required to publish. */
+    updated: z.coerce.date().nullable(),
+    /** A page that only exists once its facts do: people listed, the careers mailbox, an IEC. */
+    requires: z.enum(["people", "careers-mailbox", "exports"]).optional(),
+  })
+  .superRefine((c, ctx) => {
+    if (c.status === "published" && !c.updated) {
+      ctx.addIssue({ code: "custom", path: ["updated"], message: "A published policy page states the date it took effect." });
+    }
+  });
+
 export const companySchema = z.object({
   tradeName: text(2, 80),
   foundedYear: z.number().int().min(1900).max(2100),

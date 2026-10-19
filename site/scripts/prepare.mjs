@@ -5,10 +5,13 @@
 //   design-system/fonts/*.woff2      -> public/fonts/
 //   design-system/assets/Logos/*     -> public/brand/
 //   design-system/assets/Drops/*.svg -> public/brand/drops/
+//   content/people/*.{jpg,png,webp}  -> public/people/
+//   src/server/headers.ts            -> public/_headers
 // The outputs are git-ignored.
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { headersFile } from "../src/server/headers.ts";
 
 const site = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ds = join(site, "..", "design-system");
@@ -71,5 +74,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   copyDir(join(ds, "fonts"), join(site, "public/fonts"), (n) => n.endsWith(".woff2"));
   copyDir(join(ds, "assets/Logos"), join(site, "public/brand"), (n) => /\.(png|svg)$/.test(n));
   copyDir(join(ds, "assets/Drops"), join(site, "public/brand/drops"), (n) => n.endsWith(".svg"));
-  console.log("prepare: tokens.css, fonts and brand assets derived from design-system/");
+  copyDir(join(site, "../content/people"), join(site, "public/people"), (n) => /\.(jpe?g|png|webp)$/.test(n));
+  writeFileSync(join(site, "public/_headers"), headersFile());
+  console.log("prepare: tokens.css, fonts, brand assets and _headers derived from design-system/ and src/");
 }

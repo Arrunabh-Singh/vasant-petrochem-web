@@ -11,9 +11,11 @@ interface Props {
   family: string;
   /** Show the add-to-quote and compare controls (marketplace). */
   actions?: boolean;
+  /** The compare checkbox, for pages that load the compare tray (marketplace). */
+  compare?: boolean;
   headingLevel?: "h2" | "h3";
 }
-const { product, family, actions = false, headingLevel: H = "h3" } = Astro.props;
+const { product, family, actions = false, compare = false, headingLevel: H = "h3" } = Astro.props;
 const p = product.data;
 const href = `/products/${product.id}`;
 ---
@@ -53,10 +55,12 @@ const href = `/products/${product.id}`;
             <span data-label-off>{t("cta.add")}</span>
             <span data-label-on hidden>{t("cta.added")}</span>
           </button>
-          <label class="vp-check vp-noprint">
-            <input type="checkbox" data-compare={product.id} />
-            {t("cta.compare")}
-          </label>
+          {compare && (
+            <label class="vp-check vp-noprint">
+              <input type="checkbox" data-compare={product.id} />
+              {t("cta.compare")}
+            </label>
+          )}
         </div>
       ) : (
         <span class="vp-link" aria-hidden="true">

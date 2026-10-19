@@ -1,0 +1,50 @@
+---
+import Base from "../layouts/Base.astro";
+import Drop from "../components/Drop.astro";
+import Icon from "../components/Icon.astro";
+import { getProducts } from "../lib/catalog.ts";
+import { page } from "../lib/page.ts";
+
+const copy = await page("documents");
+const products = await getProducts();
+---
+<Base title={copy.title} description={copy.description}>
+  <section class="vp-hero" aria-labelledby="docs-title">
+    <div class="vp-container">
+      <h1 class="vp-h-page" id="docs-title">{copy.headline}</h1>
+      <p class="vp-lead">{copy.lead}</p>
+    </div>
+  </section>
+  <section class="vp-section-tight">
+    <div class="vp-container">
+      <div class="vp-specs">
+        <div class="vp-specs-scroll">
+          <table>
+            <caption class="vp-sr">Documents by product</caption>
+            <thead>
+              <tr><th scope="col">Product</th><th scope="col">Datasheet</th><th scope="col">Safety data sheet</th><th scope="col">Technical data sheet</th></tr>
+            </thead>
+            <tbody>
+              {products.map((p) => (
+                <tr>
+                  <th scope="row"><span class="vp-line-name"><Drop tint={p.data.tint} size="xs" /><a href={`/products/${p.id}`}>{p.data.name}</a></span></th>
+                  <td class="vp-method"><a class="vp-link" href={`/products/${p.id}/datasheet`}><Icon name="doc" size={18} />Print</a></td>
+                  <td class="vp-method">
+                    {p.data.documents.sds.length > 0
+                      ? p.data.documents.sds.map((s) => <a class="vp-link" href={`/documents/${s.file}`} download><Icon name="download" size={18} />{s.lang.toUpperCase()}</a>)
+                      : <a class="vp-link" href={`/quote?add=${p.id}&type=document`}>On request</a>}
+                  </td>
+                  <td class="vp-method">
+                    {p.data.documents.tds
+                      ? <a class="vp-link" href={`/products/${p.id}#documents`}>Get the TDS</a>
+                      : <a class="vp-link" href={`/quote?add=${p.id}&type=document`}>On request</a>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -45,3 +45,5 @@ if (section && list) {
       /* the board is optional: no offers section when it cannot load */
     });
 }
+
+export {};

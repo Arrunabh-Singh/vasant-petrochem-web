@@ -1,0 +1,42 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { liveInsights } from "../../lib/page.ts";
+import { abs } from "../../lib/seo.ts";
+
+export async function getStaticPaths() {
+  const posts = await liveInsights();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: CollectionEntry<"insights">;
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const path = `/insights/${post.id}`;
+const structured = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.data.title,
+    description: post.data.summary,
+    datePublished: post.data.date.toISOString(),
+    author: { "@type": "Organization", name: post.data.author },
+    mainEntityOfPage: abs(path),
+  },
+];
+---
+<Base title={post.data.title} description={post.data.summary} structured={structured} draft={post.data.status === "draft"}>
+  <Breadcrumbs items={[{ name: "Insights", href: "/insights" }, { name: post.data.title, href: path }]} />
+  <article class="vp-section-tight">
+    <div class="vp-container">
+      <header class="vp-stack vp-measure">
+        <h1 class="vp-h-page">{post.data.title}</h1>
+        <p class="vp-small">{post.data.author} · <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</time></p>
+      </header>
+      <div class="vp-prose vp-section-tight"><Content /></div>
+    </div>
+  </article>
+</Base>

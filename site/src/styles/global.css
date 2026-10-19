@@ -70,6 +70,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .vp-prose h3 { margin-top: var(--space-8); font: var(--t-title); color: var(--ink); }
 .vp-prose ul, .vp-prose ol { padding-left: var(--space-6); }
 .vp-prose li + li { margin-top: var(--space-2); }
+.vp-prose blockquote { margin: 0; padding: var(--space-4) var(--space-5); border-left: 3px solid var(--gold); background: var(--paper); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 .vp-prose table { width: 100%; border-collapse: collapse; font: var(--t-small); }
 .vp-prose th, .vp-prose td { padding: var(--space-3); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 
@@ -361,10 +362,14 @@ textarea.vp-input { min-height: 112px; padding: 14px var(--space-4); resize: ver
 .vp-search-dialog { width: min(640px, calc(100vw - 2 * var(--space-4))); max-height: min(80dvh, 720px); margin: var(--space-16) auto auto; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--cream); box-shadow: var(--shadow-float); color: var(--body); }
 .vp-search-dialog::backdrop { background: #0f2e2459; }
 .vp-search-dialog form { padding: var(--space-4); border-bottom: 1px solid var(--line); }
-.vp-search-results { max-height: calc(min(80dvh, 720px) - 100px); overflow-y: auto; padding: var(--space-2); margin: 0; list-style: none; }
+.vp-search-results { padding: 0; margin: 0; list-style: none; }
+.vp-search-dialog .vp-search-results { max-height: calc(min(80dvh, 720px) - 100px); overflow-y: auto; padding: var(--space-2); }
+[data-filter-group] .vp-search-results a { padding-inline: 0; border-bottom: 1px solid var(--line); border-radius: 0; }
 .vp-search-results a { display: grid; gap: 2px; padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm); color: var(--ink); text-decoration: none; }
 .vp-search-results a:hover, .vp-search-results a:focus-visible { background: var(--paper); }
 .vp-search-results small { font: var(--t-caption); color: var(--secondary); }
+
+.vp-person img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); }
 
 /* ------------------------------------------------- home compositions */
 .vp-hero { padding: var(--space-10) 0 var(--space-14); }
@@ -461,3 +466,6 @@ textarea.vp-input { min-height: 112px; padding: 14px var(--space-4); resize: ver
   .vp-sheet { max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; }
   .vp-crumbs { display: none; }
 }
+.vp-band-deep .vp-supply li { color: var(--on-deep-secondary); }
+.vp-band-deep .vp-supply strong { color: var(--on-deep); }
+.vp-band-deep .vp-supply .vp-icon { color: var(--accent); }

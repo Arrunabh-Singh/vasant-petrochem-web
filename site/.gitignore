@@ -8,6 +8,8 @@ dist/
 src/styles/tokens.css
 public/brand/
 public/fonts/
+public/people/
+public/_headers
 # Test output
 test-results/
 playwright-report/

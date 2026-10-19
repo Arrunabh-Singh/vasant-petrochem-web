@@ -81,8 +81,9 @@ export function removeLine(slug: string, store: Store | null = storage()): Line[
   return lines;
 }
 
-const toB64Url = (s: string) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-const fromB64Url = (s: string) => decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))));
+const toB64Url = (s: string) =>
+  btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const fromB64Url = (s: string) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)));
 
 /** The `list` URL parameter that shares a quote list. */
 export const encodeLines = (lines: Line[]) => toB64Url(JSON.stringify(lines.map(({ slug, qty, unit, pack }) => ({ slug, qty, unit, pack }))));

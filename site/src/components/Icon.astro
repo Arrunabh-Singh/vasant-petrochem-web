@@ -9,7 +9,9 @@ interface Props {
   label?: string;
 }
 const { name, size = 20, stroke = 2, label } = Astro.props;
-const a11y = label ? { role: "img", "aria-label": label } : { "aria-hidden": "true", focusable: "false" };
+const a11y = label ? { role: "img" as const, "aria-label": label } : { "aria-hidden": "true" as const, focusable: "false" as const };
+// The geometry is this repo's own constant data, so it is written as markup directly.
+const shapes = name === "whatsapp" ? "" : ICONS[name].map(([tag, attrs]) => `<${tag} ${Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(" ")}/>`).join("");
 ---
 {
   name === "whatsapp" ? (
@@ -28,11 +30,7 @@ const a11y = label ? { role: "img", "aria-label": label } : { "aria-hidden": "tr
       stroke-linecap="round"
       stroke-linejoin="round"
       {...a11y}
-    >
-      {ICONS[name].map(([tag, attrs]) => {
-        const Tag = tag;
-        return <Tag {...attrs} />;
-      })}
-    </svg>
+      set:html={shapes}
+    />
   )
 }

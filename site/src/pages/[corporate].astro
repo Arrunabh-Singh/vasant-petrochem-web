@@ -1,0 +1,60 @@
+---
+/**
+ * Policy and company pages from content/corporate/*.md. Facts are written as
+ * {{tokens}} and filled from content/company.json, so a phone number or an
+ * address is changed in one place.
+ */
+import { getCollection, type CollectionEntry } from "astro:content";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
+import Base from "../layouts/Base.astro";
+import { addressLine, company, salesEmail } from "../lib/company.ts";
+import { corporatePages } from "../lib/page.ts";
+
+export async function getStaticPaths() {
+  return (await corporatePages()).map((entry) => ({ params: { corporate: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<"corporate">;
+}
+const { entry } = Astro.props;
+
+const tokens: Record<string, string> = {
+  address: addressLine,
+  phone: company.phone.display,
+  hours: company.hours.label,
+  email: salesEmail,
+};
+const body = (entry.body ?? "").replace(/\{\{(\w+)\}\}/g, (_, key: string) => {
+  const value = tokens[key];
+  if (value === undefined) throw new Error(`content/corporate/${entry.id}.md: unknown token {{${key}}}. Known: ${Object.keys(tokens).join(", ")}.`);
+  return value;
+});
+const { code } = await (await createMarkdownProcessor()).render(body);
+const people = entry.data.requires === "people" ? await getCollection("people") : [];
+const updated = entry.data.updated?.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+---
+<Base title={entry.data.title} description={entry.data.description} draft={entry.data.status === "draft"}>
+  <section class="vp-hero" aria-labelledby="corp-title">
+    <div class="vp-container vp-stack">
+      <h1 class="vp-h-page" id="corp-title">{entry.data.title}</h1>
+      {updated && <p class="vp-small">Last updated <time datetime={entry.data.updated!.toISOString().slice(0, 10)}>{updated}</time></p>}
+    </div>
+  </section>
+  <section class="vp-section-tight">
+    <div class="vp-container vp-stack">
+      <div class="vp-prose"><Fragment set:html={code} /></div>
+      {people.length > 0 && (
+        <ul class="vp-grid" role="list">
+          {people.map((p) => (
+            <li class="vp-panel vp-person">
+              {p.data.photo && <img src={`/people/${p.data.photo}`} alt="" width="320" height="320" loading="lazy" decoding="async" />}
+              <h2 class="vp-h-title">{p.data.name}</h2>
+              <p class="vp-small">{p.data.role}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+</Base>

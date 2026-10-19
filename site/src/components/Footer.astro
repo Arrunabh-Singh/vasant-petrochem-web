@@ -1,24 +1,17 @@
 ---
-import { getEntry } from "astro:content";
 import { company, copyrightYears, addressLine, salesEmail } from "../lib/company.ts";
 import { claim } from "../lib/claims.ts";
 import { footerColumns } from "../lib/nav.ts";
-import { showDrafts } from "../lib/catalog.ts";
+import { corporatePages } from "../lib/page.ts";
 
 const columns = await footerColumns();
 const about = await claim("manufacturing-and-trading");
 // Legal links appear once their pages are published (privacy and terms wait on legal review, VP-LEG-003/004).
-const legal = (
-  await Promise.all(
-    [
-      ["privacy", "Privacy"],
-      ["terms", "Terms of use"],
-    ].map(async ([id, label]) => {
-      const page = await getEntry("pages", id!);
-      return page && (page.data.status === "published" || showDrafts) ? { href: `/${id}`, label: label! } : null;
-    }),
-  )
-).filter((l) => l !== null);
+const live = await corporatePages();
+const legal = ["privacy", "terms"].flatMap((id) => {
+  const entry = live.find((c) => c.id === id);
+  return entry ? [{ href: `/${id}`, label: entry.data.title }] : [];
+});
 // VP-LEG-001: the legal block shows only the identifiers the owner has supplied.
 const ids = [
   company.gstin && `GSTIN ${company.gstin}`,

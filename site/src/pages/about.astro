@@ -1,0 +1,63 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { itemText, page } from "../lib/page.ts";
+import { t } from "../lib/ui.ts";
+
+const copy = await page("about");
+const facility = copy.blocks.facility;
+const values = copy.blocks.values;
+const [lead, ...points] = await Promise.all((facility?.items ?? []).map(async (i) => ({ title: i.title, text: await itemText(i) })));
+const valueItems = await Promise.all((values?.items ?? []).map(async (i) => ({ title: i.title, text: await itemText(i) })));
+---
+<Base title={copy.title} description={copy.description}>
+  <section class="vp-hero" aria-labelledby="about-title">
+    <div class="vp-container">
+      <p class="vp-eyebrow">About Vasant Petrochem</p>
+      <h1 class="vp-h-page vp-measure" id="about-title">{copy.headline}</h1>
+      <p class="vp-lead">{copy.lead}</p>
+    </div>
+  </section>
+
+  <section class="vp-section vp-band-deep" aria-labelledby="facility-title">
+    <div class="vp-container vp-split">
+      <div class="vp-stack">
+        <p class="vp-eyebrow vp-eyebrow-deep">{facility?.eyebrow}</p>
+        <h2 class="vp-h-section" id="facility-title">{facility?.heading}</h2>
+        <p class="vp-lead">{lead?.text}</p>
+      </div>
+      <ul class="vp-supply">
+        {points.map((p) => (
+          <li><Icon name="check" size={18} /><span><strong>{p.title}.</strong> {p.text}</span></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="vp-section" aria-labelledby="values-title">
+    <div class="vp-container">
+      <div class="vp-head">
+        <p class="vp-eyebrow">{values?.eyebrow}</p>
+        <h2 class="vp-h-section" id="values-title">{values?.heading}</h2>
+      </div>
+      <ul class="vp-how">
+        {valueItems.map((v) => <li><h3>{v.title}</h3><p>{v.text}</p></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="vp-section-tight">
+    <div class="vp-container">
+      <div class="vp-cta-band">
+        <div class="vp-stack">
+          <h2 class="vp-h-section">Talk to the sales desk</h2>
+          <p>Send your grade and quantity, or browse the marketplace first.</p>
+        </div>
+        <div class="vp-actions">
+          <a class="vp-btn vp-btn-on-deep vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+          <a class="vp-btn vp-btn-outline-on-deep vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

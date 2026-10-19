@@ -76,11 +76,27 @@
     },
     {
       "id": "blending-and-storage",
-      "text": "Our Mangaliya facility handles blending and storage for our manufactured lines.",
+      "text": "Our Mangaliya facility handles blending and storage for our manufactured lines, giving us direct control over consistency and supply for our partners.",
       "status": "owner-asserted",
       "evidence": null,
       "decided": "2026-10-19",
       "note": "Owner decision 2026-10-19: unchanged. Covers the About page facility section."
+    },
+    {
+      "id": "computer-controlled-blending",
+      "text": "Computer-controlled blending ensures consistent viscosity and composition across every batch.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Owner decision 2026-10-19: the About page facility section stays as it is."
+    },
+    {
+      "id": "in-house-batch-testing",
+      "text": "In-house testing on manufactured batches before they leave the facility.",
+      "status": "owner-asserted",
+      "evidence": null,
+      "decided": "2026-10-19",
+      "note": "Owner decision 2026-10-19: the About page facility section stays as it is. Covers the company's own manufactured lines, not traded ones."
     },
     {
       "id": "branded-lubricants",
