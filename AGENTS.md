@@ -27,8 +27,8 @@ Each JSON file in `content/` names its schema, and `site/src/content/schema.ts` 
 
 **A product** (`content/products/<slug>.md`)
 - The front matter follows `productSchema`: name, code, family, status, data, source, specs (property, value, unit, method), packaging, applications, industries, documents, hs, cas, density, faq. The body is the description.
-- Specs are copied exactly as the evidence states them. A test method stays `null` unless the source names it.
-- Real values from a supplier TDS or certificate of analysis: set `data: verified` and `source:` to the document. The build refuses `verified` without a source.
+- Specs are copied exactly as the evidence states them: the same numbers, units and test method. Write a range with a plain hyphen (`235-255`); the pages set it as an en dash. A test method stays `null` unless the source names it.
+- **Which evidence for what.** The owner's written instruction is enough to change a placeholder value: keep `data: placeholder` and the product's `status`, and quote the instruction in the pull request's Evidence section. Only a supplier TDS or certificate of analysis for the product makes it `data: verified`, with `source:` naming the document; set `source` only together with `verified`. The build refuses `verified` without a source.
 - `status: draft` keeps a product off the live site. Previews show it, behind a banner.
 - The drop colour is `tint`. There are no product photos to supply.
 
@@ -47,8 +47,8 @@ Each JSON file in `content/` names its schema, and `site/src/content/schema.ts` 
 **Industries, families, navigation and UI strings:** `content/industries/`, `content/families.json`, `content/navigation.json` and `content/ui/en.json`.
 
 **A logo**
-- Replace the file in `design-system/assets/Logos/`, keeping its name and transparent background. The build copies it everywhere.
-- The brand book's "Logo" section lists which file is used where.
+- Replace the file in `design-system/assets/Logos/`, keeping its name, transparent background and aspect ratio. The build copies it everywhere, including every link-preview (share) image.
+- The brand book's "Logo" section lists which file is used where, and the `brand` skill has the steps.
 
 **Colours, type, spacing, motion:** `design-system/tokens.json`. They compile to `site/src/styles/tokens.css` on every build, so never edit the compiled file.
 
@@ -62,10 +62,13 @@ All from the repository root.
 | --- | --- |
 | `npm --prefix site ci` | Install the site's exact dependencies. |
 | `npm --prefix site run dev` | Local site at `http://localhost:4321` (Astro dev server). |
-| `npm --prefix site run check` | Everything CI checks: types, unit tests, a production build, then the built pages (no TODO markers, no inline scripts or styles, no foreign hosts, no broken links, JS budgets). |
-| `npm --prefix site run preview` | The built site in the local Cloudflare runtime, at `http://localhost:4321`. |
+| `npm --prefix site run check` | Types, unit tests, a production build, then the built pages (no TODO markers, no inline scripts or styles, no foreign hosts, no broken links, JS budgets). CI also runs `npm audit`, the JSON Schema step, the end-to-end tests, Lighthouse and a ZAP scan. |
+| `npm --prefix site run preview` | The built site in the local Cloudflare runtime, at `http://localhost:4321`. Wait for "Ready on", and restart it after every build: it keeps serving the Worker it started with. |
 | `npm --prefix site run shots` | Phone and laptop screenshots of the main pages, against `preview`. Add page paths to limit it, or `--film` for the home page's scroll film. |
+| `npm --prefix site run e2e` | End-to-end and accessibility tests (Playwright and axe) against `preview`. |
 | `DRAFT_PREVIEW=1 npm --prefix site run build` | A build that includes drafts, as previews show them. |
+
+Built pages land in `site/dist/client/` as `<path>.html` (for example `products/base-oil-sn500.html`), and share images in `site/dist/client/og/`. `shots` and `e2e` need Playwright's Chromium; if it is missing, run `npx --prefix site playwright install chromium` once.
 
 SQL tests run on a scratch Postgres: `createdb scratch && psql -v ON_ERROR_STOP=1 -d scratch -f supabase/tests/<file>.sql`.
 
@@ -74,11 +77,11 @@ SQL tests run on a scratch Postgres: `createdb scratch && psql -v ON_ERROR_STOP=
 1. Work on a branch. Keep one change per pull request.
 2. Run `npm --prefix site run check`. For anything visible, also run `shots`, look at both widths, and attach the screenshots.
 3. Open a pull request with the template: say what changed and why, and give the evidence for any data or claim.
-4. CI repeats the checks, and the owner reviews and merges. A merge deploys in about a minute; reverting the pull request rolls it back.
+4. CI repeats the checks, and the owner reviews and merges. A merge deploys in about a minute (browsers may keep an old logo or share image for up to a day); reverting the pull request rolls it back.
 
 ## Don'ts
 
-- Don't edit generated files: `site/src/styles/tokens.css`, `site/public/brand/`, `site/public/fonts/`, `site/public/_headers`.
+- Don't edit generated files: `site/src/styles/tokens.css`, `site/public/brand/`, `site/public/fonts/`, `site/public/people/`, `site/public/_headers`, `site/public/site.webmanifest`.
 - Don't add inline `style=` attributes or inline scripts. The content security policy blocks them, and the checks fail the build.
 - Don't hard-code a company fact. Read it from `content/company.json`.
 - Don't add a dependency without saying why in the pull request. Pin exact versions.

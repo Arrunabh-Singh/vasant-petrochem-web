@@ -24,6 +24,17 @@ const SIZES = [
 ];
 
 mkdirSync(out, { recursive: true });
+// Wait up to a minute for the preview to answer, so shots can start alongside it.
+for (let i = 0; ; i++) {
+  try {
+    if ((await fetch(base)).ok) break;
+  } catch {}
+  if (i >= 60) {
+    console.error(`shots: nothing answering at ${base}. Start it with npm run preview.`);
+    process.exit(1);
+  }
+  await new Promise((r) => setTimeout(r, 1000));
+}
 const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 let failed = false;
 for (const [width, height, tag, thumb, cols] of SIZES) {

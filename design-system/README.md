@@ -103,14 +103,16 @@ Assets in the **Logos** group, cut from the owner's 1024px artwork: the white gr
 
 | File | Use |
 | --- | --- |
-| `vasant-logo.png` | The full lockup. Footer, documents, OG images and ads, at 200px wide or more. |
+| `vasant-logo.png` | The full lockup. Footer, the printable datasheet and ads, at 200px wide or more. |
 | `vasant-logo-reversed.png` | The full lockup on `deep` or photographs: green becomes `cream`, the drop stays. |
-| `vasant-lockup-compact.png` | Navigation and anywhere under 72px tall. The same artwork, with the wordmark at 0.6× the mark's height (0.29× in the full lockup) so the letters stay legible at 40px. |
+| `vasant-lockup-compact.png` | Navigation, every share (link-preview) image, and anywhere under 72px tall. The same artwork, with the wordmark at 0.6× the mark's height (0.29× in the full lockup) so the letters stay legible at 40px. |
 | `vasant-lockup-compact-reversed.png` | The compact lockup on `deep`. |
-| `vasant-mark.png` · `vasant-icon-512.png` | The V, arrow and drop alone: favicon, app icon, social avatar. |
+| `vasant-mark.png` | The V, arrow and drop alone: print and the social avatar. |
+| `vasant-icon-512.png` | The mark centred on a transparent 512px square. The site makes the favicon, app icons and touch icon from this file alone. |
 | `vasant-wordmark.png` | The wordmark alone, where the mark already appears nearby. |
 
 - Clear space on every side equals the width of the drop in the lockup.
+- A replacement keeps the file's name and aspect ratio; when a lockup changes, its `-reversed` file is replaced with it.
 - Minimum sizes: full lockup 200px wide, compact lockup 32px tall, mark 24px tall.
 - Show the logo once per view. Never retype the wordmark, recolour it (other than the reversed files), add effects, or place the green version on `deep`.
 
