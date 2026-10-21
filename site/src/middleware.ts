@@ -1,11 +1,11 @@
 import { defineMiddleware } from "astro:middleware";
-import { securityHeaders } from "./server/headers.ts";
+import { workerHeaders } from "./server/headers.ts";
 
-/** The Worker's own responses carry the same security headers as the static files (public/_headers). */
+/** The Worker's own responses carry the static files' security headers (public/_headers), plus CORP. */
 export const onRequest = defineMiddleware(async (_context, next) => {
   const response = await next();
   const apply = (headers: Headers) => {
-    for (const [name, value] of Object.entries(securityHeaders)) if (!headers.has(name)) headers.set(name, value);
+    for (const [name, value] of Object.entries(workerHeaders)) if (!headers.has(name)) headers.set(name, value);
   };
   try {
     apply(response.headers);

@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { checkTiming, MIN_FILL_MS, verifyTurnstile } from "../../src/server/bot.ts";
-import { readForm, sameOrigin, sourcePage } from "../../src/server/http.ts";
+import { readForm, readText, sameOrigin, sourcePage } from "../../src/server/http.ts";
 import { clientIp, hashIp } from "../../src/server/ip.ts";
-import { contentSecurityPolicy, headersFile, securityHeaders } from "../../src/server/headers.ts";
+import { contentSecurityPolicy, headersFile, securityHeaders, workerHeaders } from "../../src/server/headers.ts";
 
 test("time to submit: too fast, too slow and forged values are refused", () => {
   const now = 1_800_000_000_000;
@@ -49,6 +49,13 @@ test("forms are accepted only from this site, within size, as JSON or a form", a
   assert.equal(await readForm(req({ "content-type": "application/json" }, "[1]")), null);
   assert.equal(await readForm(req({ "content-type": "text/plain" }, "x")), null);
   assert.equal(await readForm(req({ "content-type": "application/json" }, JSON.stringify({ a: "x".repeat(70_000) }))), null, "over the size cap");
+  // A streamed body without Content-Length is cut off at the cap, not read whole.
+  let pulled = 0;
+  const endless = new ReadableStream({ pull: (c) => void (pulled++ < 1000 ? c.enqueue(new Uint8Array(1024)) : c.close()) });
+  const streamed = new Request("https://www.vasantpetrochem.com/api/click", { method: "POST", body: endless, duplex: "half" } as RequestInit);
+  assert.equal(await readText(streamed, 2048), null);
+  assert.ok(pulled < 10, `stopped reading after ${pulled} chunks`);
+  assert.equal(await readText(req({}, "hello"), 2048), "hello");
   assert.equal(sourcePage(req({ referer: "https://www.vasantpetrochem.com/products/base-oil-sn500" })), "/products/base-oil-sn500");
   assert.equal(sourcePage(req({ referer: "https://evil.example/products/x" })), "/quote");
 });
@@ -62,6 +69,8 @@ test("the strict CSP allows no inline script, eval or framing, and Turnstile onl
   assert.match(contentSecurityPolicy(false), /frame-ancestors 'none'/, "the baseline also forbids framing");
   assert.equal(securityHeaders["Strict-Transport-Security"], "max-age=63072000; includeSubDomains; preload");
   assert.equal(securityHeaders["X-Content-Type-Options"], "nosniff");
+  assert.equal(workerHeaders["Cross-Origin-Resource-Policy"], "same-origin", "endpoints are never embedded elsewhere");
+  assert.equal(securityHeaders["Cross-Origin-Resource-Policy"], undefined, "the logo and share images stay embeddable");
   const file = headersFile();
   assert.match(file, /^\/\*\n {2}Strict-Transport-Security:/m);
   assert.match(file, /Content-Security-Policy-Report-Only: .*report-uri \/api\/csp-report/);

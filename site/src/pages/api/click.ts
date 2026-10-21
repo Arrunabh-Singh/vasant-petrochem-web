@@ -4,7 +4,7 @@
  */
 import type { APIRoute } from "astro";
 import { IP_HASH_SECRET, RFQ_DRY_RUN, SITE_TOKEN, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "astro:env/server";
-import { isLive, sameOrigin } from "../../server/http.ts";
+import { isLive, readText, sameOrigin } from "../../server/http.ts";
 import { clientIp, hashIp } from "../../server/ip.ts";
 import { rpc } from "../../server/supabase.ts";
 
@@ -17,8 +17,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const done = new Response(null, { status: 204, headers: { "Cache-Control": "no-store" } });
   if (!sameOrigin(request)) return done;
   // sendBeacon's body is JSON whatever content type the browser labels it with.
-  const text = await request.text();
-  if (text.length > 2048) return done;
+  const text = await readText(request, 2048);
+  if (text === null) return done;
   let raw: Record<string, unknown>;
   try {
     raw = JSON.parse(text);

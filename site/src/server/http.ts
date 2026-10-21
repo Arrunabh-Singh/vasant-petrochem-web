@@ -22,11 +22,34 @@ export function sameOrigin(request: Request): boolean {
   return origin !== null && origin === new URL(request.url).origin;
 }
 
+/**
+ * The body as text, or null past `max` bytes. The stream is read only up to
+ * the cap, so a missing or false Content-Length cannot make the Worker hold a
+ * large body in memory.
+ */
+export async function readText(request: Request, max: number): Promise<string | null> {
+  if (Number(request.headers.get("content-length") ?? 0) > max) return null;
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder();
+  let size = 0;
+  let text = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) return text + decoder.decode();
+    size += value.byteLength;
+    if (size > max) {
+      await reader.cancel();
+      return null;
+    }
+    text += decoder.decode(value, { stream: true });
+  }
+}
+
 /** The posted fields, from JSON or a urlencoded form; null when unreadable or too large. */
 export async function readForm(request: Request, max = MAX_BODY): Promise<Record<string, unknown> | null> {
-  if (Number(request.headers.get("content-length") ?? 0) > max) return null;
-  const raw = await request.text();
-  if (raw.length > max) return null;
+  const raw = await readText(request, max);
+  if (raw === null) return null;
   const type = request.headers.get("content-type") ?? "";
   if (type.includes("application/json")) {
     try {

@@ -44,6 +44,13 @@ export const securityHeaders: Readonly<Record<string, string>> = {
   "Reporting-Endpoints": 'csp="/api/csp-report"',
 };
 
+/**
+ * The Worker's own responses (the endpoints and the offers board) are never
+ * embedded by other sites. Static files leave CORP out: the logo and share
+ * images are meant to load in email signatures and link previews.
+ */
+export const workerHeaders: Readonly<Record<string, string>> = { ...securityHeaders, "Cross-Origin-Resource-Policy": "same-origin" };
+
 /** Long caching for files that change rarely; /_astro/* (hashed names) is set immutable by the adapter. */
 export const cacheRules: Readonly<Record<string, string>> = {
   "/fonts/*": "public, max-age=2592000",
