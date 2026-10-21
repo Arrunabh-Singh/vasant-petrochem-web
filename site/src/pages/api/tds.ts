@@ -8,7 +8,7 @@ import { getEntry } from "astro:content";
 import { IP_HASH_SECRET, MAIL_FROM, RESEND_API_KEY, RFQ_DRY_RUN, SITE_TOKEN, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, TURNSTILE_SECRET_KEY } from "astro:env/server";
 import { company, SITE_URL } from "../../lib/company.ts";
 import { checkTiming, verifyTurnstile } from "../../server/bot.ts";
-import { json, readForm, sameOrigin } from "../../server/http.ts";
+import { isLive, json, readForm, sameOrigin } from "../../server/http.ts";
 import { clientIp, hashIp } from "../../server/ip.ts";
 import { sendEmail } from "../../server/mail.ts";
 import { rpc } from "../../server/supabase.ts";
@@ -34,7 +34,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!product || !file) return json(404, { ok: false, message: "This product's data sheet is available on request. Ask the sales desk." });
 
   const url = `/documents/${file}`;
-  if (RFQ_DRY_RUN === "1") return json(200, { ok: true, url, dryRun: true });
+  if (RFQ_DRY_RUN === "1" || !isLive(request)) return json(200, { ok: true, url, dryRun: true });
 
   const logged = await rpc(
     "log_tds_request",

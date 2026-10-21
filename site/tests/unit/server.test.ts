@@ -66,3 +66,12 @@ test("the strict CSP allows no inline script, eval or framing, and Turnstile onl
   assert.match(file, /^\/\*\n {2}Strict-Transport-Security:/m);
   assert.match(file, /Content-Security-Policy-Report-Only: .*report-uri \/api\/csp-report/);
 });
+
+test("only the live host stores and sends; previews and local runs are dry runs", async () => {
+  const { isLive } = await import("../../src/server/http.ts");
+  assert.equal(isLive(new Request("https://www.vasantpetrochem.com/api/rfq")), true);
+  assert.equal(isLive(new Request("https://vasant-site.example.workers.dev/api/rfq")), false);
+  assert.equal(isLive(new Request("https://abc123-vasant-site.example.workers.dev/api/rfq")), false);
+  assert.equal(isLive(new Request("http://localhost:4321/api/rfq")), false);
+  assert.equal(isLive(new Request("https://vasantpetrochem.com/api/rfq")), false, "the apex redirects to www; it never serves forms");
+});

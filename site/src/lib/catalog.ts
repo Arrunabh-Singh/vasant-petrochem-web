@@ -4,8 +4,12 @@ export type ProductEntry = CollectionEntry<"products">;
 export type Spec = ProductEntry["data"]["specs"][number];
 export type Pack = ProductEntry["data"]["packaging"][number];
 
-/** Drafts are left out of production builds and shown on previews (DRAFT_PREVIEW=1). */
-export const showDrafts = import.meta.env.DRAFT_PREVIEW === "1";
+/**
+ * Drafts are left out of production builds and shown on previews: any
+ * Cloudflare build of a branch other than main, or DRAFT_PREVIEW=1 locally.
+ */
+const branch = import.meta.env.WORKERS_CI_BRANCH;
+export const showDrafts = import.meta.env.DRAFT_PREVIEW === "1" || (typeof branch === "string" && branch !== "" && branch !== "main");
 const visible = (status: string) => status === "published" || (showDrafts && status === "draft");
 
 export async function getProducts(): Promise<ProductEntry[]> {

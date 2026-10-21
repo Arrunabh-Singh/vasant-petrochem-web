@@ -20,7 +20,7 @@ import {
 } from "astro:env/server";
 import { company } from "../../lib/company.ts";
 import { checkTiming, verifyTurnstile } from "../../server/bot.ts";
-import { json, readForm, sameOrigin, seeOther, sourcePage, wantsJson } from "../../server/http.ts";
+import { isLive, json, readForm, sameOrigin, seeOther, sourcePage, wantsJson } from "../../server/http.ts";
 import { clientIp, hashIp } from "../../server/ip.ts";
 import { acknowledgementEmail, salesDeskEmail, sendEmail } from "../../server/mail.ts";
 import { parseRfq, type Enquiry } from "../../server/rfq.ts";
@@ -85,7 +85,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!parsed.ok) return fail(422, COPY.fields, parsed.errors);
   const e = parsed.enquiry;
 
-  if (RFQ_DRY_RUN === "1") return asJson ? json(200, { ok: true, reference: "VP-ENQ-TEST-0000", dryRun: true }) : seeOther("/sent");
+  if (RFQ_DRY_RUN === "1" || !isLive(request)) return asJson ? json(200, { ok: true, reference: "VP-ENQ-TEST-0000", dryRun: true }) : seeOther("/sent");
 
   const result = await rpc<string>(
     "submit_enquiry",

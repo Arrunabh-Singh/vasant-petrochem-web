@@ -4,7 +4,7 @@
  */
 import type { APIRoute } from "astro";
 import { IP_HASH_SECRET, RFQ_DRY_RUN, SITE_TOKEN, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "astro:env/server";
-import { sameOrigin } from "../../server/http.ts";
+import { isLive, sameOrigin } from "../../server/http.ts";
 import { clientIp, hashIp } from "../../server/ip.ts";
 import { rpc } from "../../server/supabase.ts";
 
@@ -25,7 +25,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   } catch {
     return done;
   }
-  if (!raw || typeof raw !== "object" || !KINDS.has(String(raw.kind)) || RFQ_DRY_RUN === "1") return done;
+  if (!raw || typeof raw !== "object" || !KINDS.has(String(raw.kind)) || RFQ_DRY_RUN === "1" || !isLive(request)) return done;
   const page = short(raw.page, 200);
   if (!page.startsWith("/")) return done;
   const ip = clientIp(request.headers);

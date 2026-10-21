@@ -28,7 +28,7 @@ export default defineConfig({
       IP_HASH_SECRET: envField.string({ context: "server", access: "secret", optional: true }),
       /** Comma-separated extra origins allowed to post forms (preview and local hosts). */
       EXTRA_ORIGINS: envField.string({ context: "server", access: "secret", optional: true }),
-      /** "1" on previews and in tests: enquiries are validated, then answered without being stored or emailed. */
+      /** "1" forces a dry run (validated, answered, never stored or emailed). Off the live host it is always a dry run (server/http.ts isLive). */
       RFQ_DRY_RUN: envField.string({ context: "server", access: "secret", optional: true }),
     },
   },

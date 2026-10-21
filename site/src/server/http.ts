@@ -1,4 +1,5 @@
 /** Request and response helpers for the Worker endpoints. */
+import { SITE_URL } from "../lib/company.ts";
 export const MAX_BODY = 64 * 1024;
 
 const BASE = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
@@ -56,3 +57,11 @@ export function sourcePage(request: Request): string {
     return "/quote";
   }
 }
+
+/**
+ * Only the live site stores enquiries and sends email. Preview deployments
+ * share the live Worker's settings, so a flag alone could not keep a preview
+ * from writing to production: anything not served on the live host answers
+ * as a dry run.
+ */
+export const isLive = (request: Request) => new URL(request.url).hostname === new URL(SITE_URL).hostname;
