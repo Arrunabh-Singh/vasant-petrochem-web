@@ -8,12 +8,11 @@
 //   node scripts/cutover.mjs rollback   remove the www/* route: Vercel serves www again within a minute
 //
 // Reads CLOUDFLARE_API_TOKEN. deploy also reads SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
-// and SITE_TOKEN; email reads RESEND_API_KEY. Secrets reach wrangler through a
-// temporary file that is deleted at once, and nothing secret is printed.
+// and SITE_TOKEN; email reads RESEND_API_KEY. Secrets go to Cloudflare's API
+// directly: never to disk, never printed.
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ZONE = "vasantpetrochem.com";
@@ -63,19 +62,13 @@ function wrangler(args, ctx) {
   execFileSync("npx", ["wrangler", ...args], { cwd: site, stdio: "inherit", env: { ...process.env, CLOUDFLARE_ACCOUNT_ID: ctx.account, WRANGLER_SEND_METRICS: "false" } });
 }
 
-/** Sets Worker secrets through a file that exists only for the call. */
-function putSecrets(values, ctx) {
-  const entries = Object.entries(values).filter(([, v]) => v);
-  if (!entries.length) return;
-  const dir = mkdtempSync(join(tmpdir(), "vp-secrets-"));
-  const file = join(dir, "secrets.json");
-  try {
-    writeFileSync(file, JSON.stringify(Object.fromEntries(entries)), { mode: 0o600 });
-    wrangler(["secret", "bulk", file], ctx);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
+/** Sets Worker secrets straight through the API: nothing is written to disk or printed. */
+async function putSecrets(values, ctx) {
+  const names = Object.keys(values).filter((k) => values[k]);
+  for (const name of names) {
+    await must(`/accounts/${ctx.account}/workers/scripts/${WORKER}/secrets`, json("PUT", { name, text: values[name], type: "secret_text" }));
   }
-  say(`secrets set: ${entries.map(([k]) => k).join(", ")}`);
+  if (names.length) say(`secrets set: ${names.join(", ")}`);
 }
 
 async function secretNames(ctx) {
@@ -128,7 +121,7 @@ async function deploy() {
   wrangler(["deploy"], ctx);
 
   const have = await secretNames(ctx);
-  putSecrets(
+  await putSecrets(
     {
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY,
@@ -188,7 +181,7 @@ async function email() {
     status = (await resend(`/domains/${domain.id}`)).status;
   }
   say(`Resend domain status: ${status}${status === "verified" ? "" : " (DNS can take a few minutes; run email again later)"}`);
-  putSecrets({ RESEND_API_KEY: key, MAIL_FROM }, ctx);
+  await putSecrets({ RESEND_API_KEY: key, MAIL_FROM }, ctx);
 }
 
 async function live() {
