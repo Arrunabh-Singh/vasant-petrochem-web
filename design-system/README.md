@@ -64,6 +64,7 @@ Keyboard focus is `focus-ring` on light grounds (a 2px `cream` gap, then 2px sol
 | Spec value | `spec` 15/22 · `spec-large` 20/26 | `mono` |
 
 - **Montserrat** (`fonts/montserrat-latin-wght-normal.woff2`, SIL Open Font License) is the wide geometric sans of the logo's wordmark, so headlines speak in the logo's voice. Use it for display styles only.
+- **Share images** use static cuts of the same font (`fonts/montserrat-latin-500.ttf`, `-700.ttf`), made by `tools/brand/static-fonts.py` because the image renderer cannot read a variable WOFF2. Re-run it whenever the WOFF2 changes.
 - **Body, labels and controls use the device's own face** (`sans`): SF Pro on Apple devices, Segoe UI on Windows, Roboto on Android. Nothing to download, and the most legible face at small sizes on each device.
 - **`mono` is the datasheet voice**: grade codes and measured values, so digits line up in columns.
 - Never below 12px (13px in practice), never weight 300. Running text stops at `measure` (680px).
