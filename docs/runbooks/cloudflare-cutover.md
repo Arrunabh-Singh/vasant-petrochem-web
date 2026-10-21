@@ -4,7 +4,7 @@ It moves `www.vasantpetrochem.com` from the current Next.js pages to the new sit
 
 **How it works.** `vasantpetrochem.com` is already on Cloudflare, and `www` is proxied to Vercel. A Cloudflare Worker (the new site) answers every `www` request except the hub's own paths, which go on to Vercel as today. To roll back, remove one route: [Rollback](#rollback).
 
-**Who does what.** The owner spends about ten minutes on four keys. Claude does the rest with `site/scripts/cutover.mjs`, whose steps are safe to run again.
+**Who does what.** The owner spends about ten minutes on four keys and one Vercel setting. Claude does the rest with `site/scripts/cutover.mjs`, whose steps are safe to run again.
 
 ## 1. The owner's ten minutes
 
@@ -30,6 +30,11 @@ Keys go in the Claude Code environment settings as environment variables (the cl
 4. **Anthropic key**, saved as `ANTHROPIC_API_KEY`. This is for the on-site product assistant (Release 3).
    - In [console.anthropic.com](https://console.anthropic.com), go to **Settings → Limits** and set a **monthly spend limit of $10**.
    - Then go to **API Keys** and create one.
+5. **Vercel, so every merge redeploys the hub.**
+   - Open Vercel → project `vasant-petrochem-web` → **Settings → Git**.
+   - Disconnect `centrax-citadel`, then connect `Arrunabh-Singh/vasant-petrochem-web`.
+   - Claude has already set the Root Directory to the repository root, and deployed `main` by hand on 21 October.
+6. **Optional: the hub's vault, MCP connector and telemetry.** In the same project, go to **Settings → Environment Variables** and add `SUPABASE_SERVICE_ROLE_KEY` for Production. Copy it from Supabase → **Settings → API Keys**.
 
 Also renew the domain at GoDaddy, or turn on auto-renew: **it expires on 11 December 2026**.
 
