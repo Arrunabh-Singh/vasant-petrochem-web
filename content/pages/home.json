@@ -5,6 +5,25 @@
   "headline": "Industrial oils, fuels and lubricants from Indore.",
   "lead": "Base oils, bitumen, fuel oils, process oils and solvents, in drums or bulk tankers. Send your grade and quantity, and get pricing within 24 hours.",
   "blocks": {
+    "film": {
+      "heading": "What we supply"
+    },
+    "statement": {
+      "eyebrow": "Vasant Petrochem",
+      "items": [
+        { "title": "Manufacturing and trading", "claim": "manufacturing-and-trading" },
+        { "title": "Blending and storage", "claim": "blending-and-storage" },
+        { "title": "Central India", "claim": "from-mangaliya" }
+      ]
+    },
+    "range": {
+      "eyebrow": "The range",
+      "heading": "Every grade, with its typical values.",
+      "body": "Specifications, packaging and documents for each product, on its own page."
+    },
+    "explore": {
+      "heading": "Explore"
+    },
     "find": {
       "eyebrow": "Marketplace",
       "heading": "Find your grade",
@@ -30,6 +49,8 @@
       "heading": "Where our products go to work"
     },
     "supply": {
+      "heading": "Supply and logistics",
+      "body": "How orders are packed, dispatched and documented.",
       "items": [
         { "title": "Drums or bulk", "claim": "drums-or-bulk" },
         { "title": "Pricing", "claim": "pricing-24h" },

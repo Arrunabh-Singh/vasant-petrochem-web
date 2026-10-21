@@ -5,6 +5,7 @@
 //   design-system/fonts/*.woff2      -> public/fonts/
 //   design-system/assets/Logos/*     -> public/brand/
 //   design-system/assets/Drops/*.svg -> public/brand/drops/
+//   src/lib/drop.ts (the drop path)  -> public/brand/drop-mask.svg
 //   content/people/*.{jpg,png,webp}  -> public/people/
 //   src/server/headers.ts            -> public/_headers
 // The outputs are git-ignored.
@@ -12,6 +13,7 @@ import { readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSy
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { headersFile } from "../src/server/headers.ts";
+import { DROP_H, DROP_PATH } from "../src/lib/drop.ts";
 
 const site = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ds = join(site, "..", "design-system");
@@ -28,7 +30,7 @@ export function compileTokens(tokens) {
 
   const lines = [];
   for (const [name, value] of colors) lines.push(`--${name}: ${resolve(value)};`);
-  for (const family of ["spacing", "radius", "shadow", "size", "material"]) {
+  for (const family of ["spacing", "radius", "shadow", "size", "material", "motion"]) {
     for (const t of tokens[family].tokens) lines.push(`--${t.name}: ${t.value};`);
   }
   for (const [name, stack] of Object.entries(tokens.type.families)) lines.push(`--font-${name}: ${stack};`);
@@ -74,6 +76,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   copyDir(join(ds, "fonts"), join(site, "public/fonts"), (n) => n.endsWith(".woff2"));
   copyDir(join(ds, "assets/Logos"), join(site, "public/brand"), (n) => /\.(png|svg)$/.test(n));
   copyDir(join(ds, "assets/Drops"), join(site, "public/brand/drops"), (n) => n.endsWith(".svg"));
+  // The drop's silhouette as a CSS mask: the live liquid is clipped to exactly the drawn drop.
+  writeFileSync(
+    join(site, "public/brand/drop-mask.svg"),
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 ${DROP_H}" preserveAspectRatio="none"><path d="${DROP_PATH}"/></svg>\n`,
+  );
   copyDir(join(site, "../content/people"), join(site, "public/people"), (n) => /\.(jpe?g|png|webp)$/.test(n));
   writeFileSync(join(site, "public/_headers"), headersFile());
   console.log("prepare: tokens.css, fonts, brand assets and _headers derived from design-system/ and src/");

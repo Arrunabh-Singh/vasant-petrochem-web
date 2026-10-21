@@ -37,8 +37,14 @@ export default defineConfig({
   vite: {
     // content/ and design-system/ live beside the app, one level up.
     server: { fs: { allow: [".."] } },
-    // Never inline scripts or assets into the page: the strict CSP allows
-    // only files from this origin (src/server/headers.ts).
-    build: { assetsInlineLimit: 0 },
+    build: {
+      // Never inline scripts or assets into the page: the strict CSP allows
+      // only files from this origin (src/server/headers.ts).
+      assetsInlineLimit: 0,
+      // The browsers we support. Without them the CSS minifier folds
+      // animation-timeline into the animation shorthand, which browsers
+      // reject, and every scroll-driven scene silently stops.
+      cssTarget: ["chrome115", "edge115", "safari17", "firefox128", "ios17"],
+    },
   },
 });

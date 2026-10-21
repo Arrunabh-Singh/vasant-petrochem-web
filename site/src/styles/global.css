@@ -4,6 +4,7 @@
    Phone layout is the default; the laptop layout starts at 1024px (the
    design system's breakpoint). One DOM tree for both (MNC VP-PERF-001). */
 @import "./tokens.css";
+@import "./motion.css";
 
 /* ------------------------------------------------------------------ base */
 *, *::before, *::after { box-sizing: border-box; }
@@ -244,12 +245,14 @@ body { padding-bottom: calc(var(--target-touch) + var(--space-3) + max(var(--spa
 .vp-phero-title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-3) 0 var(--space-4); }
 .vp-phero-copy .vp-lead { margin-bottom: var(--space-8); }
 .vp-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-5); min-height: 300px; padding: var(--space-8) var(--space-5); border-radius: var(--radius-lg); background: var(--parchment); }
+.vp-stage-drop { width: 150px; line-height: 0; }
 .vp-stage-caption { font: var(--t-small); color: var(--secondary); text-align: center; }
 .vp-stage-caption strong { color: var(--ink); font-weight: 600; }
 @media (min-width: 1024px) {
   .vp-phero { padding: var(--space-12) 0 var(--space-12); }
   .vp-phero-grid { grid-template-columns: 7fr 5fr; gap: var(--space-16); align-items: center; }
   .vp-stage { min-height: 440px; }
+  .vp-stage-drop { width: 190px; }
 }
 /* The drop travels from a product card to the product hero (browsers with
    cross-document view transitions; elsewhere the page simply loads). */

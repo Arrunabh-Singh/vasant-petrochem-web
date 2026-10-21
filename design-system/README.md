@@ -48,6 +48,8 @@ Keyboard focus is `focus-ring` on light grounds (a 2px `cream` gap, then 2px sol
 
 | Role | Style tokens (laptop / phone) | Family |
 | --- | --- | --- |
+| Film words, the home close | `film` 128/128 · `film-compact` 64/68 | `display` (Montserrat 300) |
+| Lighting statement | `statement` 40/52 · `statement-compact` 26/36 | `display` (500) |
 | Home headline | `display-xl` 56/60 · `display-xl-compact` 36/40 | `display` (Montserrat 700) |
 | Page title, product name | `display-l` 44/50 · `display-l-compact` 32/38 | `display` |
 | Section heading | `display-m` 30/36 · `display-m-compact` 24/30 | `display` |
@@ -79,13 +81,20 @@ Keyboard focus is `focus-ring` on light grounds (a 2px `cream` gap, then 2px sol
 - Radii: `radius-full` for anything you press (buttons, chips, pills), `radius-sm` for inputs, `radius-md` for cards and tables, `radius-lg` for stages, dark bands and sheets, `radius-xs` for grade chips.
 - Depth: `shadow-card` at rest, `shadow-raised` under a pointer (with a 2px lift), `shadow-float` for floating chrome. Shadows are tinted with `deep`, never black.
 - Glass: `glass` fill with `glass-blur` (24px) and `glass-saturate` (1.4), only on floating chrome, and opaque `cream` under reduced transparency or increased contrast.
-- No gradients anywhere except inside the drop.
+- No gradients anywhere except inside the drop (its liquid, and the glint that sweeps it in the home film).
 
 ## Motion
 
-- One moment per page. The product hero's drop fills once (900ms, ease-out, after 200ms), and the home page's range of drops fills in sequence. Nothing loops, nothing parallaxes, nothing reveals on scroll.
+The home page is a film; every other page is a page with a light touch of the same language. (Owner direction, October 2026, after vaiiya.org: cinematic, so a visitor who scrolls wants to explore the whole site.)
+
+- **Scroll is the clock.** On the home page, each scene's stage pins while scrolling plays it, then lets go: the opening, where the families resolve one at a time as the hero drop fills; a statement that lights as it is read; the range of drops crossing the screen as they fill; a gold line joining the four steps of supply; "Explore", letter by letter. Elsewhere, a page title resolves as the page opens, sections rise as they enter, and cards open with a gold wipe.
+- **One signature: the drop fills.** On the home page and product pages the drop fills with real-time liquid (WebGL), inside the drop's own chrome and highlight. The SVG drop is the first paint and the fallback.
+- **The reader stays in control.** Native scrolling is never smoothed, snapped or hijacked. No loading screens, no custom cursors, nothing that flashes or advances on its own. The only motion not driven by scroll is a title resolving (`duration-title`) and the hero drop's slow float (`duration-float`).
+- **What moves:** transform, opacity, blur and colour, never layout.
+- **Type in motion:** scene words in `film` (Montserrat 300, `gold-deep`, 4:1 on cream), resolving from a 16px blur. A statement in `statement` moves from `line-strong` to `ink`, so even unlit words keep 3:1.
+- **Easing:** `ease-out` for entrances, `ease-in-out` for the float. Scrubbed motion is linear, because the reader's scroll sets the pace.
+- **Still is complete.** With reduced motion, or in a browser without scroll-driven animations, nothing pins and nothing hides: the drops are full, every word is lit, and the page reads top to bottom.
 - Cards lift 2px under a pointer. Touch gets no hover state.
-- With reduced motion, the drop is simply full.
 
 ## Logo
 

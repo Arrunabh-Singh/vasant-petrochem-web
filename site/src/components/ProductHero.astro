@@ -3,9 +3,9 @@ import type { ProductEntry } from "../lib/catalog.ts";
 import { packagingLine } from "../lib/catalog.ts";
 import { t } from "../lib/ui.ts";
 import AtAGlance from "./AtAGlance.astro";
-import Drop from "./Drop.astro";
 import GradeChip from "./GradeChip.astro";
 import Icon from "./Icon.astro";
+import LiquidDrop from "./LiquidDrop.astro";
 
 interface Props {
   product: ProductEntry;
@@ -33,7 +33,7 @@ const p = product.data;
       </div>
     </div>
     <div class="vp-stage">
-      <Drop tint={p.tint} size="xl" animate title={`${p.name}, illustrated`} vt={`drop-${product.id}`} />
+      <div class="vp-stage-drop"><LiquidDrop tint={p.tint} fill="load" title={`${p.name}, illustrated`} vt={`drop-${product.id}`} /></div>
       <p class="vp-stage-caption">Supplied in <strong>{packagingLine(product)}</strong></p>
     </div>
   </div>

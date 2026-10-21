@@ -7,10 +7,10 @@ import type { TINTS as TintList } from "../content/schema.ts";
 
 export type Tint = (typeof TintList)[number];
 
-const DROP_PATH = "M50 0C47.62 4.39 0 117.26 0 126.26A50 50 0 0 0 100 126.26C100 117.26 52.38 4.39 50 0Z";
+export const DROP_PATH = "M50 0C47.62 4.39 0 117.26 0 126.26A50 50 0 0 0 100 126.26C100 117.26 52.38 4.39 50 0Z";
 export const DROP_H = 176.26;
-const LEVEL = 107.07;
-const HIGHLIGHT = "M10.1 130.3C11.2 141.5 16.2 153.2 24.2 159.6C31.4 165.3 39.4 168 47.5 167.7";
+export const LEVEL = 107.07;
+export const HIGHLIGHT = "M10.1 130.3C11.2 141.5 16.2 153.2 24.2 159.6C31.4 165.3 39.4 168 47.5 167.7";
 const CHROME: [number, string][] = [
   [0, "#979797"], [0.1, "#999b9b"], [0.19, "#b1b3b2"], [0.28, "#d8dadc"], [0.33, "#f3f4f5"], [0.37, "#f5f7f9"],
   [0.42, "#d9dbdd"], [0.465, "#c0c2c3"], [0.51, "#a6a8aa"], [0.56, "#b3b5b6"], [0.61, "#c6c8c9"],

@@ -1,0 +1,234 @@
+/* The home film (pages/index.astro; design-system/README.md, "Motion").
+   First, every scene as a finished still section: what reduced-motion readers
+   and browsers without scroll-driven animations see. Then, inside @supports,
+   the film: tall scenes whose stage pins while scroll plays it. */
+
+/* Room the phone's action bar takes at the bottom of the screen (global.css). */
+:root { --vp-bar: calc(var(--target-touch) + var(--space-3) + max(var(--space-4), env(safe-area-inset-bottom))); }
+
+/* ------------------------------------------------------ 1 opening and fill */
+.vp-open { padding: var(--space-8) 0 var(--space-12); }
+.vp-open-grid { display: grid; gap: var(--space-8); grid-template-areas: "copy" "drop" "words"; align-items: center; }
+.vp-open-copy { grid-area: copy; }
+.vp-open-copy .vp-h-hero { margin-top: var(--space-3); }
+.vp-open-copy .vp-lead { margin: var(--space-5) 0 var(--space-8); }
+.vp-open-visual { grid-area: drop; display: grid; justify-items: center; }
+.vp-open-drop { position: relative; width: min(40vw, 170px); line-height: 0; }
+.vp-open-drop .vp-liquid { width: 100%; }
+.vp-open-glint { display: none; }
+.vp-open-shadow { width: 64%; height: 16px; margin-top: var(--space-4); border-radius: 50%; background: var(--deep); opacity: .14; filter: blur(9px); }
+.vp-open-words { grid-area: words; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-4); margin: 0; padding: 0; list-style: none; font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--bronze); }
+@media (min-width: 1024px) {
+  .vp-open { padding: var(--space-16) 0 var(--space-24); }
+  .vp-open-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "copy drop" "copy words"; gap: var(--space-6) var(--space-12); }
+  .vp-open-drop { width: min(17vw, 240px); }
+}
+
+/* ---------------------------------------------------------- 2 statement */
+.vp-statement { padding: var(--space-14) 0; }
+.vp-statement-text { margin: var(--space-4) 0 var(--space-8); max-width: 30ch; font: var(--t-statement-compact); letter-spacing: var(--t-statement-compact-tracking); color: var(--ink); text-wrap: pretty; }
+@media (min-width: 1024px) {
+  .vp-statement { padding: var(--space-24) 0; }
+  .vp-statement-text { font: var(--t-statement); letter-spacing: var(--t-statement-tracking); }
+}
+
+/* ----------------------------------------------------------- 3 the range */
+.vp-range { padding: var(--space-14) 0; background: var(--parchment); }
+.vp-range-head { display: grid; gap: var(--space-6); }
+.vp-range-head .vp-head { margin-bottom: 0; }
+.vp-range-track { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6) var(--space-3); margin: var(--space-10) auto 0; padding: 0 var(--space-gutter); max-width: var(--container); list-style: none; }
+.vp-range-track a { display: grid; justify-items: center; gap: var(--space-2); padding: var(--space-4) var(--space-2); border-radius: var(--radius-md); color: var(--ink); text-align: center; text-decoration: none; }
+.vp-range-track a:hover { background: var(--cream); }
+.vp-range-track .vp-drop { width: 64px; margin-bottom: var(--space-2); }
+.vp-range-name { font: var(--t-button); }
+.vp-range-code { font: var(--t-grade); letter-spacing: var(--t-grade-tracking); color: var(--bronze); }
+.vp-range-spec { font: var(--t-caption); color: var(--secondary); }
+@media (min-width: 1024px) {
+  .vp-range { padding: var(--space-24) 0; }
+  .vp-range-head { grid-template-columns: 1fr auto; align-items: end; }
+  .vp-range-track { grid-template-columns: repeat(4, 1fr); gap: var(--space-8) var(--space-6); padding: 0 var(--space-8); }
+  .vp-range-track .vp-drop { width: 84px; }
+}
+
+/* -------------------------------------------------- 4 how supply moves */
+.vp-flow { padding: var(--space-14) 0; }
+.vp-flow-grid { display: grid; gap: var(--space-8); }
+.vp-flow .vp-head { margin-bottom: 0; }
+.vp-pin { position: relative; width: 80px; height: 80px; margin: var(--space-4) 0 var(--space-2); }
+.vp-pin span { position: absolute; inset: 0; border: 1.5px solid var(--gold); border-radius: 50%; opacity: .35; }
+.vp-pin span:nth-child(1) { inset: 33px; border: 0; background: var(--gold-deep); opacity: 1; }
+.vp-pin span:nth-child(2) { inset: 22px; opacity: .6; }
+.vp-pin span:nth-child(3) { inset: 11px; opacity: .45; }
+.vp-steps { position: relative; display: grid; gap: var(--space-8); margin: 0; padding: 0 0 0 var(--space-12); list-style: none; }
+.vp-steps::before { content: ""; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; border-radius: 2px; background: var(--gold); transform-origin: top; }
+.vp-steps li { position: relative; }
+.vp-step-n { position: absolute; left: calc(-1 * var(--space-12)); top: -3px; display: grid; place-items: center; width: 32px; height: 32px; border: 2px solid var(--gold); border-radius: 50%; background: var(--cream); font: 600 .875rem/1 var(--font-display); color: var(--ink); }
+.vp-steps h3 { font: var(--t-title); color: var(--ink); }
+.vp-steps p { max-width: 44ch; margin-top: var(--space-2); font: var(--t-small); color: var(--secondary); }
+@media (min-width: 1024px) {
+  .vp-flow { padding: var(--space-24) 0; }
+  .vp-flow-grid { grid-template-columns: 5fr 7fr; gap: var(--space-16); align-items: center; }
+  .vp-steps { gap: var(--space-10); }
+}
+
+/* --------------------------------------------------------------- 5 explore */
+.vp-explore { padding: var(--space-14) 0; }
+.vp-explore-word { margin-bottom: var(--space-10); font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); color: var(--ink); }
+.vp-tiles { display: grid; gap: var(--space-5); }
+.vp-tile { display: grid; align-content: start; gap: var(--space-4); padding: var(--space-6); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper); }
+.vp-tile h3 { font: var(--t-display-m-compact); color: var(--ink); text-wrap: balance; }
+.vp-tile .vp-facts { grid-template-columns: 1fr; padding: var(--space-4) 0; }
+.vp-tile-wide { margin-bottom: var(--space-5); }
+.vp-tile-links { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.vp-tile-links a { display: flex; align-items: center; justify-content: space-between; min-height: var(--target-touch); border-bottom: 1px solid var(--line); font: var(--t-button); color: var(--ink); text-decoration: none; }
+.vp-tile-links a:hover { color: var(--brand); }
+@media (min-width: 1024px) {
+  .vp-explore { padding: var(--space-24) 0; }
+  .vp-explore-word { font: var(--t-film); letter-spacing: var(--t-film-tracking); }
+  .vp-tiles { grid-template-columns: 1fr 1fr; gap: var(--space-6); }
+  .vp-tile { padding: var(--space-10); }
+  .vp-tile h3 { font: var(--t-display-m); }
+  .vp-tile-wide { margin-bottom: var(--space-6); }
+}
+
+/* ----------------------------------------------------------------- 6 close */
+.vp-close { padding: var(--space-14) 0 var(--space-16); border-top: 1px solid var(--line); }
+.vp-close-title { max-width: 13ch; font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); color: var(--ink); text-wrap: balance; }
+.vp-close .vp-lead { margin: var(--space-6) 0 var(--space-8); }
+@media (min-width: 1024px) {
+  .vp-close { padding: var(--space-24) 0; }
+  .vp-close-title { font: var(--t-film); letter-spacing: var(--t-film-tracking); }
+}
+
+/* ======================================================================
+   The film. Scroll is the clock: each tall scene names a view timeline,
+   its stage sticks for the length of the scene, and its parts play across
+   the scene's `contain` range (the stretch where the stage is pinned).
+   ====================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* 1 · Opening and fill. The copy steps back while the families resolve
+       one at a time in its place; the drop fills; then the copy returns. */
+    .vp-open { height: 250svh; padding: 0; view-timeline: --open block; }
+    .vp-open-stage { position: sticky; top: 0; display: grid; height: calc(100svh - var(--vp-bar)); overflow: hidden; container-type: size; }
+    /* Phones: one stage. The drop peeks in under the buttons, rises to the
+       middle as the copy steps back, fills, and settles back at the end. */
+    .vp-open-grid { grid-template-areas: "stage"; height: 100%; gap: 0; }
+    .vp-open-copy, .vp-open-visual, .vp-open-words { grid-area: stage; }
+    .vp-open-copy { align-self: center; animation: vp-copy linear both; animation-timeline: --open; animation-range: contain 0% contain 100%; }
+    .vp-open-copy:focus-within { animation: none; }
+    .vp-open-visual { align-self: end; animation: vp-drop-up linear both; animation-timeline: --open; animation-range: contain 0% contain 100%; }
+    .vp-open-words { align-self: start; display: grid; margin-top: var(--space-8); font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); text-transform: none; color: var(--gold-deep); text-align: center; pointer-events: none; }
+    .vp-open-words li { grid-area: 1 / 1; animation: vp-word linear both; animation-timeline: --open; }
+    .vp-open-words li::after { content: "."; }
+    .vp-open-words li:nth-child(1) { animation-range: contain 9% contain 24%; }
+    .vp-open-words li:nth-child(2) { animation-range: contain 21% contain 36%; }
+    .vp-open-words li:nth-child(3) { animation-range: contain 33% contain 48%; }
+    .vp-open-words li:nth-child(4) { animation-range: contain 45% contain 60%; }
+    .vp-open-words li:nth-child(5) { animation-range: contain 57% contain 72%; }
+    .vp-open-words li:nth-child(6) { animation-range: contain 69% contain 84%; }
+    .vp-open-words li:nth-child(n+7) { display: none; }
+    .vp-open-drop { width: min(40vw, 170px); animation: vp-float var(--duration-float) var(--ease-in-out) infinite alternate; }
+    .vp-open-drop .vp-drop-liquid { transform-box: fill-box; animation: vp-level linear both; animation-timeline: --open; animation-range: contain 4% contain 84%; }
+    .vp-open-shadow { animation: vp-shadow var(--duration-float) var(--ease-in-out) infinite alternate; }
+    .vp-open-glint { position: absolute; inset: 0; display: block; overflow: hidden; pointer-events: none; -webkit-mask: url("/brand/drop-mask.svg") 0 0 / 100% 100% no-repeat; mask: url("/brand/drop-mask.svg") 0 0 / 100% 100% no-repeat; }
+    .vp-open-glint::before { content: ""; position: absolute; inset: -10% -80%; background: linear-gradient(100deg, transparent 44%, #ffffff8c 50%, transparent 56%); animation: vp-glint linear both; animation-timeline: --open; animation-range: contain 0% contain 40%; }
+    @media (min-width: 1024px) {
+      .vp-open-stage { height: 100svh; }
+      .vp-open-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "copy drop"; gap: var(--space-12); align-items: center; }
+      .vp-open-copy, .vp-open-words { grid-area: copy; }
+      .vp-open-visual { grid-area: drop; align-self: center; animation: none; }
+      .vp-open-words { align-self: center; margin-top: 0; font: var(--t-film); letter-spacing: var(--t-film-tracking); text-align: start; }
+      .vp-open-drop { width: min(17vw, 240px); }
+    }
+    @keyframes vp-drop-up {
+      0%, 100% { transform: translateY(calc(100% - 132px)); }
+      10%, 86% { transform: translateY(calc((100% - 100cqb) / 2 + 56px)); }
+    }
+    @keyframes vp-copy {
+      0% { opacity: 1; filter: none; transform: none; }
+      7%, 88% { opacity: 0; filter: blur(12px); transform: translateY(-12px); }
+      100% { opacity: 1; filter: none; transform: none; }
+    }
+    @keyframes vp-word {
+      0% { opacity: 0; filter: blur(16px); transform: translateY(28px) scale(.96); }
+      30%, 70% { opacity: 1; filter: none; transform: none; }
+      100% { opacity: 0; filter: blur(16px); transform: translateY(-28px) scale(1.02); }
+    }
+    /* The liquid starts low in the drop (the island's LOW) and rises to the brand level. */
+    @keyframes vp-level { from { transform: translateY(55%); } to { transform: none; } }
+    @keyframes vp-float { to { transform: translateY(-8px); } }
+    @keyframes vp-shadow { to { transform: scaleX(.86); opacity: .08; } }
+    @keyframes vp-glint { from { transform: translateX(-38%); } to { transform: translateX(38%); } }
+
+    /* 3 · The range. The track crosses the pinned stage; the drops fill in a wave. */
+    .vp-range { height: calc(100svh + var(--n, 8) * 26svh); padding: 0; view-timeline: --range block; }
+    .vp-range:has(li:nth-child(2)) { --n: 2; }
+    .vp-range:has(li:nth-child(3)) { --n: 3; }
+    .vp-range:has(li:nth-child(4)) { --n: 4; }
+    .vp-range:has(li:nth-child(5)) { --n: 5; }
+    .vp-range:has(li:nth-child(6)) { --n: 6; }
+    .vp-range:has(li:nth-child(7)) { --n: 7; }
+    .vp-range:has(li:nth-child(8)) { --n: 8; }
+    .vp-range:has(li:nth-child(9)) { --n: 9; }
+    .vp-range:has(li:nth-child(10)) { --n: 10; }
+    .vp-range:has(li:nth-child(11)) { --n: 11; }
+    .vp-range:has(li:nth-child(12)) { --n: 12; }
+    .vp-range-stage { position: sticky; top: 0; display: grid; align-content: center; gap: var(--space-8); height: calc(100svh - var(--vp-bar)); overflow: hidden; }
+    .vp-range-viewport { container-type: inline-size; }
+    .vp-range-track { display: flex; width: max-content; max-width: none; gap: var(--space-4); margin: 0; animation: vp-track linear both; animation-timeline: --range; animation-range: contain 0% contain 100%; }
+    .vp-range-track li { width: clamp(150px, 42vw, 280px); }
+    .vp-range-track .vp-drop { width: clamp(84px, 11vw, 150px); }
+    .vp-range-track .vp-drop-liquid { transform-box: fill-box; animation: vp-pour linear both; animation-timeline: --range; }
+    .vp-range-track li:nth-child(1) .vp-drop-liquid { animation-range: contain 0% contain 12%; }
+    .vp-range-track li:nth-child(2) .vp-drop-liquid { animation-range: contain 6% contain 18%; }
+    .vp-range-track li:nth-child(3) .vp-drop-liquid { animation-range: contain 12% contain 24%; }
+    .vp-range-track li:nth-child(4) .vp-drop-liquid { animation-range: contain 18% contain 30%; }
+    .vp-range-track li:nth-child(5) .vp-drop-liquid { animation-range: contain 27% contain 39%; }
+    .vp-range-track li:nth-child(6) .vp-drop-liquid { animation-range: contain 36% contain 48%; }
+    .vp-range-track li:nth-child(7) .vp-drop-liquid { animation-range: contain 45% contain 57%; }
+    .vp-range-track li:nth-child(8) .vp-drop-liquid { animation-range: contain 54% contain 66%; }
+    .vp-range-track li:nth-child(9) .vp-drop-liquid { animation-range: contain 63% contain 75%; }
+    .vp-range-track li:nth-child(10) .vp-drop-liquid { animation-range: contain 72% contain 84%; }
+    .vp-range-track li:nth-child(n+11) .vp-drop-liquid { animation-range: contain 80% contain 92%; }
+    @media (min-width: 1024px) {
+      .vp-range-stage { height: 100svh; gap: var(--space-12); }
+      .vp-range-track { gap: var(--space-8); }
+    }
+    @keyframes vp-track { to { transform: translateX(calc(-100% + 100cqi)); } }
+    @keyframes vp-pour { from { transform: translateY(100%); } to { transform: none; } }
+
+    /* 4 · How supply moves (pinned on laptops; on phones each step rises as it enters). */
+    .vp-steps li { animation: vp-step linear both; animation-timeline: view(); animation-range: entry 10% entry 70%; }
+    .vp-steps::before { animation: vp-draw linear both; animation-timeline: view(); animation-range: entry 20% cover 60%; }
+    @media (min-width: 1024px) {
+      .vp-flow { height: 190svh; padding: 0; view-timeline: --flow block; }
+      .vp-flow-stage { position: sticky; top: 0; display: grid; align-items: center; height: 100svh; }
+      .vp-steps::before { animation-timeline: --flow; animation-range: contain 0% contain 78%; }
+      .vp-steps li { animation-timeline: --flow; }
+      .vp-steps li:nth-child(1) { animation-range: contain 0% contain 10%; }
+      .vp-steps li:nth-child(2) { animation-range: contain 20% contain 30%; }
+      .vp-steps li:nth-child(3) { animation-range: contain 40% contain 50%; }
+      .vp-steps li:nth-child(n+4) { animation-range: contain 60% contain 70%; }
+      .vp-pin span:nth-child(n+2) { animation: vp-ring linear both; animation-timeline: --flow; animation-range: contain 0% contain 100%; }
+      .vp-pin span:nth-child(3) { animation-range: contain 15% contain 100%; }
+      .vp-pin span:nth-child(4) { animation-range: contain 30% contain 100%; }
+    }
+    @keyframes vp-step { from { opacity: .01; filter: blur(6px); transform: translateY(20px); } }
+    @keyframes vp-draw { from { transform: scaleY(0); } }
+    @keyframes vp-ring { from { transform: scale(.4); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+
+    /* 5 · Explore resolves letter by letter. */
+    .vp-explore-word { view-timeline: --explore block; }
+    .vp-letters .l { animation: vp-letter linear both; animation-timeline: --explore; }
+    .vp-letters .l:nth-child(1) { animation-range: cover 6% cover 26%; }
+    .vp-letters .l:nth-child(2) { animation-range: cover 9% cover 29%; }
+    .vp-letters .l:nth-child(3) { animation-range: cover 12% cover 32%; }
+    .vp-letters .l:nth-child(4) { animation-range: cover 15% cover 35%; }
+    .vp-letters .l:nth-child(5) { animation-range: cover 18% cover 38%; }
+    .vp-letters .l:nth-child(6) { animation-range: cover 21% cover 41%; }
+    .vp-letters .l:nth-child(7) { animation-range: cover 24% cover 44%; }
+    .vp-letters .l:nth-child(n+8) { animation-range: cover 27% cover 47%; }
+    @keyframes vp-letter { from { opacity: .01; filter: blur(14px); transform: translateY(.18em); } }
+  }
+}
