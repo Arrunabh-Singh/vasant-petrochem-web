@@ -10,6 +10,7 @@ public/brand/
 public/fonts/
 public/people/
 public/_headers
+public/site.webmanifest
 # Test output
 test-results/
 playwright-report/

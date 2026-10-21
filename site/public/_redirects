@@ -1,3 +1,5 @@
 # Addresses from the previous site that moved.
 /products /marketplace 301
 /products/ /marketplace 301
+# Browsers and crawlers ask for /favicon.ico by default.
+/favicon.ico /brand/favicon-32.png 301

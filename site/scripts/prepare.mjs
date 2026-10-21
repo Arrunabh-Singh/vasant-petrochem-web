@@ -6,6 +6,7 @@
 //   design-system/assets/Logos/*     -> public/brand/
 //   design-system/assets/Drops/*.svg -> public/brand/drops/
 //   src/lib/drop.ts (the drop path)  -> public/brand/drop-mask.svg
+//   the icon (vasant-icon-512.png)   -> favicon, touch and app icons, site.webmanifest
 //   content/people/*.{jpg,png,webp}  -> public/people/
 //   src/server/headers.ts            -> public/_headers
 // The outputs are git-ignored.
@@ -14,6 +15,7 @@ import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { headersFile } from "../src/server/headers.ts";
 import { DROP_H, DROP_PATH } from "../src/lib/drop.ts";
+import sharp from "sharp";
 
 const site = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ds = join(site, "..", "design-system");
@@ -83,5 +85,38 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   );
   copyDir(join(site, "../content/people"), join(site, "public/people"), (n) => /\.(jpe?g|png|webp)$/.test(n));
   writeFileSync(join(site, "public/_headers"), headersFile());
-  console.log("prepare: tokens.css, fonts, brand assets and _headers derived from design-system/ and src/");
+
+  // Icons from the brand's icon: a small favicon, the iOS touch icon (on cream,
+  // since iOS fills transparency with black, with room for its rounded
+  // corners) and the install icons.
+  const icon = join(site, "public/brand/vasant-icon-512.png");
+  await sharp(icon).resize(32, 32).png().toFile(join(site, "public/brand/favicon-32.png"));
+  await sharp(icon)
+    .resize(136, 136)
+    .extend({ top: 22, bottom: 22, left: 22, right: 22, background: "#fbf8f1" })
+    .flatten({ background: "#fbf8f1" })
+    .png()
+    .toFile(join(site, "public/brand/apple-touch-icon.png"));
+  await sharp(icon).resize(192, 192).png().toFile(join(site, "public/brand/icon-192.png"));
+  const company = JSON.parse(readFileSync(join(site, "../content/company.json"), "utf8"));
+  writeFileSync(
+    join(site, "public/site.webmanifest"),
+    JSON.stringify(
+      {
+        name: company.tradeName,
+        short_name: company.tradeName.split(" ")[0],
+        start_url: "/",
+        display: "browser",
+        background_color: "#fbf8f1",
+        theme_color: "#fbf8f1",
+        icons: [
+          { src: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/brand/vasant-icon-512.png", sizes: "512x512", type: "image/png" },
+        ],
+      },
+      null,
+      2,
+    ) + "\n",
+  );
+  console.log("prepare: tokens.css, fonts, brand assets, icons and _headers derived from design-system/ and src/");
 }
