@@ -93,4 +93,5 @@ SQL tests run on a scratch Postgres: `createdb scratch && psql -v ON_ERROR_STOP=
 - `catalog`: add or update a product;
 - `brand`: replace a logo or a token;
 - `offers`: propose a lot for the live board;
+- `ads`: ads, social images, letterhead, business cards and email signatures (`npm --prefix site run kit`);
 - `design-review`: review a page before it ships.

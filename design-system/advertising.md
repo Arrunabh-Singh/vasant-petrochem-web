@@ -17,7 +17,7 @@ Google responsive display also asks for a square logo (use `vasant-icon-512.png`
 ## Composition
 
 - The compact lockup sits top left (reversed on `deep`), with the clear space of the drop around it.
-- Eyebrow in `mono`: the grade code and industries (`gold` on `deep`, `bronze` on `cream`).
+- Eyebrow: the grade code and industries, in capitals (`gold` on `deep`, `bronze` on `cream`). The rendered ads set it in Montserrat, like everything else on them, so they look the same from any machine.
 - Title in `display` 700: the product's name exactly as the catalog has it, or the range line.
 - One claim in `sans` at about 40px, from the allowed list only.
 - One call to action, the only pill on the canvas: *Get a quote* for Product, *See the range* for Range.
@@ -38,13 +38,13 @@ Google responsive display also asks for a square logo (use `vasant-icon-512.png`
 
 ## Landing pages and tracking
 
-- Product ads land on `/products/<slug>`; Range ads land on `/products`.
-- Tag every link: `?utm_source=<meta|google|linkedin|whatsapp>&utm_medium=<paid_social|cpc|display>&utm_campaign=<slug or range>-<yyyymm>&utm_content=<format>`.
+- Product ads land on `/products/<slug>`; Range ads land on `/marketplace`.
+- Tag every link: `?utm_source=<meta|google|linkedin|whatsapp>&utm_medium=<paid_social|display|social>&utm_campaign=<campaign>-<yyyymm>&utm_content=<format>`. `social` is WhatsApp Status and broadcasts, which are unpaid. `npm --prefix site run kit` writes every link to `links.csv`.
 - Before spending: enquiries must store the `utm_*` values (VP-LEAD-006), and call and WhatsApp taps must be counted per page (VP-LEAD-007). A pixel or conversion tag also needs the cookie notice (VP-LEG-005), the privacy policy and a CSP change; it is a separate decision.
 
 ## Making the files
 
-Render `AdCreative` at its native size in a page with this system loaded and save a PNG (Playwright, `deviceScaleFactor: 1`, a clip at the format's size). Every product's 1200 × 628 image is also produced by the site's `opengraph-image` route from the same template.
+`npm --prefix site run kit -- --campaign <slug> [--claim <id>]` renders every product and the range in all five formats, on `deep` and on `cream`, plus `links.csv`, into `marketing/<slug>/`. The steps are in the `ads` skill. The ads are the site's own `/kit` pages (preview builds only), which follow `AdCreative`'s layout and are saved at native size with Playwright. The site's share images (`/og/`) are a separate, cream card, drawn at build time.
 
 ## Before an ad goes live
 

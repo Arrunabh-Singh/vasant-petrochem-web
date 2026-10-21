@@ -26,6 +26,18 @@ Plain, specific and unhurried, the way a good sales desk talks on the phone. "We
 - **Errors say what to do**, next to the field, with an icon: *Enter your name so we know who to reply to.* No apologies, no alerts.
 - No emoji, no exclamation marks, no "best", "leading" or "No. 1".
 
+### Writing for international buyers
+
+Many readers buy in a second language, in the Middle East and beyond, often through a translation tool. Write so a translation cannot go wrong:
+- One idea per sentence, in plain international English. No idioms, metaphors or Indian-English office phrases ("kindly revert", "do the needful", "prepone", "lakh", "crore").
+- Units:
+  - SI, with the unit always written (`210 L drum`, `20 kL tanker`, `MT` for tonnes);
+  - temperatures in °C;
+  - viscosity in cSt with its temperature.
+- Dates written out: *21 October 2026*, never `21/10/26`. Times carry their zone: *9:00 AM–6:00 PM IST*.
+- Phone numbers in international form, `+91 94250 58496`, and a WhatsApp link wherever the number appears.
+- Prices and terms only from the sales desk, never on the site. Incoterms 2020 names appear only once `exports` is on (an IEC exists, VP-HUM-008), and the site makes no export claim before then.
+
 ## Colour
 
 Grounds are `cream` (every page), `parchment` (alternate bands and the drop's stage) and `paper` (cards, tables, fields). `deep` is the dark band: at most two per page (the documents card and the closing call to action), plus the footer strip and ad grounds.
@@ -110,6 +122,7 @@ Assets in the **Logos** group, cut from the owner's 1024px artwork: the white gr
 | `vasant-mark.png` | The V, arrow and drop alone: print and the social avatar. |
 | `vasant-icon-512.png` | The mark centred on a transparent 512px square. The site makes the favicon, app icons and touch icon from this file alone. |
 | `vasant-wordmark.png` | The wordmark alone, where the mark already appears nearby. |
+| `*.svg` | A vector master beside each PNG, for print, signage and large sizes; `vasant-favicon.svg` is the site's favicon. |
 
 - Clear space on every side equals the width of the drop in the lockup.
 - A replacement keeps the file's name and aspect ratio; when a lockup changes, its `-reversed` file is replaced with it.
@@ -142,6 +155,53 @@ Lucide line icons (the site's `lucide-react`), 2px stroke, 20px beside 15 to 17p
 ## Imagery
 
 No stock photography. Real facility photographs (tanks, drums, the lab, a tanker at the gate; task VP-HUM-006) go in content cards at `radius-lg`, ungraded. Until they exist, the drop and the type carry the page; an illustration never pretends to be the facility.
+
+### Photography brief (VP-HUM-006)
+
+Buyers who cannot visit want proof that the place and the stock are real. One morning at Mangaliya covers it.
+
+**Shot list**, each landscape (3:2) and, where it works, portrait (4:5):
+1. The gate and signboard, with a tanker in the bay.
+2. The tank farm from ground level: the tanks with their numbers, pipework and bund.
+3. A row of filled 210 L drums with their labels facing out.
+4. A tanker loading at the gantry, with the hose and earthing visible.
+5. Sampling: a gloved hand drawing a sample into a clear bottle.
+6. The laboratory bench: a viscometer or flash-point tester in use, and its readout.
+7. The blending area or a mixing vessel.
+8. Close-ups of each liquid in a clear sample bottle against white, one per product, in daylight. These pair with each product's drop.
+9. The office or sales desk, if it can be shown.
+
+**How to shoot:**
+- Daylight. Phone cameras are fine (the main lens, not zoom), held level.
+- Everyone in safety gear: helmet, gloves, safety shoes. Nothing unsafe in frame: no open flame, no smoking, no spills.
+- No other company's brand or logo legible, no vehicle number plates, no papers with names or figures.
+- People only with their written consent (`content/people.json` records it).
+- Keep the originals at full size, unedited. The site crops and compresses them itself.
+
+**Hand-off:** share the originals in a Drive folder with the owner. An agent adds the chosen ones in a pull request, with alt text describing what each shows.
+
+## Right-to-left (Arabic)
+
+Arabic pages are built as drafts and published only after a native reviewer approves the translation. The layout mirrors; the brand does not.
+
+**Mirror:**
+- the page direction (`<html lang="ar" dir="rtl">`);
+- spacing and alignment, through logical CSS properties (`margin-inline-start`, `text-align: start`), never left and right;
+- direction icons: back, forward, chevrons and arrows in links.
+
+**Never mirror:**
+- the logo (the wordmark stays in Latin letters and is never transliterated);
+- the drop;
+- product codes, spec values, units and numbers (Western digits, as on the datasheets);
+- phone and WhatsApp icons;
+- the home film's motion.
+
+**Type:**
+- Arabic text in a matching geometric sans: Noto Kufi Arabic or IBM Plex Sans Arabic, self-hosted, OFL.
+- Montserrat for any Latin within it.
+- Arabic line height about 15% looser, never letter-spaced, never in italics or capitals styling.
+
+**Mixed text:** wrap a code or value inside an Arabic sentence in `<bdi>`, so `SN-500` and `90-110 cSt` keep their order.
 
 ## Accessibility floor
 

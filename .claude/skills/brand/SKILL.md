@@ -12,6 +12,9 @@ description: Change Vasant Petrochem's brand assets or design tokens (logos, col
 1. Read the "Logo" section of `design-system/README.md` for which file is used where, and its minimum size and clear space.
 2. Replace the file in `design-system/assets/Logos/` **under the same name**, as a PNG with a transparent background, at least as large as the one it replaces and **with the same aspect ratio**: the site sets the compact lockup at 634 × 182 (`site/src/components/GlobalNav.astro`) and draws share images at that shape (`site/src/pages/og/[...slug].png.ts`). A logo of a different shape needs those sizes changed in the same pull request.
 3. If the owner supplied original artwork (a vector AI, EPS, SVG or PDF file, or a larger master image), keep it in `design-system/assets/Logos/source/`. A PNG-only delivery needs nothing there.
+   - Each PNG has an SVG master beside it, which `tools/brand/vectorize.py` drew from the current artwork.
+   - Vector artwork from the owner replaces those SVGs.
+   - A new PNG without vectors makes its SVG stale, so delete that SVG in the same pull request. The script's corner points belong to today's artwork only.
 4. Never recolour, stretch or add effects. The only colour variants are the `-reversed` files, for dark grounds: when a lockup changes, ask the owner for its matching `-reversed` file, never make one by recolouring. (The site uses no reversed file today.)
 5. Check and look:
    - `npm --prefix site run check`;

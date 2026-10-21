@@ -1,0 +1,193 @@
+---
+/**
+ * The brand kit, drawn at true size on preview builds only (never in
+ * production): every ad (design-system/advertising.md), the social images
+ * and the print pieces. /kit lists them; `npm run kit` saves them all.
+ */
+import { getCollection } from "astro:content";
+import Kit from "../../layouts/Kit.astro";
+import { claim } from "../../lib/claims.ts";
+import { addressLine, company } from "../../lib/company.ts";
+import { dropSvg } from "../../lib/drop.ts";
+import { creatives, industryNames, kitItems, type AdFormat, type Ground } from "../../lib/kit.ts";
+
+export async function getStaticPaths() {
+  const items = await kitItems();
+  if (!items.length) return [];
+  return [{ params: { item: undefined } }, ...items.map((i) => ({ params: { item: i.path.slice("/kit/".length) } }))];
+}
+
+// The one claim an ad carries: npm run kit -- --claim <id>, from the allowed list only.
+const AD_CLAIMS = ["pricing-24h", "test-reports-on-request", "drums-or-bulk", "one-contact", "from-mangaliya"];
+const claimId = process.env.KIT_CLAIM || "pricing-24h";
+if (!AD_CLAIMS.includes(claimId)) throw new Error(`KIT_CLAIM "${claimId}" is not one of the ad claims: ${AD_CLAIMS.join(", ")}`);
+
+const [kind, ...rest] = (Astro.params.item ?? "").split("/");
+const items = kind ? [] : await kitItems();
+const all = await creatives();
+const people = (await getCollection("people")).map((p) => p.data);
+const legal = [company.legalName ?? company.tradeName, company.gstin && `GSTIN ${company.gstin}`, company.cin && `CIN ${company.cin}`, company.udyam && `Udyam ${company.udyam}`].filter(Boolean).join(" · ");
+const web = "www.vasantpetrochem.com";
+
+let ad: { format: AdFormat; ground: Ground; range: boolean; eyebrow: string; title: string; claim: string; cta: string; drop: string | undefined; lineup: string[] } | null = null;
+if (kind === "ad") {
+  const [format, ground, id] = rest as [AdFormat, Ground, string];
+  const c = all.find((x) => x.id === id)!;
+  const names = await industryNames();
+  ad = {
+    format,
+    ground,
+    range: !c.product,
+    eyebrow: c.product ? [c.product.data.code, ...c.product.data.industries.map((i) => names.get(i) ?? i)].join(" · ") : "Manufacturing & trading · Indore",
+    title: c.product ? c.product.data.name : "Industrial oils, fuels & lubricants.",
+    claim: await claim(claimId),
+    cta: c.product ? "Get a quote" : "See the range",
+    drop: c.product ? dropSvg(c.product.data.tint, { id: "ad", title: c.product.data.name }) : undefined,
+    lineup: c.product ? [] : all.filter((x) => x.product).map((x, i) => dropSvg(x.product!.data.tint, { id: `ln${i}` })),
+  };
+}
+const lineup = all.filter((x) => x.product).map((x, i) => dropSvg(x.product!.data.tint, { id: `sl${i}` }));
+const cards = people.length ? people.map((p) => ({ name: p.name, role: p.role })) : [{ name: company.tradeName, role: "Industrial oils, fuels & lubricants" }];
+---
+<Kit title={kind ? (Astro.params.item as string) : "Index"}>
+  {!kind && (
+    <main class="index">
+      <h1>Brand kit</h1>
+      <p>Every file <code>npm --prefix site run kit</code> saves, at its true size. Preview builds only.</p>
+      <ul>{items.map((i) => <li><a href={i.path}>{i.out}</a> <span>{i.kind === "pdf" ? `${i.w} × ${i.h} mm` : `${i.w} × ${i.h}`}</span></li>)}</ul>
+    </main>
+  )}
+
+  {ad && (
+    <div class:list={["ad", `ad-${ad.format}`, `ad-${ad.ground}`, { "ad-range": ad.range }]}>
+      <img class="ad-logo" src={ad.ground === "deep" ? "/brand/vasant-lockup-compact-reversed.svg" : "/brand/vasant-lockup-compact.svg"} alt={company.tradeName} />
+      <div class="ad-copy">
+        <p class="ad-eyebrow">{ad.eyebrow}</p>
+        <h1 class="ad-title">{ad.title}</h1>
+        <p class="ad-claim">{ad.claim}</p>
+      </div>
+      {ad.drop ? <div class="ad-art" set:html={ad.drop} /> : <div class="ad-lineup" aria-hidden="true">{ad.lineup.map((d) => <span set:html={d} />)}</div>}
+      <div class="ad-foot"><span class="ad-cta">{ad.cta}</span><span class="ad-where">vasantpetrochem.com</span></div>
+    </div>
+  )}
+
+  {kind === "social" && rest[0] === "linkedin-banner" && (
+    <div class="banner">
+      <p class="banner-line">Industrial oils, fuels & lubricants.</p>
+      <div class="banner-lineup" aria-hidden="true">{lineup.map((d) => <span set:html={d} />)}</div>
+    </div>
+  )}
+  {kind === "social" && rest[0] !== "linkedin-banner" && (
+    <div class:list={["avatar", `avatar-${rest[0]}`]}><img src="/brand/vasant-mark.svg" alt={company.tradeName} /></div>
+  )}
+
+  {kind === "print" && rest[0] !== "card" && (
+    <div class:list={["sheet", { "sheet-band": rest[0] === "letterhead-header" }]}>
+      <header class="lh-head">
+        <img class="lh-logo" src="/brand/vasant-logo.svg" alt={company.tradeName} />
+        <p class="lh-contact">{company.phone.display}<br />{company.mailboxes.sales ?? company.email}<br />{web}<br />{addressLine}</p>
+      </header>
+      <div class="lh-rule"></div>
+      {rest[0] === "letterhead" && (
+        <footer class="lh-foot">
+          <span>{legal}</span>
+          <span>{company.registeredOffice ? `Registered office: ${company.registeredOffice}` : `Works: ${addressLine}`}</span>
+        </footer>
+      )}
+    </div>
+  )}
+
+  {kind === "print" && rest[0] === "card" && cards.map((c) => (
+    <>
+      <section class="card card-front"><img src="/brand/vasant-logo.svg" alt={company.tradeName} /></section>
+      <section class="card card-back">
+        <img class="card-mark" src="/brand/vasant-mark.svg" alt="" />
+        <p class="card-name">{c.name}</p>
+        <p class="card-role">{c.role}</p>
+        <p class="card-lines">{company.phone.display}<br />{company.mailboxes.sales ?? company.email}<br />{web}<br />{addressLine}</p>
+      </section>
+    </>
+  ))}
+</Kit>
+
+<style is:global>
+  .index { max-width: 60rem; margin: 2rem auto; padding: 0 1rem; font-family: var(--font-sans); }
+  .index ul { padding-left: 1.2rem; line-height: 1.8; }
+  .index span { color: var(--secondary); margin-left: .5rem; }
+
+  /* Ads: design-system/components/bundle.css (.vp-ad), in the brand font throughout so they render alike on any machine. */
+  .ad { position: relative; overflow: hidden; }
+  .ad-deep { background: var(--deep); color: var(--on-deep); }
+  .ad-cream { background: var(--cream); color: var(--ink); }
+  .ad-square { width: 1080px; height: 1080px; }
+  .ad-portrait { width: 1080px; height: 1350px; }
+  .ad-story { width: 1080px; height: 1920px; }
+  .ad-landscape { width: 1200px; height: 628px; }
+  .ad-display-square { width: 1200px; height: 1200px; }
+  .ad-logo { position: absolute; left: 80px; top: 72px; height: 76px; width: auto; }
+  .ad-copy { position: absolute; left: 80px; right: 80px; top: 230px; }
+  .ad-eyebrow { margin-bottom: 28px; font: 600 28px/38px var(--font-display); letter-spacing: .06em; text-transform: uppercase; color: var(--gold); }
+  .ad-cream .ad-eyebrow { color: var(--bronze); }
+  .ad-title { margin-bottom: 32px; max-width: 620px; font: 700 92px/96px var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+  .ad-claim { max-width: 560px; font: 500 40px/52px var(--font-display); color: var(--on-deep-secondary); }
+  .ad-cream .ad-claim { color: var(--body); }
+  .ad-art { position: absolute; right: 90px; bottom: 170px; width: 260px; }
+  .ad-art svg, .ad-lineup svg, .banner-lineup svg { width: 100%; height: auto; }
+  .ad-lineup { position: absolute; left: 80px; right: 80px; bottom: 210px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .ad-lineup > span { width: 64px; }
+  .ad-foot { position: absolute; left: 80px; right: 80px; bottom: 72px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+  .ad-cta { display: inline-flex; align-items: center; min-height: 96px; padding: 0 52px; border-radius: var(--radius-full); background: var(--on-deep); color: var(--deep); font: 600 38px/44px var(--font-display); }
+  .ad-cream .ad-cta { background: var(--brand); color: var(--on-brand); }
+  .ad-where { font: 500 30px/36px var(--font-display); color: var(--on-deep-secondary); }
+  .ad-cream .ad-where { color: var(--secondary); }
+  .ad-portrait .ad-copy, .ad-display-square .ad-copy { top: 250px; }
+  .ad-display-square .ad-art { right: 110px; bottom: 190px; }
+  /* Story: text clear of the top 250px and bottom 340px the platforms cover. */
+  .ad-story .ad-logo { top: 300px; }
+  .ad-story .ad-copy { top: 470px; }
+  .ad-story .ad-title { max-width: 920px; font-size: 104px; line-height: 108px; }
+  .ad-story .ad-claim { max-width: 920px; }
+  .ad-story .ad-art { right: 410px; bottom: 560px; }
+  .ad-story .ad-foot { bottom: 400px; }
+  .ad-story .ad-lineup { bottom: 640px; }
+  .ad-landscape .ad-logo { left: 56px; top: 48px; height: 52px; }
+  .ad-landscape .ad-copy { left: 56px; top: 150px; right: 520px; }
+  .ad-landscape .ad-eyebrow { margin-bottom: 16px; font-size: 20px; line-height: 28px; }
+  .ad-landscape .ad-title { margin-bottom: 18px; font-size: 60px; line-height: 64px; }
+  .ad-landscape .ad-claim { font-size: 28px; line-height: 36px; }
+  .ad-landscape .ad-art { right: 120px; bottom: 60px; width: 190px; }
+  .ad-landscape .ad-foot { left: 56px; right: auto; bottom: 48px; }
+  .ad-landscape .ad-cta { min-height: 68px; padding: 0 36px; font-size: 26px; }
+  .ad-landscape .ad-where { display: none; }
+  .ad-landscape .ad-lineup { left: auto; right: 56px; width: 470px; bottom: 120px; }
+  .ad-landscape .ad-lineup > span { width: 44px; }
+  .ad-range .ad-title { max-width: 900px; }
+
+  /* Social */
+  .banner { width: 1584px; height: 396px; background: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px; }
+  .banner-line { font: 700 52px/60px var(--font-display); letter-spacing: -0.01em; color: var(--ink); }
+  .banner-lineup { display: flex; gap: 44px; align-items: flex-end; }
+  .banner-lineup > span { width: 52px; }
+  .avatar { display: grid; place-items: center; background: var(--cream); }
+  .avatar img { width: 62%; height: auto; }
+  .avatar-avatar { width: 400px; height: 400px; }
+  .avatar-whatsapp { width: 640px; height: 640px; }
+
+  /* Print: A4 letterhead and its header band; 85 x 55 mm cards with 3 mm bleed. */
+  @page { margin: 0; }
+  .sheet { position: relative; width: 210mm; height: 297mm; background: #fff; }
+  .sheet-band { height: 40mm; }
+  .lh-head { position: absolute; left: 18mm; right: 18mm; top: 12mm; display: flex; justify-content: space-between; align-items: flex-start; }
+  .lh-logo { width: 50mm; height: auto; }
+  .lh-contact { text-align: right; font: 500 8.5pt/12.5pt var(--font-display); color: var(--secondary); }
+  .lh-rule { position: absolute; left: 18mm; right: 18mm; top: 39mm; border-top: .6pt solid var(--gold); }
+  .lh-foot { position: absolute; left: 18mm; right: 18mm; bottom: 11mm; padding-top: 3mm; border-top: .6pt solid var(--gold); display: flex; justify-content: space-between; gap: 6mm; font: 500 7.5pt/11pt var(--font-display); color: var(--secondary); }
+  .card { position: relative; width: 91mm; height: 61mm; overflow: hidden; break-after: page; }
+  .card-front { display: grid; place-items: center; background: var(--cream); }
+  .card-front img { width: 50mm; height: auto; }
+  .card-back { background: #fff; padding: 8mm 7mm; }
+  .card-mark { position: absolute; right: 7mm; top: 7mm; width: 10mm; height: auto; }
+  .card-name { font: 700 11pt/14pt var(--font-display); color: var(--ink); }
+  .card-role { margin-top: 1mm; font: 600 6.5pt/9pt var(--font-display); letter-spacing: .06em; text-transform: uppercase; color: var(--bronze); }
+  .card-lines { position: absolute; left: 7mm; right: 7mm; bottom: 7mm; padding-top: 2.5mm; border-top: .5pt solid var(--gold); font: 500 7pt/10pt var(--font-display); color: var(--body); }
+</style>
