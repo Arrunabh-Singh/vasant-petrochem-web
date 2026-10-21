@@ -41,6 +41,66 @@ jobs:
       # agents; a schema change must ship with its regenerated JSON Schema.
       - name: JSON Schemas are current
         run: npm run content:schema && git diff --exit-code -- ../content/_schemas
+      # The production dependency tree as a CycloneDX SBOM, kept with the run.
+      - name: SBOM
+        run: npm sbom --sbom-format cyclonedx --omit dev > sbom.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: site/sbom.cdx.json
+          retention-days: 90
+
+  quality:
+    name: e2e, Lighthouse and ZAP
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    env:
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      # One local Worker for all three. Off the live host every form answers as
+      # a dry run, so nothing here is stored or emailed (src/server/http.ts).
+      - name: Start the site
+        run: |
+          npm run preview > preview.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf -o /dev/null http://localhost:4321/ && exit 0; sleep 1; done
+          cat preview.log; exit 1
+      # Flows, zero axe violations (WCAG 2.2 AA), no console errors or CSP
+      # reports, no sideways scroll at 390 (tests/e2e).
+      - name: End-to-end and accessibility
+        run: npm run e2e
+      # Mobile budgets on four pages (lighthouserc.json).
+      - name: Lighthouse
+        run: npx --yes @lhci/cli@0.15.1 autorun
+      # Passive OWASP ZAP baseline; any High finding fails the job.
+      - name: ZAP baseline
+        run: |
+          mkdir -p zap && chmod 777 zap
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://localhost:4321 -J zap.json -r zap.html -I
+          high=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' zap/zap.json)
+          echo "High findings: $high"
+          test "$high" -eq 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-reports
+          path: |
+            site/test-results
+            site/.lighthouseci
+            site/zap
+          retention-days: 14
+          if-no-files-found: ignore
 
   sql:
     name: database tests

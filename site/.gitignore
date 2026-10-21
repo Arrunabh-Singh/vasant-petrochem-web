@@ -11,8 +11,11 @@ public/fonts/
 public/people/
 public/_headers
 public/site.webmanifest
-# Test output
+# Test and scan output
 test-results/
 playwright-report/
+.lighthouseci/
+zap/
+sbom.cdx.json
 # Review screenshots (npm run shots)
 shots/
