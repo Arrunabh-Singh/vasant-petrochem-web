@@ -105,7 +105,7 @@
    its stage sticks for the length of the scene, and its parts play across
    the scene's `contain` range (the stretch where the stage is pinned).
    ====================================================================== */
-@media (prefers-reduced-motion: no-preference) {
+@media screen and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     /* 1 · Opening and fill. The copy steps back while the families resolve
        one at a time in its place; the drop fills; then the copy returns. */

@@ -1,8 +1,8 @@
 /**
  * Marketplace filters and the compare tray. Facets combine with AND across
  * groups and OR within a group; the state lives in the URL, so a filtered view
- * can be shared. Without JavaScript the filters stay hidden and every product
- * is listed.
+ * can be shared. Without JavaScript the filters stay hidden (.vp-js) and every
+ * product is listed. On phones the facets sit in a sheet (a popover).
  */
 type Facet = "family" | "industry" | "pack" | "docs";
 const FACETS: Facet[] = ["family", "industry", "pack", "docs"];
@@ -13,12 +13,13 @@ const root = document.querySelector<HTMLElement>("[data-market]");
 const form = root?.querySelector<HTMLFormElement>("[data-filters]");
 
 if (root && form) {
-  form.hidden = false;
   const query = form.querySelector<HTMLInputElement>('input[name="q"]')!;
   const chips = [...form.querySelectorAll<HTMLButtonElement>("[data-facet]")];
   const items = [...root.querySelectorAll<HTMLElement>("[data-results] > li")];
   const count = root.querySelector<HTMLElement>("[data-count]")!;
   const empty = root.querySelector<HTMLElement>("[data-empty]")!;
+  const done = form.querySelector<HTMLElement>("[data-done]")!;
+  const active = form.querySelector<HTMLElement>("[data-active]")!;
 
   const selected = (facet: Facet) => chips.filter((c) => c.dataset.facet === facet && c.getAttribute("aria-pressed") === "true").map((c) => c.dataset.value!);
 
@@ -46,6 +47,10 @@ if (root && form) {
       if (ok) shown++;
     }
     count.textContent = shown === items.length ? `${shown} products` : `${shown} of ${items.length} products`;
+    done.textContent = `Show ${shown} ${shown === 1 ? "product" : "products"}`;
+    const on = chips.filter((c) => c.getAttribute("aria-pressed") === "true").length;
+    active.textContent = String(on);
+    active.hidden = on === 0;
     empty.hidden = shown > 0;
     if (writeUrl) {
       const params = new URLSearchParams();

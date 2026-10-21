@@ -1,4 +1,5 @@
 import { getCollection, getEntry, type CollectionEntry } from "astro:content";
+import { typeset, withUnit } from "./typeset.ts";
 
 export type ProductEntry = CollectionEntry<"products">;
 export type Spec = ProductEntry["data"]["specs"][number];
@@ -32,14 +33,15 @@ export async function familyName(slug: string): Promise<string> {
   return f.data.name;
 }
 
-/** "90-110 cSt": the catalog's value and unit, exactly as written. */
-export const specText = (s: Spec) => (s.unit ? `${s.value} ${s.unit}` : s.value);
+/** "90–110 cSt": the catalog's value, typeset, with its unit. */
+export const specText = (s: Spec) => withUnit(typeset(s.value), s.unit);
 
-/** "210 L drum" */
+/** "210 L drum", plain text: enquiries carry it too. */
 export const packText = (p: Pack) => (p.size ? `${p.size} ${p.unit ?? ""} ${p.type}`.replace("  ", " ") : p.type);
 
-/** "210 L drum · 20 kL bulk tanker" */
-export const packagingLine = (product: ProductEntry) => product.data.packaging.map(packText).join(" · ");
+/** "210 L drum · 20 kL bulk tanker", each size kept on one line with its unit. */
+export const packagingLine = (product: ProductEntry) =>
+  product.data.packaging.map((p) => (p.size ? `${withUnit(String(p.size), p.unit)} ${p.type}` : p.type)).join(" · ");
 
 /** The three values shown at a glance and on cards: the catalog's first three. */
 export const keySpecs = (product: ProductEntry) => product.data.specs.slice(0, 3);

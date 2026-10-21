@@ -98,7 +98,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
                   <Drop tint={p.data.tint} size="xl" vt={`drop-${p.id}`} />
                   <span class="vp-range-name">{p.data.name}</span>
                   <span class="vp-range-code">{p.data.code}</span>
-                  {spec && <span class="vp-range-spec">{spec.property} {specText(spec)}</span>}
+                  {spec && <span class="vp-range-spec">{spec.property} <span class="vp-nowrap">{specText(spec)}</span></span>}
                 </a>
               </li>
             );

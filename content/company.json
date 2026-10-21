@@ -32,9 +32,9 @@
     "security": null
   },
   "hours": {
-    "label": "Mon — Sat: 9:00 AM — 6:00 PM IST",
-    "days": "Mon — Sat",
-    "time": "9:00 AM — 6:00 PM",
+    "label": "Mon–Sat, 9:00 AM–6:00 PM IST",
+    "days": "Mon–Sat",
+    "time": "9:00 AM–6:00 PM",
     "opens": "09:00",
     "closes": "18:00",
     "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]

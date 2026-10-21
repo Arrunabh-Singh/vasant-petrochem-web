@@ -39,9 +39,6 @@ if (form) {
   if (offer && /^[0-9a-f-]{36}$/.test(offer)) offerRef.value = offer;
   if (params.size) history.replaceState(null, "", location.pathname);
 
-  form.querySelector<HTMLElement>("[data-add-wrap]")!.hidden = false;
-  share.hidden = false;
-
   const lines = () => readBasket().filter(known);
 
   function convertNote(line: Line, item: Item): string {

@@ -41,48 +41,62 @@ const structured = [
       </div>
 
       <div class="vp-market" data-market>
-        <form class="vp-filters" role="search" aria-label="Filter products" data-filters hidden>
-          <div class="vp-search-field">
-            <label class="vp-sr" for="market-q">Search the marketplace</label>
-            <Icon name="search" />
-            <input id="market-q" class="vp-input" type="search" name="q" placeholder="Grade, code or use" autocomplete="off" />
+        <form class="vp-filters vp-js" role="search" aria-label="Filter products" data-filters>
+          <div class="vp-filter-bar">
+            <div class="vp-search-field">
+              <label class="vp-sr" for="market-q">Search the marketplace</label>
+              <Icon name="search" />
+              <input id="market-q" class="vp-input" type="search" name="q" placeholder="Grade or code" autocomplete="off" />
+            </div>
+            <button class="vp-btn vp-btn-secondary vp-filter-open" type="button" popovertarget="market-facets"><Icon name="filter" />Filters<span class="vp-count" data-active hidden></span></button>
           </div>
-          <details open>
-            <summary>Product family <Icon name="chevron" size={18} /></summary>
-            <ul class="vp-chips">
-              {families.map((f) => (
-                <li><button class="vp-chip" type="button" data-facet="family" data-value={f.id} aria-pressed="false">{f.data.name} <span class="vp-chip-count">{count((p) => p.data.family === f.id)}</span></button></li>
-              ))}
-            </ul>
-          </details>
-          <details open>
-            <summary>Industry <Icon name="chevron" size={18} /></summary>
-            <ul class="vp-chips">
-              {industries.map((i) => (
-                <li><button class="vp-chip" type="button" data-facet="industry" data-value={i.id} aria-pressed="false">{i.data.name} <span class="vp-chip-count">{count((p) => p.data.industries.includes(i.id))}</span></button></li>
-              ))}
-            </ul>
-          </details>
-          <details>
-            <summary>Packaging <Icon name="chevron" size={18} /></summary>
-            <ul class="vp-chips">
-              {packs.map((k) => (
-                <li><button class="vp-chip" type="button" data-facet="pack" data-value={k} aria-pressed="false">{k} <span class="vp-chip-count">{count((p) => p.data.packaging.some((x) => x.type === k))}</span></button></li>
-              ))}
-            </ul>
-          </details>
-          {
-            (hasSds || hasTds) && (
-              <details>
-                <summary>Documents <Icon name="chevron" size={18} /></summary>
+          <div class="vp-facets" id="market-facets" popover>
+            <div class="vp-facets-head">
+              <h2 class="vp-h-title">Filters</h2>
+              <button class="vp-nav-icon" type="button" popovertarget="market-facets" popovertargetaction="hide" aria-label="Close filters"><Icon name="close" /></button>
+            </div>
+            <div class="vp-facets-body">
+              <details open>
+                <summary>Product family <Icon name="chevron" size={18} /></summary>
                 <ul class="vp-chips">
-                  {hasSds && <li><button class="vp-chip" type="button" data-facet="docs" data-value="sds" aria-pressed="false">SDS available</button></li>}
-                  {hasTds && <li><button class="vp-chip" type="button" data-facet="docs" data-value="tds" aria-pressed="false">TDS available</button></li>}
+                  {families.map((f) => (
+                    <li><button class="vp-chip" type="button" data-facet="family" data-value={f.id} aria-pressed="false">{f.data.name} <span class="vp-chip-count">{count((p) => p.data.family === f.id)}</span></button></li>
+                  ))}
                 </ul>
               </details>
-            )
-          }
-          <button class="vp-link" type="reset" data-clear>Clear all filters</button>
+              <details open>
+                <summary>Industry <Icon name="chevron" size={18} /></summary>
+                <ul class="vp-chips">
+                  {industries.map((i) => (
+                    <li><button class="vp-chip" type="button" data-facet="industry" data-value={i.id} aria-pressed="false">{i.data.name} <span class="vp-chip-count">{count((p) => p.data.industries.includes(i.id))}</span></button></li>
+                  ))}
+                </ul>
+              </details>
+              <details>
+                <summary>Packaging <Icon name="chevron" size={18} /></summary>
+                <ul class="vp-chips">
+                  {packs.map((k) => (
+                    <li><button class="vp-chip" type="button" data-facet="pack" data-value={k} aria-pressed="false">{k} <span class="vp-chip-count">{count((p) => p.data.packaging.some((x) => x.type === k))}</span></button></li>
+                  ))}
+                </ul>
+              </details>
+              {
+                (hasSds || hasTds) && (
+                  <details>
+                    <summary>Documents <Icon name="chevron" size={18} /></summary>
+                    <ul class="vp-chips">
+                      {hasSds && <li><button class="vp-chip" type="button" data-facet="docs" data-value="sds" aria-pressed="false">SDS available</button></li>}
+                      {hasTds && <li><button class="vp-chip" type="button" data-facet="docs" data-value="tds" aria-pressed="false">TDS available</button></li>}
+                    </ul>
+                  </details>
+                )
+              }
+              <button class="vp-link" type="reset" data-clear>Clear all filters</button>
+            </div>
+            <div class="vp-facets-done">
+              <button class="vp-btn vp-btn-primary vp-btn-touch" type="button" popovertarget="market-facets" popovertargetaction="hide" data-done>Show {products.length} products</button>
+            </div>
+          </div>
         </form>
 
         <div class="vp-stack">

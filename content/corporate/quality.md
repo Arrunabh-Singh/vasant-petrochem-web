@@ -4,11 +4,11 @@ description: How Vasant Petrochem manages product quality, safety and the enviro
 status: draft
 updated: null
 ---
-> Draft. Vendor onboarding forms ask for these policies by name (MNC VP-CORP-003). Every section needs the owner's own approved text before this page is published; nothing here may be filled with assumed practice.
+> Draft. Vendor onboarding forms ask for these policies by name (MNC VP-CORP-003). Every section needs the owner’s own approved text before this page is published; nothing here may be filled with assumed practice.
 
 ## Quality policy
 
-TODO(VP-HUM-014): the company's quality policy, as approved and signed by the owner.
+TODO(VP-HUM-014): the company’s quality policy, as approved and signed by the owner.
 
 ## Testing and documents
 
@@ -16,11 +16,11 @@ Test reports are available on request. TODO(VP-HUM-014): what is tested, where, 
 
 ## Health and safety
 
-TODO(VP-HUM-014): the company's health and safety policy.
+TODO(VP-HUM-014): the company’s health and safety policy.
 
 ## Environment
 
-TODO(VP-HUM-014): the company's environmental policy.
+TODO(VP-HUM-014): the company’s environmental policy.
 
 ## Code of conduct
 

@@ -50,10 +50,10 @@ const types = [
         <div class="vp-stack" aria-labelledby="lines-title">
           <h2 class="vp-legend" id="lines-title">Products</h2>
           <ul class="vp-lines" data-lines aria-live="polite"></ul>
-          <div class="vp-empty" data-lines-empty hidden>
+          <div class="vp-empty vp-js" data-lines-empty>
             <p class="vp-small">Your quote list is empty. Add products here, or from the marketplace.</p>
           </div>
-          <div class="vp-field" data-add-wrap hidden>
+          <div class="vp-field vp-js" data-add-wrap>
             <label for="add-product">Add a product</label>
             <div class="vp-select">
               <select id="add-product" class="vp-input" data-add-product>
@@ -106,7 +106,7 @@ const types = [
         <p class="vp-caption">We use these details only to reply to your enquiry.</p>
         <div class="vp-actions">
           <button class="vp-btn vp-btn-primary vp-btn-touch" type="submit">{t("cta.send")}</button>
-          <button class="vp-btn vp-btn-secondary vp-btn-touch" type="button" data-share hidden><Icon name="share" />Copy a link to this list</button>
+          <button class="vp-btn vp-btn-secondary vp-btn-touch vp-js" type="button" data-share><Icon name="share" />Copy a link to this list</button>
         </div>
         <p class="vp-caption" data-share-status aria-live="polite"></p>
       </form>

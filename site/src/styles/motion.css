@@ -1,8 +1,8 @@
 /* Motion, site-wide (design-system/README.md, "Motion").
    Everything above the @supports block is the finished, still page. Motion is
-   an enhancement for browsers with scroll-driven animations, for readers who
-   have not asked for reduced motion. Scroll is the clock; only transform,
-   opacity, filter and colour move. */
+   an enhancement for screens, in browsers with scroll-driven animations, for
+   readers who have not asked for reduced motion; print always gets the still
+   page. Scroll is the clock; only transform, opacity, filter and colour move. */
 
 /* The drop with live liquid (components/LiquidDrop.astro): the canvas takes
    over the SVG's liquid once islands/liquid.ts marks the drop live. */
@@ -16,7 +16,7 @@
 /* A statement's words and a heading's letters, each in its own span. */
 .vp-lit .w, .vp-letters .l { display: inline-block; }
 
-@media (prefers-reduced-motion: no-preference) {
+@media screen and (prefers-reduced-motion: no-preference) {
   /* A page title resolves from blur as the page opens. It starts at opacity
      .01, never 0, so it paints at once and stays the page's LCP. */
   main h1 { animation: vp-title-in var(--duration-title) var(--ease-out) both; }

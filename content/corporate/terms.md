@@ -22,7 +22,7 @@ You agree not to submit false, misleading or automated enquiries, or use the for
 
 ## Intellectual property
 
-The site's text, layout, logo and other material belong to Vasant Petrochem or its licensors. You may view and print pages for your own business use. Other brand and product names belong to their owners.
+The site’s text, layout, logo and other material belong to Vasant Petrochem or its licensors. You may view and print pages for your own business use. Other brand and product names belong to their owners.
 
 ## Third-party services and links
 

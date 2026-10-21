@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
 import { page } from "../lib/page.ts";
 import { searchGroups } from "../lib/search.ts";
+import { t } from "../lib/ui.ts";
 
 const copy = await page("search");
 const groups = await searchGroups();
@@ -14,7 +15,7 @@ const groups = await searchGroups();
       <form class="vp-search-field" role="search" action="/search" data-filter-form>
         <Icon name="search" />
         <label class="vp-sr" for="search-page-input">{copy.lead}</label>
-        <input id="search-page-input" class="vp-input" type="search" name="q" placeholder={copy.lead} autocomplete="off" data-filter-input />
+        <input id="search-page-input" class="vp-input" type="search" name="q" placeholder={t("search.placeholder")} autocomplete="off" data-filter-input />
       </form>
     </div>
   </section>

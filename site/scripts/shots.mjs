@@ -1,7 +1,10 @@
 // Screenshots for review, at a phone (390) and a laptop (1440) width.
-//   npm run shots                     every main page, full length
+//   npm run shots                     every main page, full length, as the still page
 //   npm run shots -- /quote /about    just these pages
 //   npm run shots -- --film           the home film as contact sheets, scrolled every 4%
+// Full-length captures use reduced motion: scroll-driven reveals show each
+// element only as it scrolls into view, so a full-page capture with motion on
+// would show everything below the first screen mid-reveal.
 // Against a running site (npm run preview), or SHOTS_URL. Output: site/shots/ (git-ignored).
 // Each page also reports horizontal overflow, console errors and CSP violations.
 import { mkdirSync } from "node:fs";
@@ -12,7 +15,7 @@ const base = process.env.SHOTS_URL ?? "http://localhost:4321";
 const out = new URL("../shots/", import.meta.url).pathname;
 const args = process.argv.slice(2);
 const film = args.includes("--film");
-const reduce = args.includes("--reduce");
+const reduce = args.includes("--reduce") || !film;
 const pages = args.filter((a) => a.startsWith("/"));
 const DEFAULT = ["/", "/marketplace", "/products/base-oil-sn500", "/quote", "/source", "/contact", "/about", "/supply", "/industries", "/documents", "/search", "/no-such-page"];
 const SIZES = [

@@ -4,7 +4,7 @@ description: How Vasant Petrochem checks its counterparties, screens against san
 status: draft
 updated: null
 ---
-> Draft. International buyers and banks look for these statements before they trade. Each section states a practice, so each needs the owner's approved wording and must match what the company actually does before publication (MNC P1).
+> Draft. International buyers and banks look for these statements before they trade. Each section states a practice, so each needs the owner’s approved wording and must match what the company actually does before publication (MNC P1).
 
 ## Know your counterparty
 
@@ -12,7 +12,7 @@ TODO(VP-HUM-014): how new buyers, suppliers and transporters are checked before 
 
 ## Sanctions
 
-TODO(VP-HUM-014): which sanctions lists counterparties and vessels are screened against (for example the UN, OFAC, EU and UK lists), at what points, and what happens on a match. The company's back office records each screening.
+TODO(VP-HUM-014): which sanctions lists counterparties and vessels are screened against (for example the UN, OFAC, EU and UK lists), at what points, and what happens on a match. The company’s back office records each screening.
 
 ## Anti-bribery and corruption
 

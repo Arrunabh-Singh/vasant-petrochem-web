@@ -16,59 +16,72 @@ interface Props {
 const { product } = Astro.props;
 const p = product.data;
 const LANG: Record<string, string> = { en: "English", hi: "Hindi", ar: "Arabic", fr: "French" };
+const files = Boolean(p.documents.tds) || p.documents.sds.length > 0;
 ---
-<section class="vp-docs" id="documents" aria-labelledby="docs-title">
+<section class:list={["vp-docs", !files && "vp-docs-single"]} id="documents" aria-labelledby="docs-title">
   <div class="vp-stack">
     <p class="vp-eyebrow vp-eyebrow-deep">Documents · {p.code}</p>
     <h2 id="docs-title">{p.name} documents</h2>
     <p>
       {
-        p.documents.tds || p.documents.sds.length > 0
+        files
           ? "Safety data sheets download straight away. The technical data sheet opens after you leave your email."
           : "Ask for the technical and safety data sheets with your enquiry, and the sales desk sends the current versions."
       }
     </p>
-    <a class="vp-btn vp-btn-outline-on-deep" href={`/products/${product.id}/datasheet`}><Icon name="doc" />{t("cta.datasheet")}</a>
+    {files && <a class="vp-btn vp-btn-outline-on-deep" href={`/products/${product.id}/datasheet`}><Icon name="doc" />{t("cta.datasheet")}</a>}
   </div>
-  <div class="vp-stack">
-    {
-      p.documents.sds.length > 0 && (
-        <ul class="vp-docs-list">
-          {p.documents.sds.map((s) => (
-            <li>
-              <div>
-                <strong>Safety data sheet</strong>
-                <span>{LANG[s.lang] ?? s.lang.toUpperCase()} · revision {s.rev}</span>
-              </div>
-              <a class="vp-btn vp-btn-on-deep vp-btn-small" href={`/documents/${s.file}`} download>
-                <Icon name="download" size={18} />
-                Download
-              </a>
-            </li>
-          ))}
-        </ul>
-      )
-    }
-    {
-      p.documents.tds ? (
-        <form class="vp-docs-form" method="post" action="/api/tds" data-vp-form id={`tds-${product.id}`}>
-          <input type="hidden" name="slug" value={product.id} />
-          <label for={`tds-email-${product.id}`}>Work email</label>
-          <input id={`tds-email-${product.id}`} class="vp-field-deep" type="email" name="email" required autocomplete="email" placeholder="you@company.com" maxlength={254} />
-          <p class="vp-field-error" data-error-for="email" hidden />
-          <FormGuard id={`tds-${product.id}`} />
-          <div class="vp-alert" role="alert" data-form-error hidden><span data-form-error-text>{t("form.error")}</span></div>
-          <button class="vp-btn vp-btn-on-deep vp-btn-touch vp-btn-full" type="submit"><Icon name="doc" />{t("cta.tds")}</button>
-          <template data-form-success>
-            <div class="vp-stack" role="status" tabindex="-1">
-              <p>Your technical data sheet is ready, and a copy is on its way to your inbox.</p>
-              <a class="vp-btn vp-btn-on-deep vp-btn-touch" href="#" data-download hidden><Icon name="download" />Open the TDS</a>
-            </div>
-          </template>
-        </form>
-      ) : (
+  {
+    !files && (
+      <div class="vp-docs-actions">
         <a class="vp-btn vp-btn-on-deep vp-btn-touch" href={`/quote?add=${product.id}&type=document`}><Icon name="mail" />Ask for the TDS and SDS</a>
-      )
-    }
-  </div>
+        <a class="vp-btn vp-btn-outline-on-deep vp-btn-touch" href={`/products/${product.id}/datasheet`}><Icon name="doc" />{t("cta.datasheet")}</a>
+      </div>
+    )
+  }
+  {
+    files && (
+      <div class="vp-stack">
+        {
+          p.documents.sds.length > 0 && (
+            <ul class="vp-docs-list">
+              {p.documents.sds.map((s) => (
+                <li>
+                  <div>
+                    <strong>Safety data sheet</strong>
+                    <span>{LANG[s.lang] ?? s.lang.toUpperCase()} · revision {s.rev}</span>
+                  </div>
+                  <a class="vp-btn vp-btn-on-deep vp-btn-small" href={`/documents/${s.file}`} download>
+                    <Icon name="download" size={18} />
+                    Download
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+        {
+          p.documents.tds ? (
+            <form class="vp-docs-form" method="post" action="/api/tds" data-vp-form id={`tds-${product.id}`}>
+              <input type="hidden" name="slug" value={product.id} />
+              <label for={`tds-email-${product.id}`}>Work email</label>
+              <input id={`tds-email-${product.id}`} class="vp-field-deep" type="email" name="email" required autocomplete="email" placeholder="you@company.com" maxlength={254} />
+              <p class="vp-field-error" data-error-for="email" hidden />
+              <FormGuard id={`tds-${product.id}`} />
+              <div class="vp-alert" role="alert" data-form-error hidden><span data-form-error-text>{t("form.error")}</span></div>
+              <button class="vp-btn vp-btn-on-deep vp-btn-touch vp-btn-full" type="submit"><Icon name="doc" />{t("cta.tds")}</button>
+              <template data-form-success>
+                <div class="vp-stack" role="status" tabindex="-1">
+                  <p>Your technical data sheet is ready, and a copy is on its way to your inbox.</p>
+                  <a class="vp-btn vp-btn-on-deep vp-btn-touch" href="#" data-download hidden><Icon name="download" />Open the TDS</a>
+                </div>
+              </template>
+            </form>
+          ) : (
+            <a class="vp-btn vp-btn-on-deep vp-btn-touch" href={`/quote?add=${product.id}&type=document`}><Icon name="mail" />Ask for the TDS</a>
+          )
+        }
+      </div>
+    )
+  }
 </section>

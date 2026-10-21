@@ -7,6 +7,7 @@ import { page } from "../lib/page.ts";
 
 const copy = await page("documents");
 const products = await getProducts();
+const [DATASHEET, SDS, TDS] = ["Datasheet", "Safety data sheet", "Technical data sheet"];
 ---
 <Base title={copy.title} description={copy.description}>
   <section class="vp-hero" aria-labelledby="docs-title">
@@ -19,22 +20,22 @@ const products = await getProducts();
     <div class="vp-container">
       <div class="vp-specs">
         <div class="vp-specs-scroll">
-          <table>
+          <table class="vp-table-stack" role="table">
             <caption class="vp-sr">Documents by product</caption>
-            <thead>
-              <tr><th scope="col">Product</th><th scope="col">Datasheet</th><th scope="col">Safety data sheet</th><th scope="col">Technical data sheet</th></tr>
+            <thead role="rowgroup">
+              <tr role="row">{["Product", DATASHEET, SDS, TDS].map((h) => <th scope="col" role="columnheader">{h}</th>)}</tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup">
               {products.map((p) => (
-                <tr>
-                  <th scope="row"><span class="vp-line-name"><Drop tint={p.data.tint} size="xs" /><a href={`/products/${p.id}`}>{p.data.name}</a></span></th>
-                  <td class="vp-method"><a class="vp-link" href={`/products/${p.id}/datasheet`}><Icon name="doc" size={18} />Print</a></td>
-                  <td class="vp-method">
+                <tr role="row">
+                  <th scope="row" role="rowheader"><span class="vp-line-name"><Drop tint={p.data.tint} size="xs" /><a href={`/products/${p.id}`}>{p.data.name}</a></span></th>
+                  <td class="vp-method" role="cell" data-label={DATASHEET}><a class="vp-link" href={`/products/${p.id}/datasheet`}><Icon name="doc" size={18} />Print</a></td>
+                  <td class="vp-method" role="cell" data-label={SDS}>
                     {p.data.documents.sds.length > 0
                       ? p.data.documents.sds.map((s) => <a class="vp-link" href={`/documents/${s.file}`} download><Icon name="download" size={18} />{s.lang.toUpperCase()}</a>)
                       : <a class="vp-link" href={`/quote?add=${p.id}&type=document`}>On request</a>}
                   </td>
-                  <td class="vp-method">
+                  <td class="vp-method" role="cell" data-label={TDS}>
                     {p.data.documents.tds
                       ? <a class="vp-link" href={`/products/${p.id}#documents`}>Get the TDS</a>
                       : <a class="vp-link" href={`/quote?add=${p.id}&type=document`}>On request</a>}
