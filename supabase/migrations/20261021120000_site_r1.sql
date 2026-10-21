@@ -16,6 +16,9 @@
 -- from PUBLIC: Supabase grants EXECUTE to those roles directly
 -- (20260816120011_fix_function_default_privileges.sql).
 
+-- Fail fast rather than queue behind live traffic if a table is busy.
+set lock_timeout = '10s';
+
 -- 1. The site token --------------------------------------------------------
 
 select vault.create_secret(
@@ -61,34 +64,43 @@ comment on column public.quote_requests.lines is
 comment on column public.quote_requests.offer_ref is
   'The live offer (market.offer) the buyer asked about, if any.';
 
-alter table public.quote_requests drop constraint if exists quote_site_r1_check;
-alter table public.quote_requests
-  add constraint quote_site_r1_check check (
-    (request_type is null or request_type in ('quote', 'sample', 'contract', 'source', 'document', 'supplier', 'general'))
-    and (lines is null or (jsonb_typeof(lines) = 'array' and jsonb_array_length(lines) between 1 and 20 and octet_length(lines::text) <= 20000))
-    and (delivery_city    is null or char_length(delivery_city)    <= 120)
-    and (delivery_country is null or char_length(delivery_country) <= 60)
-    and (delivery_port    is null or char_length(delivery_port)    <= 80)
-    and (utm_source       is null or char_length(utm_source)       <= 120)
-    and (utm_medium       is null or char_length(utm_medium)       <= 120)
-    and (utm_campaign     is null or char_length(utm_campaign)     <= 120)
-    and (utm_content      is null or char_length(utm_content)      <= 120)
-    and (utm_term         is null or char_length(utm_term)         <= 120)
-    and (landing_page     is null or char_length(landing_page)     <= 200)
-    and (referrer         is null or char_length(referrer)         <= 120)
-  );
+-- Added only if missing, so the migration can run again without a DROP.
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'quote_site_r1_check' and conrelid = 'public.quote_requests'::regclass) then
+    alter table public.quote_requests add constraint quote_site_r1_check check (
+      (request_type is null or request_type in ('quote', 'sample', 'contract', 'source', 'document', 'supplier', 'general'))
+      and (lines is null or (jsonb_typeof(lines) = 'array' and jsonb_array_length(lines) between 1 and 20 and octet_length(lines::text) <= 20000))
+      and (delivery_city    is null or char_length(delivery_city)    <= 120)
+      and (delivery_country is null or char_length(delivery_country) <= 60)
+      and (delivery_port    is null or char_length(delivery_port)    <= 80)
+      and (utm_source       is null or char_length(utm_source)       <= 120)
+      and (utm_medium       is null or char_length(utm_medium)       <= 120)
+      and (utm_campaign     is null or char_length(utm_campaign)     <= 120)
+      and (utm_content      is null or char_length(utm_content)      <= 120)
+      and (utm_term         is null or char_length(utm_term)         <= 120)
+      and (landing_page     is null or char_length(landing_page)     <= 200)
+      and (referrer         is null or char_length(referrer)         <= 120)
+    );
+  end if;
+end;
+$$;
 
 alter table public.tds_requests
   add column if not exists product_slug text,
   add column if not exists ip_hash      text;
 
-alter table public.tds_requests drop constraint if exists tds_site_r1_check;
-alter table public.tds_requests
-  add constraint tds_site_r1_check check (
-    (product_slug is null or char_length(product_slug) <= 80)
-    and (product_label is null or char_length(product_label) <= 200)
-    and (ip_hash is null or char_length(ip_hash) <= 128)
-  );
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'tds_site_r1_check' and conrelid = 'public.tds_requests'::regclass) then
+    alter table public.tds_requests add constraint tds_site_r1_check check (
+      (product_slug is null or char_length(product_slug) <= 80)
+      and (product_label is null or char_length(product_label) <= 200)
+      and (ip_hash is null or char_length(ip_hash) <= 128)
+    );
+  end if;
+end;
+$$;
 
 -- 3. The site's write functions -------------------------------------------------
 -- The existing triggers still apply to every insert: the enquiry reference
@@ -193,10 +205,15 @@ create index if not exists click_events_ip_hash_idx on public.click_events (ip_h
 alter table public.click_events enable row level security;
 revoke all on public.click_events from anon, authenticated;
 grant select on public.click_events to authenticated;
-drop policy if exists click_events_read on public.click_events;
-create policy click_events_read on public.click_events
-  for select to authenticated
-  using (app.has_role(VARIADIC ARRAY['admin'::public.app_role, 'approver'::public.app_role]));
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'click_events' and policyname = 'click_events_read') then
+    create policy click_events_read on public.click_events
+      for select to authenticated
+      using (app.has_role(VARIADIC ARRAY['admin'::public.app_role, 'approver'::public.app_role]));
+  end if;
+end;
+$$;
 
 create or replace function public.log_click(p jsonb, token text)
 returns void
