@@ -1,0 +1,207 @@
+---
+/**
+ * The home page as a film (design-system/README.md, "Motion"): six scenes
+ * told by scrolling. Every scene is a finished still section first; the film
+ * (styles/film.css) pins and plays them where scroll-driven animations exist
+ * and motion is welcome.
+ */
+import Base from "../layouts/Base.astro";
+import Drop from "../components/Drop.astro";
+import Icon from "../components/Icon.astro";
+import LiquidDrop from "../components/LiquidDrop.astro";
+import { getFamilies, getIndustries, getProducts, keySpecs, specText } from "../lib/catalog.ts";
+import { claim } from "../lib/claims.ts";
+import { company, whatsappHref } from "../lib/company.ts";
+import { itemText, page } from "../lib/page.ts";
+import { localBusiness } from "../lib/seo.ts";
+import { t } from "../lib/ui.ts";
+import "../styles/film.css";
+
+const home = await page("home");
+const b = home.blocks;
+const products = await getProducts();
+const families = (await getFamilies()).filter((f) => products.some((p) => p.data.family === f.id));
+const industries = await getIndustries();
+const texts = (items: { title: string; body?: string | undefined; claim?: string | undefined }[] = []) =>
+  Promise.all(items.map(async (i) => ({ title: i.title, text: await itemText(i) })));
+const how = await texts(b.how?.items);
+const supply = await texts(b.supply?.items);
+const statement = (await texts(b.statement?.items)).map((i) => i.text).join(" ").split(/\s+/);
+const trading = b.trading?.items?.[0] ? await itemText(b.trading.items[0]) : null;
+const dispatch = await claim("from-mangaliya");
+const supplyIcons = ["package", "clock", "phone", "pin"] as const;
+// "Compare grades" opens a real comparison: the first family with two grades.
+const pair = families.map((f) => products.filter((p) => p.data.family === f.id)).find((g) => g.length > 1);
+const compareHref = pair ? `/marketplace/compare?p=${pair[0]!.id},${pair[1]!.id}` : "/marketplace/compare";
+const explore = [...(b.explore?.heading ?? "Explore")];
+---
+<Base title={home.title} description={home.description} fullTitle structured={[localBusiness()]}>
+  {/* 1 · Opening and fill: the drop fills as the families resolve one by one. */}
+  <section class="vp-open" aria-labelledby="hero-title" data-fill-scene>
+    <div class="vp-open-stage">
+      <div class="vp-container vp-open-grid">
+        <div class="vp-open-copy">
+          <p class="vp-eyebrow">{company.works.street.split(", ").at(-1)}, {company.works.city} · Est. {company.foundedYear}</p>
+          <h1 class="vp-h-hero" id="hero-title">{home.headline}</h1>
+          <p class="vp-lead">{home.lead}</p>
+          <div class="vp-actions">
+            <a class="vp-btn vp-btn-primary vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
+            <a class="vp-btn vp-btn-secondary vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+          </div>
+        </div>
+        <div class="vp-open-visual">
+          <div class="vp-open-drop">
+            <LiquidDrop tint="gold" fill="scroll" />
+            <span class="vp-open-glint" aria-hidden="true"></span>
+          </div>
+          <span class="vp-open-shadow" aria-hidden="true"></span>
+        </div>
+        <ul class="vp-open-words" aria-label={b.film?.heading}>
+          {families.map((f) => <li>{f.data.name}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {/* 2 · Statement: the company in its registered words, lit as it is read. */}
+  <section class="vp-statement" aria-label={b.statement?.eyebrow}>
+    <div class="vp-container">
+      <p class="vp-eyebrow">{b.statement?.eyebrow}</p>
+      <p class="vp-statement-text vp-lit">
+        {statement.map((w, i) => <><span class="w">{w}</span>{i < statement.length - 1 ? " " : ""}</>)}
+      </p>
+      <a class="vp-link" href="/about">More about us <Icon name="arrow" size={16} /></a>
+    </div>
+  </section>
+
+  {/* 3 · The range: every product's drop crosses the screen and fills. */}
+  <section class="vp-range" aria-labelledby="range-title">
+    <div class="vp-range-stage">
+      <div class="vp-container vp-range-head">
+        <div class="vp-head">
+          <p class="vp-eyebrow">{b.range?.eyebrow}</p>
+          <h2 class="vp-h-section" id="range-title">{b.range?.heading}</h2>
+          <p class="vp-lead">{b.range?.body}</p>
+        </div>
+        <div class="vp-actions">
+          <a class="vp-btn vp-btn-primary" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
+          <a class="vp-btn vp-btn-secondary" href={compareHref}>Compare grades</a>
+        </div>
+      </div>
+      <div class="vp-range-viewport">
+        <ol class="vp-range-track" role="list">
+          {products.map((p) => {
+            const spec = keySpecs(p)[0];
+            return (
+              <li>
+                <a href={`/products/${p.id}`}>
+                  <Drop tint={p.data.tint} size="xl" vt={`drop-${p.id}`} />
+                  <span class="vp-range-name">{p.data.name}</span>
+                  <span class="vp-range-code">{p.data.code}</span>
+                  {spec && <span class="vp-range-spec">{spec.property} <span class="vp-nowrap">{specText(spec)}</span></span>}
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  {/* 4 · How supply moves: a gold line joins the four steps, from Mangaliya out. */}
+  <section class="vp-flow" aria-labelledby="how-title">
+    <div class="vp-flow-stage">
+      <div class="vp-container vp-flow-grid">
+        <div class="vp-head">
+          <p class="vp-eyebrow">{b.how?.eyebrow}</p>
+          <h2 class="vp-h-section" id="how-title">{b.how?.heading}</h2>
+          <div class="vp-pin" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <p class="vp-small">{dispatch}</p>
+        </div>
+        <ol class="vp-steps">
+          {how.map((s, i) => <li><span class="vp-step-n" aria-hidden="true">{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></li>)}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  {/* 5 · Explore: the doors into the rest of the site. */}
+  <section class="vp-explore" aria-labelledby="explore-title">
+    <div class="vp-container">
+      <h2 class="vp-explore-word" id="explore-title">
+        <span class="vp-sr">{explore.join("")}</span><span class="vp-letters" aria-hidden="true">{explore.map((ch) => <span class="l">{ch}</span>)}</span>
+      </h2>
+
+      <section class="vp-tile vp-tile-wide vp-wipe" aria-labelledby="offers-title" data-offers-teaser hidden>
+        <div class="vp-head-row">
+          <div class="vp-head">
+            <p class="vp-eyebrow"><span class="vp-tag vp-tag-live">{b.offers?.eyebrow}</span></p>
+            <h3 id="offers-title">{b.offers?.heading}</h3>
+            <p class="vp-small">{b.offers?.body}</p>
+          </div>
+          <a class="vp-link" href="/marketplace/offers">All live offers <Icon name="arrow" size={16} /></a>
+        </div>
+        <ul class="vp-offers" data-offers-list></ul>
+      </section>
+
+      <div class="vp-tiles">
+        <div class="vp-tile vp-wipe">
+          <p class="vp-eyebrow">{b.find?.eyebrow}</p>
+          <h3>{b.find?.heading}</h3>
+          <p class="vp-small">{b.find?.body}</p>
+          <form class="vp-search-field" action="/marketplace" method="get" role="search">
+            <label class="vp-sr" for="home-q">Search the marketplace</label>
+            <Icon name="search" />
+            <input id="home-q" class="vp-input" type="search" name="q" placeholder="Grade, code or use" />
+          </form>
+          <ul class="vp-chips" aria-label="Product families">
+            {families.map((f) => <li><a class="vp-chip" href={`/marketplace?family=${f.id}`}>{f.data.name}</a></li>)}
+          </ul>
+        </div>
+
+        <div class="vp-tile vp-wipe">
+          <p class="vp-eyebrow">{b.industries?.eyebrow}</p>
+          <h3>{b.industries?.heading}</h3>
+          <ul class="vp-tile-links">
+            {industries.map((i) => <li><a href={`/industries/${i.id}`}>{i.data.name}<Icon name="arrow" size={16} /></a></li>)}
+          </ul>
+        </div>
+
+        <div class="vp-tile vp-wipe">
+          <p class="vp-eyebrow">{b.supply?.heading}</p>
+          <h3>{b.supply?.body}</h3>
+          <ul class="vp-facts">
+            {supply.map((s, i) => <li><Icon name={supplyIcons[i] ?? "check"} size={18} /><span>{s.text}</span></li>)}
+          </ul>
+          <a class="vp-link" href="/supply">{b.supply?.heading} <Icon name="arrow" size={16} /></a>
+        </div>
+
+        {
+          trading && (
+            <div class="vp-tile vp-wipe">
+              <p class="vp-eyebrow">{b.trading?.eyebrow}</p>
+              <h3>{b.trading?.heading}</h3>
+              <p class="vp-small">{trading}</p>
+              <a class="vp-btn vp-btn-secondary" href={whatsappHref("Hello, I am looking for a branded industrial lubricant or specialty oil. Can you check current stock?")} target="_blank" rel="noopener"><Icon name="whatsapp" />Ask on WhatsApp</a>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* 6 · Close. */}
+  <section class="vp-close" aria-labelledby="cta-title">
+    <div class="vp-container">
+      <h2 class="vp-close-title vp-reveal" id="cta-title">{b.cta?.heading}</h2>
+      <p class="vp-lead">{b.cta?.body}</p>
+      <div class="vp-actions">
+        <a class="vp-btn vp-btn-primary vp-btn-touch" href="/source">{t("cta.source")}</a>
+        <a class="vp-btn vp-btn-secondary vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<script>
+  import "../islands/offers-teaser.ts";
+</script>

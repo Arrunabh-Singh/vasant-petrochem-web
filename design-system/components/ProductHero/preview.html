@@ -1,0 +1,17 @@
+<!-- @dsCard group="Product" height=760 subtitle="Phone and laptop, with the fill moment" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ProductHero — preview</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  function App() {
+    return h('div', { className: 'vp-demo vp-demo-pair' },
+      h(V.Frame, { width: 390, label: 'Phone · 390px' }, h(V.ProductHero, { product: V.product('rubber-process-oil') })),
+      h(V.Frame, { width: 1280, label: 'Laptop · 1280px' }, h(V.ProductHero, { product: V.product('base-oil-sn500') })));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

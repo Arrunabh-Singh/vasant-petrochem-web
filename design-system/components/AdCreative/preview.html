@@ -1,0 +1,53 @@
+<!-- @dsCard group="Advertising" height=1500 subtitle="Every format, for any product, on deep or cream" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AdCreative — preview</title>
+<style>
+  .ad-controls { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-4); }
+  .ad-picks { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6); }
+  .ad-picks .vp-drop { width: 14px !important; }
+  .ad-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6) var(--space-5); align-items: start; }
+  .ad-wide { grid-column: span 2; }
+  .ad-check { display: inline-flex; align-items: center; gap: var(--space-2); font: 600 14px/20px var(--font-sans); color: var(--ink); }
+  .ad-check input { width: 18px; height: 18px; accent-color: var(--brand); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  function Switch(p) {
+    return h('div', { className: 'vp-switch', role: 'group', 'aria-label': p.label }, p.options.map(function (o) {
+      return h('button', { key: o[0], type: 'button', 'aria-pressed': p.value === o[0], onClick: function () { p.onChange(o[0]); } }, o[1]);
+    }));
+  }
+  function App() {
+    var a = React.useState('product'), family = a[0], setFamily = a[1];
+    var b = React.useState('deep'), ground = b[0], setGround = b[1];
+    var c = React.useState('base-oil-sn500'), slug = c[0], setSlug = c[1];
+    var d = React.useState(false), safe = d[0], setSafe = d[1];
+    var pr = V.product(slug);
+    var ad = function (format, label, cls) {
+      return h('div', { className: cls }, h(V.Frame, { width: V.adFormats[format].w, label: label },
+        h(V.AdCreative, { format: format, family: family, product: pr, ground: ground, safeZones: safe })));
+    };
+    return h('div', { className: 'vp-demo' },
+      h('div', { className: 'ad-controls' },
+        h(Switch, { label: 'Family', value: family, onChange: setFamily, options: [['product', 'Product'], ['range', 'Range']] }),
+        h(Switch, { label: 'Ground', value: ground, onChange: setGround, options: [['deep', 'Deep'], ['cream', 'Cream']] }),
+        h('label', { className: 'ad-check' }, h('input', { type: 'checkbox', checked: safe, onChange: function (e) { setSafe(e.target.checked); } }), 'Story safe zones')),
+      family === 'product' ? h('div', { className: 'ad-picks', role: 'group', 'aria-label': 'Product' }, V.catalog.map(function (p) {
+        return h('button', { key: p.slug, type: 'button', className: 'vp-pick', 'aria-pressed': slug === p.slug, onClick: function () { setSlug(p.slug); } },
+          h(V.Droplet, { slug: p.slug, size: 14 }), p.code);
+      })) : null,
+      h('div', { className: 'ad-grid' },
+        ad('square', V.adFormats.square.label),
+        ad('portrait', V.adFormats.portrait.label),
+        ad('story', V.adFormats.story.label),
+        ad('landscape', V.adFormats.landscape.label, 'ad-wide'),
+        ad('display-square', V.adFormats['display-square'].label)));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

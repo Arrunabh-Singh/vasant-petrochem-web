@@ -1,0 +1,74 @@
+---
+/**
+ * The live offers board: lots the sales desk has approved, read at request
+ * time and cached at the edge for a minute. Agents can only propose offers
+ * (MCP propose_offer); a different person publishes them in the hub.
+ */
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "astro:env/server";
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Drop from "../../components/Drop.astro";
+import Icon from "../../components/Icon.astro";
+import { getProducts } from "../../lib/catalog.ts";
+import { page } from "../../lib/page.ts";
+import { rpc } from "../../server/supabase.ts";
+
+export const prerender = false;
+
+type Offer = { id: string; product_slug: string; title: string; quantity: number; uom: string; location: string; basis: string; valid_until: string; notes: string | null };
+
+const copy = await page("offers");
+const result = await rpc<Offer[]>("list_offers", {}, { url: SUPABASE_URL, key: SUPABASE_PUBLISHABLE_KEY });
+const offers = result.ok && Array.isArray(result.data) ? result.data : [];
+const products = new Map((await getProducts()).map((p) => [p.id, p]));
+const date = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
+---
+<Base title={copy.title} description={copy.description}>
+  <Breadcrumbs items={[{ name: "Marketplace", href: "/marketplace" }, { name: copy.title, href: "/marketplace/offers" }]} />
+  <section class="vp-section-tight">
+    <div class="vp-container vp-stack">
+      <div class="vp-head">
+        <p class="vp-eyebrow"><span class="vp-tag vp-tag-live">Available now</span></p>
+        <h1 class="vp-h-page">{copy.headline}</h1>
+        <p class="vp-lead">{copy.lead}</p>
+      </div>
+      {
+        offers.length > 0 ? (
+          <ul class="vp-offers">
+            {offers.map((o) => {
+              const p = products.get(o.product_slug);
+              return (
+                <li class="vp-offer">
+                  <div class="vp-offer-head">
+                    {p && <Drop tint={p.data.tint} size="s" />}
+                    <div>
+                      <h2 class="vp-h-title">{o.title}</h2>
+                      {p && <a class="vp-small" href={`/products/${p.id}`}>{p.data.name} ({p.data.code})</a>}
+                    </div>
+                  </div>
+                  <dl>
+                    <div><dt>Quantity</dt><dd>{o.quantity} {o.uom}</dd></div>
+                    <div><dt>Location</dt><dd>{o.location}</dd></div>
+                    <div><dt>Basis</dt><dd>{o.basis}</dd></div>
+                    <div><dt>Valid until</dt><dd><time datetime={o.valid_until}>{date(o.valid_until)}</time></dd></div>
+                  </dl>
+                  <a class="vp-btn vp-btn-primary" href={`/quote?add=${encodeURIComponent(o.product_slug)}&offer=${encodeURIComponent(o.id)}`}>Request this lot</a>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <div class="vp-empty">
+            <h2 class="vp-h-title">{copy.blocks.empty?.heading}</h2>
+            <p class="vp-small">{copy.blocks.empty?.body}</p>
+            <div class="vp-actions">
+              <a class="vp-btn vp-btn-primary" href="/source">Source any grade</a>
+              <a class="vp-btn vp-btn-secondary" href="/marketplace"><Icon name="arrow" />Browse the marketplace</a>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Base>

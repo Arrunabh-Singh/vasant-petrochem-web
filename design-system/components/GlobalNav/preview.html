@@ -1,0 +1,21 @@
+<!-- @dsCard group="Navigation" height=520 subtitle="Laptop bar, phone bar and the open phone menu" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>GlobalNav — preview</title>
+<style>.gn-phones { display: grid; grid-template-columns: repeat(2, minmax(0, 390px)); gap: var(--space-5); margin-top: var(--space-5); }</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  function App() {
+    return h('div', { className: 'vp-demo' },
+      h(V.Frame, { width: 1280, label: 'Laptop · 1280px' }, h(V.GlobalNav, { active: 'Products' })),
+      h('div', { className: 'gn-phones' },
+        h(V.Frame, { width: 390, label: 'Phone · 390px' }, h(V.GlobalNav, { active: 'Products' })),
+        h(V.Frame, { width: 390, label: 'Phone · menu open' }, h(V.GlobalNav, { active: 'Products', defaultOpen: true }))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

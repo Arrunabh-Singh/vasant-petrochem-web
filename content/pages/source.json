@@ -1,0 +1,8 @@
+{
+  "$schema": "../_schemas/page.schema.json",
+  "title": "Source any grade",
+  "description": "Need an industrial oil, fuel, solvent or lubricant that is not in our catalogue? Send the specification and quantity and we will source it.",
+  "status": "published",
+  "headline": "Source any grade",
+  "lead": "Need a grade that is not in the marketplace? Send the product, the specification and the quantity, and the sales desk will come back with what it can supply."
+}

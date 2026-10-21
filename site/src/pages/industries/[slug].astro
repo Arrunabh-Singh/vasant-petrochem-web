@@ -1,0 +1,60 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { familyName, getIndustries, getProducts, type ProductEntry } from "../../lib/catalog.ts";
+import { breadcrumbs } from "../../lib/seo.ts";
+import { t } from "../../lib/ui.ts";
+import type { CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const [industries, products] = await Promise.all([getIndustries(), getProducts()]);
+  return industries.map((industry) => ({
+    params: { slug: industry.id },
+    props: { industry, products: products.filter((p) => p.data.industries.includes(industry.id)) },
+  }));
+}
+
+interface Props {
+  industry: CollectionEntry<"industries">;
+  products: ProductEntry[];
+}
+const { industry, products } = Astro.props;
+const families = await Promise.all(products.map((p) => familyName(p.data.family)));
+const applications = [...new Set(products.flatMap((p) => p.data.applications))];
+const path = `/industries/${industry.id}`;
+---
+<Base
+  title={industry.data.name}
+  description={`${industry.data.summary} Grades, typical properties and packaging from Vasant Petrochem.`.slice(0, 170)}
+  structured={[breadcrumbs([{ name: "Industries", path: "/industries" }, { name: industry.data.name, path }])]}
+  draft={industry.data.status === "draft"}
+>
+  <Breadcrumbs items={[{ name: "Industries", href: "/industries" }, { name: industry.data.name, href: path }]} />
+  <section class="vp-section-tight">
+    <div class="vp-container vp-stack">
+      <h1 class="vp-h-page">{industry.data.name}</h1>
+      <p class="vp-lead">{industry.body ?? industry.data.summary}</p>
+      {applications.length > 0 && (
+        <ul class="vp-chips" aria-label="Applications">
+          {applications.map((a) => <li><span class="vp-tag">{a}</span></li>)}
+        </ul>
+      )}
+    </div>
+  </section>
+  <section class="vp-section-tight">
+    <div class="vp-container">
+      <h2 class="vp-h-section">Grades for {industry.data.name.toLowerCase()}</h2>
+      <ul class="vp-grid" role="list">
+        {products.map((p, i) => <li><ProductCard product={p} family={families[i] ?? ""} actions /></li>)}
+      </ul>
+      <div class="vp-actions">
+        <a class="vp-btn vp-btn-primary" href="/quote">{t("cta.quote")}</a>
+        <a class="vp-btn vp-btn-secondary" href="/source">{t("cta.source")}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<script>
+  import "../../islands/add.ts";
+</script>

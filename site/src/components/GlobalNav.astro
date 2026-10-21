@@ -1,0 +1,51 @@
+---
+import { navigation, isCurrent } from "../lib/nav.ts";
+import { t } from "../lib/ui.ts";
+import Icon from "./Icon.astro";
+
+interface Props {
+  quoteHref?: string;
+}
+const { quoteHref = "/quote" } = Astro.props;
+const path = Astro.url.pathname;
+---
+<header class="vp-nav">
+  <div class="vp-nav-inner">
+    <a class="vp-nav-logo" href="/" aria-label={t("nav.home")}>
+      <img src="/brand/vasant-lockup-compact.png" alt="Vasant Petrochem" width="634" height="182" />
+    </a>
+    <nav aria-label={t("nav.label")}>
+      <ul class="vp-nav-links">
+        {navigation.header.map((n) => (
+          <li><a href={n.href} aria-current={isCurrent(n.href, path) ? "page" : undefined}>{n.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <div class="vp-nav-tools">
+      <a class="vp-nav-icon" href="/search" data-search-open aria-label={t("nav.search")}><Icon name="search" /></a>
+      <a class="vp-nav-icon" href="/quote" aria-label={t("nav.basket")}>
+        <Icon name="basket" />
+        <span class="vp-count" data-basket-count hidden></span>
+      </a>
+      <a class="vp-btn vp-btn-primary vp-btn-small vp-nav-cta" href={quoteHref}>{t("cta.quote")}</a>
+      <button class="vp-nav-icon vp-nav-menu" type="button" popovertarget="vp-nav-sheet" aria-label={t("nav.open")}>
+        <Icon name="menu" size={22} />
+      </button>
+    </div>
+  </div>
+  <div id="vp-nav-sheet" class="vp-nav-sheet" popover>
+    <nav aria-label={t("nav.label")}>
+      <ul>
+        {navigation.header.map((n) => (
+          <li>
+            <a href={n.href} aria-current={isCurrent(n.href, path) ? "page" : undefined}>
+              {n.label}
+              <Icon name="arrow" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <a class="vp-btn vp-btn-primary vp-btn-touch vp-btn-full" href={quoteHref}>{t("cta.quote")}</a>
+  </div>
+</header>

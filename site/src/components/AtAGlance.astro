@@ -1,0 +1,17 @@
+---
+import type { ProductEntry } from "../lib/catalog.ts";
+import { keySpecs, specText } from "../lib/catalog.ts";
+
+interface Props {
+  product: ProductEntry;
+}
+const specs = keySpecs(Astro.props.product);
+---
+<dl class="vp-glance">
+  {specs.map((s) => (
+    <div class="vp-glance-item">
+      <dt>{s.property}</dt>
+      <dd>{specText(s)}</dd>
+    </div>
+  ))}
+</dl>

@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vasant-site",
+  "compatibility_date": "2026-09-15",
+  "observability": { "enabled": true },
+  "assets": {
+    // No not_found_handling: with it, a browser navigation to a Worker-rendered
+    // page (/marketplace/offers) is answered with the static 404 page instead.
+    // Unknown paths reach the Worker, which serves the prerendered 404.
+    "html_handling": "auto-trailing-slash"
+  },
+  // Secrets are set in the Cloudflare dashboard (or .dev.vars locally), never
+  // here; their names are the env schema in astro.config.mjs.
+  "keep_vars": true
+}

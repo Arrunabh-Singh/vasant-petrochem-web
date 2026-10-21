@@ -1,0 +1,59 @@
+{
+  "$schema": "./_schemas/company.schema.json",
+  "tradeName": "Vasant Petrochem",
+  "foundedYear": 2025,
+  "legalName": null,
+  "registeredOffice": null,
+  "gstin": null,
+  "udyam": null,
+  "cin": null,
+  "iec": null,
+  "exports": false,
+  "works": {
+    "street": "Industrial Area, Mangaliya",
+    "city": "Indore",
+    "region": "Madhya Pradesh",
+    "regionCode": "MP",
+    "postalCode": "453771",
+    "country": "IN",
+    "lat": 22.6569,
+    "lng": 75.7898
+  },
+  "phone": {
+    "display": "+91 94250 58496",
+    "href": "tel:+919425058496",
+    "whatsapp": "919425058496"
+  },
+  "email": "vasantpetrochem@gmail.com",
+  "mailboxes": {
+    "sales": null,
+    "documents": null,
+    "careers": null,
+    "security": null
+  },
+  "hours": {
+    "label": "Mon–Sat, 9:00 AM–6:00 PM IST",
+    "days": "Mon–Sat",
+    "time": "9:00 AM–6:00 PM",
+    "opens": "09:00",
+    "closes": "18:00",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  },
+  "social": {
+    "linkedin": null,
+    "indiamart": null,
+    "justdial": null,
+    "googleBusiness": null
+  },
+  "_todo": {
+    "legalName": "TODO(VP-HUM-001): registered legal entity name, as on the GST certificate",
+    "registeredOffice": "TODO(VP-HUM-001): registered office address, distinct from the works address",
+    "gstin": "TODO(VP-HUM-001): GSTIN",
+    "udyam": "TODO(VP-HUM-001): Udyam registration number",
+    "cin": "TODO(VP-HUM-001): CIN, only if the entity is incorporated",
+    "iec": "TODO(VP-HUM-008): Importer-Exporter Code; set `exports` to true once it exists",
+    "email": "TODO(VP-HUM-002): replace with sales@ on the company domain, then retire the Gmail address",
+    "mailboxes": "TODO(VP-HUM-002): sales@, documents@, careers@ and security@ on the company domain",
+    "social": "TODO(VP-HUM-012): LinkedIn, IndiaMART, Justdial and Google Business URLs"
+  }
+}

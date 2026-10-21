@@ -1,0 +1,22 @@
+<!-- @dsCard group="Forms" height=1300 subtitle="Idle, error and success, on phone and laptop" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>EnquiryForm — preview</title>
+<style>.ef-done { max-width: 390px; margin-top: var(--space-5); }</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  function pad(children) { return h('div', { style: { padding: '24px 0' } }, h('div', { className: 'vp-container' }, children)); }
+  function App() {
+    return h('div', { className: 'vp-demo' },
+      h('div', { className: 'vp-demo-pair' },
+        h(V.Frame, { width: 390, label: 'Phone · error state' }, pad(h(V.EnquiryForm, { state: 'error', defaultProduct: 'Paving Bitumen (VG-30)' }))),
+        h(V.Frame, { width: 1280, label: 'Laptop · pre-filled on a product page' }, pad(h('div', { style: { maxWidth: 820 } }, h(V.EnquiryForm, { defaultProduct: 'Base Oil SN500 (SN-500)', title: 'Request a quote for Base Oil SN500' }))))),
+      h('div', { className: 'ef-done' }, h(V.Frame, { width: 390, label: 'After sending' }, pad(h(V.EnquiryForm, { state: 'success', reference: 'VP-ENQ-202610-0042' })))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

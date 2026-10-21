@@ -68,6 +68,8 @@ These are binding on every task. A pull request that violates one is rejected re
 
 **P6 — Attack surface is a cost.** Do not build an admin panel, a login system, or a user account layer. Reads of enquiry data happen through the database provider's own authenticated dashboard. Every custom auth surface is a liability we are not staffed to defend.
 
+> **Amended 2026-10-19 (owner decision, [ADR-0003](docs/adr/0003-buyer-accounts.md)):** buyer accounts are approved for the marketplace, under the security conditions in ADR-0003 (separate origin, MFA for admin roles, organisation-scoped row-level security, KYC and sanctions screening before approval). Everything else in P6 stands.
+
 ## 3. Execution protocol for Claude Code
 
 - One branch per workstream: `ws/01-legal`, `ws/04-security`, etc.

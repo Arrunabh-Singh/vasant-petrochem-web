@@ -1,0 +1,11 @@
+{
+  "$schema": "./_schemas/families.schema.json",
+  "families": [
+    { "slug": "base-oils", "name": "Base oils", "summary": "Lubricant base stocks for engine oils, hydraulic fluids and industrial blends.", "order": 1 },
+    { "slug": "fuels", "name": "Fuels", "summary": "Fuel oil and light diesel for boilers, furnaces, burners and DG sets.", "order": 2 },
+    { "slug": "bitumen", "name": "Bitumen", "summary": "Paving-grade bitumen for highways, bridges and urban roads.", "order": 3 },
+    { "slug": "process-oils", "name": "Process oils", "summary": "Process oils for rubber compounding, tyres and polymers.", "order": 4 },
+    { "slug": "solvents", "name": "Solvents", "summary": "Mineral turpentine for paints, coatings and degreasing.", "order": 5 },
+    { "slug": "specialties", "name": "Specialty products", "summary": "Petroleum jelly for pharmaceutical, cosmetic and personal-care formulations.", "order": 6 }
+  ]
+}

@@ -1,0 +1,61 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { page } from "../lib/page.ts";
+import { searchGroups } from "../lib/search.ts";
+import { t } from "../lib/ui.ts";
+
+const copy = await page("search");
+const groups = await searchGroups();
+---
+<Base title={copy.title} description={copy.description}>
+  <section class="vp-hero" aria-labelledby="search-title">
+    <div class="vp-container vp-stack">
+      <h1 class="vp-h-page" id="search-title">{copy.headline}</h1>
+      <form class="vp-search-field" role="search" action="/search" data-filter-form>
+        <Icon name="search" />
+        <label class="vp-sr" for="search-page-input">{copy.lead}</label>
+        <input id="search-page-input" class="vp-input" type="search" name="q" placeholder={t("search.placeholder")} autocomplete="off" data-filter-input />
+      </form>
+    </div>
+  </section>
+  <section class="vp-section-tight">
+    <div class="vp-container vp-stack">
+      {groups.map((g) => (
+        <section class="vp-stack" aria-labelledby={`g-${g.name}`} data-filter-group>
+          <h2 class="vp-h-title" id={`g-${g.name}`}>{g.name}</h2>
+          <ul class="vp-search-results" role="list">
+            {g.hits.map((h) => (
+              <li data-filter-item={`${h.t} ${h.s} ${h.k}`.toLowerCase()}>
+                <a href={h.u}><span>{h.t}</span><small>{h.s}</small></a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+      <div class="vp-empty" data-filter-empty hidden>
+        <p class="vp-small">Nothing matches. Tell us the grade or specification you need and we will source it.</p>
+        <a class="vp-btn vp-btn-secondary" href="/source">Source any grade</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<script>
+  // Filters the full list in place; ?q= (from the dialog or a shared link) fills the box.
+  const input = document.querySelector<HTMLInputElement>("[data-filter-input]");
+  if (input) {
+    const items = [...document.querySelectorAll<HTMLElement>("[data-filter-item]")];
+    const groups = [...document.querySelectorAll<HTMLElement>("[data-filter-group]")];
+    const empty = document.querySelector<HTMLElement>("[data-filter-empty]")!;
+    const run = () => {
+      const terms = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+      for (const el of items) el.hidden = !terms.every((t) => el.dataset.filterItem!.includes(t));
+      for (const g of groups) g.hidden = !g.querySelector("[data-filter-item]:not([hidden])");
+      empty.hidden = groups.some((g) => !g.hidden);
+    };
+    input.value = new URLSearchParams(location.search).get("q") ?? "";
+    input.addEventListener("input", run);
+    input.form!.addEventListener("submit", (e) => e.preventDefault());
+    run();
+  }
+</script>

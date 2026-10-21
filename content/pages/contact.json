@@ -1,0 +1,8 @@
+{
+  "$schema": "../_schemas/page.schema.json",
+  "title": "Contact the sales desk",
+  "description": "Call, message or write to the Vasant Petrochem sales desk in Indore for quotes, samples and documents. Pricing within 24 hours.",
+  "status": "published",
+  "headline": "Contact the sales desk",
+  "lead": "Quotes, samples, documents or anything else: one desk answers, and the person who quotes you tracks your dispatch."
+}

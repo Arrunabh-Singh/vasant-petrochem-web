@@ -55,3 +55,6 @@ next-env.d.ts
 
 # lighthouse ci
 /.lighthouseci/
+
+# Agent worktrees (Claude Code)
+.claude/worktrees/

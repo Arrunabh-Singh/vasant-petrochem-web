@@ -1,0 +1,33 @@
+---
+/**
+ * The drop with real-time liquid (islands/liquid.ts). The SVG drop is the
+ * first paint and the fallback; the canvas takes over its liquid only once
+ * the island has started and its frames are fast. `fill` is "scroll" on the
+ * home film (the level follows its opening scene) or "load" (fills once as
+ * the page opens, like a product hero).
+ */
+import { dropSvg, DROP_H, HIGHLIGHT, TINT_COLOURS, type Tint } from "../lib/drop.ts";
+
+interface Props {
+  tint: Tint;
+  fill: "scroll" | "load";
+  title?: string;
+  vt?: string;
+}
+const { tint, fill, title, vt } = Astro.props;
+// Gradient and clip ids must be unique within a page (the counter Drop.astro uses).
+const g = globalThis as { __vpDrop?: number };
+g.__vpDrop = (g.__vpDrop ?? 0) + 1;
+const svg = dropSvg(tint, { id: `vpd${g.__vpDrop}`, ...(title ? { title } : {}), animate: fill === "load" });
+const c = TINT_COLOURS[tint];
+---
+<div class="vp-liquid" data-liquid={fill} data-light={c.light} data-mid={c.mid} data-deep={c.deep}>
+  <span class="vp-drop" data-vt={vt} set:html={svg} />
+  <canvas class="vp-liquid-canvas" aria-hidden="true"></canvas>
+  <svg class="vp-liquid-glint" viewBox={`0 0 100 ${DROP_H}`} aria-hidden="true" focusable="false">
+    <path d={HIGHLIGHT} fill="none" stroke="#ffffff" stroke-width="4.6" stroke-linecap="round" opacity="0.9" />
+  </svg>
+</div>
+<script>
+  import "../islands/liquid.ts";
+</script>

@@ -1,0 +1,21 @@
+<!-- @dsCard group="Actions" height=150 subtitle="Industry filters and links" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Chip — preview</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  var industries = ['All products', 'Automotive', 'Lubricants', 'Power & Energy', 'Road Construction', 'Paint & Coatings', 'Pharmaceutical'];
+  function App() {
+    var st = React.useState('All products'), sel = st[0], set = st[1];
+    return h('div', { className: 'vp-demo vp-demo-stack' },
+      h('div', { className: 'vp-chips', role: 'group', 'aria-label': 'Filter by industry' }, industries.map(function (n) {
+        return h(V.Chip, { key: n, selected: sel === n, onClick: function () { set(n); } }, n);
+      })),
+      h('p', { className: 'vp-demo-note' }, 'Press a chip: the selected one takes the brand fill.'));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

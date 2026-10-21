@@ -1,0 +1,30 @@
+<!-- @dsCard group="Actions" height=236 subtitle="Primary, secondary and on-dark; regular, small and touch" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Button — preview</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement, B = V.Button;
+  function App() {
+    return h('div', null,
+      h('div', { className: 'vp-demo vp-demo-stack' },
+        h('div', { className: 'vp-demo-row' },
+          h(B, null, 'Get a quote'),
+          h(B, { variant: 'secondary', icon: 'whatsapp' }, 'Chat on WhatsApp'),
+          h(B, { variant: 'secondary', size: 'small' }, 'View all products'),
+          h(B, { disabled: true }, 'Sending…')),
+        h('div', { className: 'vp-demo-row' },
+          h(B, { size: 'touch', iconAfter: 'arrow' }, 'Get a quote'),
+          h(B, { size: 'touch', variant: 'secondary', icon: 'phone', 'aria-label': 'Call the sales desk', className: 'vp-icon-btn' }),
+          h('p', { className: 'vp-demo-note' }, 'Touch size: 56px, for phone heroes, forms and the action bar.'))),
+      h('div', { className: 'vp-demo vp-demo-deep' },
+        h('div', { className: 'vp-demo-row' },
+          h(B, { variant: 'on-deep', icon: 'doc' }, 'Download the TDS'),
+          h(B, { variant: 'outline-on-deep', icon: 'whatsapp' }, 'Chat on WhatsApp'),
+          h('p', { className: 'vp-demo-note' }, 'Inside a deep band the primary is cream.'))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

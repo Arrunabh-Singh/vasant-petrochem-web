@@ -1,0 +1,62 @@
+---
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Drop from "../../components/Drop.astro";
+import GradeChip from "../../components/GradeChip.astro";
+import Icon from "../../components/Icon.astro";
+import { familyName, getProducts, specText, packagingLine } from "../../lib/catalog.ts";
+import { disclaimer } from "../../lib/claims.ts";
+
+const products = await getProducts();
+const data = await Promise.all(
+  products.map(async (p) => ({
+    slug: p.id,
+    family: await familyName(p.data.family),
+    specs: p.data.specs.map((s) => [s.property, specText(s)]),
+    packaging: packagingLine(p),
+  })),
+);
+const note = await disclaimer();
+---
+<Base
+  title="Compare grades"
+  description="Compare the typical properties of up to three grades side by side, then add them to one quote."
+  noindex
+>
+  <Breadcrumbs items={[{ name: "Marketplace", href: "/marketplace" }, { name: "Compare grades", href: "/marketplace/compare" }]} />
+  <section class="vp-section-tight">
+    <div class="vp-container vp-stack">
+      <h1 class="vp-h-page">Compare grades</h1>
+      <p class="vp-lead" data-compare-intro>Choose up to three grades in the marketplace, then compare their typical properties here. Rows where the grades differ are shaded.</p>
+      <div class="vp-compare" data-compare-table hidden>
+        <table>
+          <caption class="vp-sr">Typical properties of the selected grades</caption>
+          <thead><tr><th scope="col"><span class="vp-sr">Property</span></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="vp-disclaimer" data-compare-note hidden>{note}</p>
+      <div class="vp-actions">
+        <button class="vp-btn vp-btn-primary" type="button" data-compare-add hidden><Icon name="plus" />Add these to my quote</button>
+        <a class="vp-btn vp-btn-secondary" href="/marketplace"><Icon name="arrow" />Back to the marketplace</a>
+      </div>
+    </div>
+  </section>
+  {
+    products.map((p) => (
+      <template data-compare-head={p.id}>
+        <th scope="col">
+          <div class="vp-stack">
+            <Drop tint={p.data.tint} size="s" />
+            <a class="vp-h-title" href={`/products/${p.id}`}>{p.data.name}</a>
+            <GradeChip code={p.data.code} />
+          </div>
+        </th>
+      </template>
+    ))
+  }
+  <script type="application/json" id="vp-compare-data" is:inline set:html={JSON.stringify(data).replace(/</g, "\\u003c")} />
+</Base>
+<script>
+  import "../../islands/compare.ts";
+</script>

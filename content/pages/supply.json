@@ -1,0 +1,30 @@
+{
+  "$schema": "../_schemas/page.schema.json",
+  "title": "Supply and logistics",
+  "description": "How Vasant Petrochem supplies industrial oils, fuels and bitumen: packaging options, dispatch from Mangaliya, Indore, and delivery across Central India.",
+  "status": "published",
+  "headline": "Supply and logistics",
+  "lead": "Drums, pails or bulk tankers, dispatched from Mangaliya, Indore, across Central India. Tell us where it needs to go and when, and the quote includes it.",
+  "blocks": {
+    "steps": {
+      "eyebrow": "How supply works",
+      "heading": "From your requirement to your gate",
+      "items": [
+        { "title": "Requirement", "body": "Grade, quantity, packaging, delivery city and the date you need it." },
+        { "title": "Quotation", "claim": "pricing-freight-included" },
+        { "title": "Dispatch", "claim": "from-mangaliya" },
+        { "title": "Documents", "claim": "test-reports-on-request" }
+      ]
+    },
+    "packaging": {
+      "eyebrow": "Packaging",
+      "heading": "Pack sizes by product",
+      "body": "Each product’s packs come from its catalogue entry. Ask the sales desk if you need a different pack."
+    },
+    "coverage": {
+      "eyebrow": "Coverage",
+      "heading": "Where we deliver",
+      "items": [{ "title": "Central India", "claim": "central-india-coverage" }]
+    }
+  }
+}

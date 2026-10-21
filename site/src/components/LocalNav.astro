@@ -1,0 +1,25 @@
+---
+/** The product page's floating bar: name, code, section links and the quote action. */
+import { t } from "../lib/ui.ts";
+
+interface Props {
+  name: string;
+  code: string;
+}
+const { name, code } = Astro.props;
+const links = [
+  ["Overview", "#overview"],
+  ["Specs", "#specs"],
+  ["Uses", "#uses"],
+  ["Documents", "#documents"],
+];
+---
+<div class="vp-local">
+  <div class="vp-local-inner">
+    <p class="vp-local-name"><span class="vp-local-title">{name}</span><span class="vp-local-code">{code}</span></p>
+    <nav class="vp-local-links" aria-label={`${name} sections`}>
+      {links.map(([label, href]) => <a href={href}>{label}</a>)}
+    </nav>
+    <a class="vp-btn vp-btn-primary vp-btn-small vp-local-cta" href="#enquiry">{t("cta.quote")}</a>
+  </div>
+</div>

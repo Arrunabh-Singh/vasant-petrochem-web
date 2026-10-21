@@ -1,0 +1,94 @@
+---
+import "../styles/global.css";
+import GlobalNav from "../components/GlobalNav.astro";
+import Footer from "../components/Footer.astro";
+import ContactBar from "../components/ContactBar.astro";
+import SearchDialog from "../components/SearchDialog.astro";
+import { company, SITE_URL } from "../lib/company.ts";
+import { abs, jsonLd, organization } from "../lib/seo.ts";
+import { t } from "../lib/ui.ts";
+
+interface Props {
+  /** The page's own title; " · Vasant Petrochem" is added unless `fullTitle`. */
+  title: string;
+  description: string;
+  /** Canonical path, defaulting to the current one. */
+  path?: string;
+  /** 1200x628 share image, from scripts/postbuild.mjs. */
+  ogImage?: string;
+  structured?: object[];
+  noindex?: boolean;
+  /** A draft shown on a preview deployment: carries a banner and is never indexed. */
+  draft?: boolean;
+  /** The WhatsApp message the contact bar prefills. */
+  waMessage?: string;
+  fullTitle?: boolean;
+  /** Where every "Get a quote" button on the page goes (a product page: its own form). */
+  quoteHref?: string;
+}
+
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  ogImage = "/og/default.png",
+  structured = [],
+  noindex = false,
+  draft = false,
+  waMessage = `Hello ${company.tradeName}, I would like to discuss a requirement.`,
+  fullTitle = false,
+  quoteHref = "/quote",
+} = Astro.props;
+
+const pageTitle = fullTitle ? title : `${title} · ${company.tradeName}`;
+const canonical = new URL(path, SITE_URL).toString();
+const ld = [organization(), ...structured];
+// Instant navigation: prerender a same-site page when the pointer rests on its link.
+const speculation = {
+  prerender: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/api/*" } }] }, eagerness: "moderate" }],
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {(noindex || draft) && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#fbf8f1" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/brand/icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" href="/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={company.tradeName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={abs(ogImage)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="628" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {ld.map((d) => <script type="application/ld+json" is:inline set:html={jsonLd(d)} />)}
+    <script type="speculationrules" is:inline set:html={JSON.stringify(speculation)} />
+  </head>
+  <body>
+    <a class="vp-skip" href="#main">{t("skip")}</a>
+    {draft && <p class="vp-draft" role="note">{t("draft.banner")}</p>}
+    <GlobalNav quoteHref={quoteHref} />
+    <slot name="local" />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <ContactBar message={waMessage} quoteHref={quoteHref} />
+    <SearchDialog />
+    <script>
+      import "../islands/track.ts";
+    </script>
+  </body>
+</html>

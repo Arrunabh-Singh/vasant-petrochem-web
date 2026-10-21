@@ -1,0 +1,33 @@
+---
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import { getIndustries, getProducts } from "../../lib/catalog.ts";
+import { page } from "../../lib/page.ts";
+
+const copy = await page("industries");
+const industries = await getIndustries();
+const products = await getProducts();
+---
+<Base title={copy.title} description={copy.description}>
+  <section class="vp-hero" aria-labelledby="ind-title">
+    <div class="vp-container">
+      <h1 class="vp-h-page" id="ind-title">{copy.headline}</h1>
+      <p class="vp-lead">{copy.lead}</p>
+    </div>
+  </section>
+  <section class="vp-section-tight">
+    <div class="vp-container">
+      <ul class="vp-ind">
+        {industries.map((i) => (
+          <li>
+            <h2 class="vp-h-title"><a href={`/industries/${i.id}`}><Icon name={i.data.icon} /> {i.data.name}</a></h2>
+            <p>{i.data.summary}</p>
+            <ul class="vp-chips">
+              {products.filter((p) => p.data.industries.includes(i.id)).map((p) => <li><a class="vp-chip" href={`/products/${p.id}`}>{p.data.name}</a></li>)}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>

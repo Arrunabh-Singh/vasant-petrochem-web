@@ -1,0 +1,50 @@
+---
+/**
+ * One labelled form control with its hint and an error slot the form island
+ * fills. Limits here mirror the server's validation (src/lib/validate.ts);
+ * they are a convenience, the server is the control (VP-SEC-005).
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+  name: string;
+  label: string;
+  type?: "text" | "email" | "tel" | "number" | "date" | "textarea" | "select";
+  required?: boolean;
+  autocomplete?: string;
+  placeholder?: string;
+  hint?: string;
+  options?: { value: string; label: string }[];
+  value?: string;
+  maxlength?: number;
+  inputmode?: "text" | "numeric" | "decimal" | "tel" | "email";
+  min?: string;
+  id?: string;
+}
+const { name, label, type = "text", required = false, autocomplete, placeholder, hint, options = [], value, maxlength, inputmode, min, id = `f-${name}` } = Astro.props;
+const describedBy = [hint && `${id}-hint`, `${id}-error`].filter(Boolean).join(" ");
+const common = { id, name, required, "aria-describedby": describedBy, class: "vp-input" };
+---
+<div class="vp-field">
+  <label for={id}>{label}{!required && <span class="vp-req"> (optional)</span>}</label>
+  {hint && <p class="vp-hint" id={`${id}-hint`}>{hint}</p>}
+  {
+    type === "textarea" ? (
+      <textarea {...common} rows={4} maxlength={maxlength} placeholder={placeholder} autocomplete={autocomplete}>{value}</textarea>
+    ) : type === "select" ? (
+      <div class="vp-select">
+        <select {...common} autocomplete={autocomplete}>
+          {options.map((o) => (
+            <option value={o.value} selected={o.value === value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <Icon name="chevron" size={18} />
+      </div>
+    ) : (
+      <input {...common} type={type} value={value} maxlength={maxlength} placeholder={placeholder} autocomplete={autocomplete} inputmode={inputmode} min={min} />
+    )
+  }
+  <p class="vp-field-error" id={`${id}-error`} data-error-for={name} hidden></p>
+</div>

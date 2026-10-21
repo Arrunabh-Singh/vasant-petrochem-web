@@ -1,0 +1,8 @@
+---
+interface Props {
+  code: string;
+  tone?: "gold" | "quiet";
+}
+const { code, tone = "gold" } = Astro.props;
+---
+<span class:list={["vp-grade", tone === "quiet" && "vp-grade-quiet"]}>{code}</span>

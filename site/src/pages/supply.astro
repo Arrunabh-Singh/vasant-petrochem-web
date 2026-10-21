@@ -1,0 +1,72 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { getProducts, packagingLine } from "../lib/catalog.ts";
+import { itemText, page } from "../lib/page.ts";
+import { t } from "../lib/ui.ts";
+
+const copy = await page("supply");
+const b = copy.blocks;
+const steps = await Promise.all((b.steps?.items ?? []).map(async (i) => ({ title: i.title, text: await itemText(i) })));
+const coverage = b.coverage?.items?.[0] ? await itemText(b.coverage.items[0]) : "";
+const products = await getProducts();
+---
+<Base title={copy.title} description={copy.description}>
+  <section class="vp-hero" aria-labelledby="supply-title">
+    <div class="vp-container">
+      <p class="vp-eyebrow">Supply</p>
+      <h1 class="vp-h-page vp-measure" id="supply-title">{copy.headline}</h1>
+      <p class="vp-lead">{copy.lead}</p>
+    </div>
+  </section>
+
+  <section class="vp-section vp-band-parchment" aria-labelledby="steps-title">
+    <div class="vp-container">
+      <div class="vp-head">
+        <p class="vp-eyebrow">{b.steps?.eyebrow}</p>
+        <h2 class="vp-h-section" id="steps-title">{b.steps?.heading}</h2>
+      </div>
+      <ol class="vp-how">
+        {steps.map((s) => <li><h3>{s.title}</h3><p>{s.text}</p></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="vp-section" aria-labelledby="packs-title">
+    <div class="vp-container">
+      <div class="vp-head">
+        <p class="vp-eyebrow">{b.packaging?.eyebrow}</p>
+        <h2 class="vp-h-section" id="packs-title">{b.packaging?.heading}</h2>
+        <p class="vp-lead">{b.packaging?.body}</p>
+      </div>
+      <div class="vp-specs">
+        <div class="vp-specs-scroll">
+          <table>
+            <caption class="vp-sr">Packaging by product</caption>
+            <tbody>
+              {products.map((p) => (
+                <tr class="vp-specs-pack">
+                  <th scope="row"><a href={`/products/${p.id}`}>{p.data.name}</a> <span class="vp-grade vp-grade-quiet">{p.data.code}</span></th>
+                  <td>{packagingLine(p)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vp-section-tight" aria-labelledby="coverage-title">
+    <div class="vp-container">
+      <div class="vp-panel vp-panel-row">
+        <div class="vp-stack">
+          <p class="vp-eyebrow">{b.coverage?.eyebrow}</p>
+          <h2 class="vp-h-title" id="coverage-title">{b.coverage?.heading}</h2>
+          <p class="vp-small">{coverage}</p>
+        </div>
+        <a class="vp-btn vp-btn-primary" href="/quote">{t("cta.quote")}<Icon name="arrow" size={18} /></a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,8 @@
+{
+  "$schema": "../_schemas/page.schema.json",
+  "title": "Industries",
+  "description": "Industrial oils, fuels, bitumen and solvents for road construction, paints, rubber, power, lubricants and pharmaceuticals.",
+  "status": "published",
+  "headline": "Industries we supply",
+  "lead": "Start from what you make or build. Each industry lists the grades buyers in it use, with their typical properties."
+}

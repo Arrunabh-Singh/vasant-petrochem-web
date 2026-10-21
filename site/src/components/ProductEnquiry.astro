@@ -1,0 +1,37 @@
+---
+import type { ProductEntry } from "../lib/catalog.ts";
+import { t } from "../lib/ui.ts";
+import Field from "./Field.astro";
+import FormGuard from "./FormGuard.astro";
+import FormStatus from "./FormStatus.astro";
+
+interface Props {
+  product: ProductEntry;
+}
+const { product } = Astro.props;
+const p = product.data;
+const units = ["MT", "kL", "L", "kg", "drums", "pails"].map((u) => ({ value: u, label: u }));
+---
+<form class="vp-form" id="enquiry" method="post" action="/api/rfq" data-vp-form aria-labelledby="enquiry-title">
+  <h2 class="vp-form-title" id="enquiry-title">Get a quote for {p.name}</h2>
+  <input type="hidden" name="type" value="quote" />
+  <input type="hidden" name="product" value={product.id} />
+  <div class="vp-form-row">
+    <Field name="qty" label="Quantity" type="text" inputmode="decimal" maxlength={10} hint="Numbers only, for example 20" />
+    <Field name="unit" label="Unit" type="select" options={units} value="MT" />
+  </div>
+  <Field name="delivery_city" label="Delivery city and state" autocomplete="address-level2" maxlength={120} />
+  <div class="vp-form-row">
+    <Field name="name" label="Your name" required autocomplete="name" maxlength={120} />
+    <Field name="company" label="Company" autocomplete="organization" maxlength={160} />
+  </div>
+  <div class="vp-form-row">
+    <Field name="email" label="Work email" type="email" required autocomplete="email" maxlength={254} />
+    <Field name="phone" label="Phone or WhatsApp" type="tel" autocomplete="tel" maxlength={20} />
+  </div>
+  <Field name="message" label="Anything else" type="textarea" maxlength={2000} placeholder="Packaging, timeline, specification needs" />
+  <FormGuard id={`enquiry-${product.id}`} />
+  <FormStatus />
+  <p class="vp-caption">We use these details only to reply to your enquiry.</p>
+  <button class="vp-btn vp-btn-primary vp-btn-touch" type="submit">{t("cta.send")}</button>
+</form>

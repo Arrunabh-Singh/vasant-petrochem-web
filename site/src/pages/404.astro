@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+---
+<Base title="Page not found" description="This page does not exist. Search the catalogue, or tell the sales desk what you need." noindex>
+  <section class="vp-hero" aria-labelledby="nf-title">
+    <div class="vp-container vp-stack vp-measure">
+      <p class="vp-eyebrow">Error 404</p>
+      <h1 class="vp-h-page" id="nf-title">This page doesn’t exist.</h1>
+      <p class="vp-lead">The link may be old or mistyped. Every product is in the marketplace, and the sales desk can source anything that isn’t.</p>
+      <div class="vp-actions">
+        <a class="vp-btn vp-btn-primary" href="/marketplace">Browse the marketplace</a>
+        <a class="vp-btn vp-btn-secondary" href="/search" data-search-open><Icon name="search" />Search the site</a>
+      </div>
+    </div>
+  </section>
+</Base>

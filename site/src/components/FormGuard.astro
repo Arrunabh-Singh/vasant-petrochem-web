@@ -1,0 +1,30 @@
+---
+/**
+ * The hidden parts every public form carries: campaign attribution (filled by
+ * islands/track.ts), the honeypot, the time-to-submit stamp, and Cloudflare
+ * Turnstile when a site key is configured (VP-SEC-004, VP-LEAD-006).
+ */
+import { PUBLIC_TURNSTILE_SITE_KEY } from "astro:env/client";
+
+interface Props {
+  /** Distinguishes the honeypot's id when a page has more than one form. */
+  id?: string;
+}
+const id = Astro.props.id ?? "form";
+const siteKey = PUBLIC_TURNSTILE_SITE_KEY;
+const attr = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "landing_page", "referrer"];
+---
+{attr.map((name) => <input type="hidden" name={name} data-attr />)}
+<input type="hidden" name="startedAt" data-started-at />
+<div class="vp-hp" aria-hidden="true">
+  <label for={`hp-${id}`}>Leave this field empty</label>
+  <input id={`hp-${id}`} type="text" name="website" tabindex="-1" autocomplete="off" />
+</div>
+{
+  siteKey && (
+    <>
+      <div class="cf-turnstile" data-sitekey={siteKey} data-theme="light" data-size="flexible" />
+      <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer is:inline />
+    </>
+  )
+}

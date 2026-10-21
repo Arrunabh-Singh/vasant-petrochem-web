@@ -1,0 +1,8 @@
+{
+  "$schema": "../_schemas/page.schema.json",
+  "title": "Marketplace",
+  "description": "Base oils, fuels, bitumen, process oils and solvents with their typical properties. Filter, compare grades and request one quote for several products.",
+  "status": "published",
+  "headline": "Marketplace",
+  "lead": "Every grade we supply, with its typical properties. Filter by family, industry and packaging, compare up to three grades, and gather products into one quote."
+}

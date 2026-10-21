@@ -1,0 +1,45 @@
+{
+  "$schema": "./_schemas/navigation.schema.json",
+  "header": [
+    { "label": "Marketplace", "href": "/marketplace" },
+    { "label": "Industries", "href": "/industries" },
+    { "label": "Supply", "href": "/supply" },
+    { "label": "About", "href": "/about" },
+    { "label": "Contact", "href": "/contact" }
+  ],
+  "footer": [
+    {
+      "heading": "Marketplace",
+      "links": [
+        { "label": "All products", "href": "/marketplace" },
+        { "label": "Live offers", "href": "/marketplace/offers" },
+        { "label": "Compare grades", "href": "/marketplace/compare" },
+        { "label": "Source any grade", "href": "/source" },
+        { "label": "Export enquiries", "href": "/export" },
+        { "label": "Get a quote", "href": "/quote" }
+      ]
+    },
+    {
+      "heading": "Company",
+      "links": [
+        { "label": "About", "href": "/about" },
+        { "label": "Leadership", "href": "/leadership" },
+        { "label": "Industries", "href": "/industries" },
+        { "label": "Supply and logistics", "href": "/supply" },
+        { "label": "Quality", "href": "/quality" },
+        { "label": "Certifications", "href": "/certifications" },
+        { "label": "Compliance", "href": "/compliance" },
+        { "label": "Careers", "href": "/careers" },
+        { "label": "Contact", "href": "/contact" }
+      ]
+    },
+    {
+      "heading": "Resources",
+      "links": [
+        { "label": "Documents", "href": "/documents" },
+        { "label": "Insights", "href": "/insights" },
+        { "label": "Search", "href": "/search" }
+      ]
+    }
+  ]
+}

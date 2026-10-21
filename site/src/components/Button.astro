@@ -1,0 +1,36 @@
+---
+/** The design system's button: a link when `href` is set, else a button. */
+import type { HTMLAttributes } from "astro/types";
+import Icon from "./Icon.astro";
+import type { IconName } from "../lib/icons.ts";
+
+type Props = {
+  variant?: "primary" | "secondary" | "on-deep" | "outline-on-deep";
+  size?: "small" | "touch";
+  icon?: IconName;
+  iconAfter?: IconName;
+  href?: string;
+  full?: boolean;
+  type?: "button" | "submit";
+  class?: string;
+} & Omit<HTMLAttributes<"a"> & HTMLAttributes<"button">, "type" | "class">;
+
+const { variant = "primary", size, icon, iconAfter, href, full, type = "button", class: extra, ...rest } = Astro.props;
+const cls = ["vp-btn", `vp-btn-${variant}`, size && `vp-btn-${size}`, full && "vp-btn-full", extra];
+const iconSize = size === "small" ? 18 : 20;
+---
+{
+  href ? (
+    <a href={href} class:list={cls} {...rest}>
+      {icon && <Icon name={icon} size={iconSize} />}
+      <slot />
+      {iconAfter && <Icon name={iconAfter} size={18} />}
+    </a>
+  ) : (
+    <button type={type} class:list={cls} {...rest}>
+      {icon && <Icon name={icon} size={iconSize} />}
+      <slot />
+      {iconAfter && <Icon name={iconAfter} size={18} />}
+    </button>
+  )
+}

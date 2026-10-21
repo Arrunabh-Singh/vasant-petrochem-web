@@ -1,0 +1,122 @@
+<!-- @dsCard group="Pages" height=2400 page subtitle="The home page on phone and laptop" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Home page — preview</title>
+<style>
+  .hp-controls { margin-bottom: var(--space-5); }
+  .hp-story { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); align-items: start; }
+  .hp-lineup li { animation: hp-in 700ms cubic-bezier(.2, .8, .2, 1) both; }
+  @keyframes hp-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .hp-lineup li { animation: none; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  var INDUSTRIES = [
+    ['Road construction', 'Paving-grade bitumen for highways, bridges and urban infrastructure projects.', ['paving-bitumen-vg30']],
+    ['Paint & coatings', 'Mineral turpentine for paint, varnish and industrial coating formulations.', ['mineral-turpentine-oil']],
+    ['Rubber & polymers', 'Process oils for rubber compounding, tyre manufacturing and polymer processing.', ['rubber-process-oil', 'base-oil-sn500']],
+    ['Power & energy', 'Industrial fuel oil and light diesel for boilers, furnaces and power generation.', ['industrial-fuel-oil', 'light-diesel-oil']],
+    ['Automotive & lubricants', 'Base oils as feedstock for engine oils, gear oils and industrial lubricants.', ['base-oil-sn150', 'base-oil-sn500']],
+    ['Pharmaceutical', 'Refined petroleum jelly for pharmaceutical, cosmetic and personal-care formulations.', ['petroleum-jelly']]
+  ];
+  var HOW = [
+    ['Quotes within 24 hours', 'Send the grade and quantity and you get pricing back the next business day, freight included.'],
+    ['One point of contact', 'The person who quotes you is the person who tracks your dispatch. No ticket queue.'],
+    ['Test reports on request', 'Ask for the test report for your consignment: viscosity, flash point, pour point and density.'],
+    ['Drums or bulk', '210 L and 155 kg packs, or bulk tanker loads, whatever suits your storage and offloading.']
+  ];
+
+  function Home(p) {
+    return h('div', null,
+      h(V.GlobalNav),
+      h('section', { className: 'vp-hero' },
+        h('div', { className: 'vp-container' },
+          h('p', { className: 'vp-eyebrow' }, 'Mangaliya, Indore · Est. 2025'),
+          h('h1', { className: 'vp-h-hero' }, 'Industrial oils, fuels & lubricants from Indore.'),
+          h('p', { className: 'vp-lead' }, 'Vasant Petrochem manufactures and trades base oils, bitumen, industrial fuels, process oils and solvents for plants, road projects and blenders across Central India.'),
+          h('div', { className: 'vp-actions' },
+            h(V.Button, { size: 'touch' }, 'Get a quote'),
+            h(V.Button, { size: 'touch', variant: 'secondary', iconAfter: 'arrow' }, 'Browse products')),
+          h('ul', { className: 'vp-lineup hp-lineup', 'aria-label': 'Our product lines' }, V.catalog.map(function (o, i) {
+            return h('li', { key: o.slug, style: { animationDelay: (i * 70) + 'ms' } },
+              h('a', { href: '#/products/' + o.slug },
+                h(V.Droplet, { slug: o.slug, size: 44 }),
+                h('span', { className: 'vp-lineup-name' }, o.name),
+                h('span', { className: 'vp-lineup-code' }, o.code)));
+          })))),
+      h('div', { className: 'vp-container' },
+        h('ul', { className: 'vp-facts' },
+          ['Manufacturing and trading', 'Drums or bulk tanker', 'Test reports available on request', 'Pricing within 24 hours'].map(function (f) {
+            return h('li', { key: f }, h(V.Icon, { name: 'check', size: 18 }), f);
+          }))),
+      h('section', { className: 'vp-section', id: 'products' },
+        h('div', { className: 'vp-container' },
+          h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Product catalog'), h('h2', { className: 'vp-h-section' }, 'Our product lines'),
+            h('p', { className: 'vp-small' }, 'Manufactured and traded from Mangaliya. Ask for current specs and pricing on any line.')),
+          h('div', { className: 'vp-rail vp-grid-4' }, V.catalog.map(function (o) { return h(V.ProductCard, { key: o.slug, product: o }); })))),
+      h('section', { className: 'vp-section vp-band-parchment', id: 'industries' },
+        h('div', { className: 'vp-container' },
+          h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Markets we serve'), h('h2', { className: 'vp-h-section' }, 'Industries we supply')),
+          h('ul', { className: 'vp-ind' }, INDUSTRIES.map(function (it) {
+            return h('li', { key: it[0] }, h('h3', null, it[0]), h('p', null, it[1]),
+              h('div', { className: 'vp-chips' }, it[2].map(function (s) { var o = V.product(s); return h(V.Chip, { key: s, href: '#/products/' + s }, o.name); })));
+          })))),
+      h('section', { className: 'vp-section', id: 'about' },
+        h('div', { className: 'vp-container' },
+          h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'How we work'), h('h2', { className: 'vp-h-section' }, 'What you can expect')),
+          h('ul', { className: 'vp-how' }, HOW.map(function (w) { return h('li', { key: w[0] }, h('h3', null, w[0]), h('p', null, w[1])); })))),
+      h('section', { className: 'vp-section', style: { paddingTop: 0 } },
+        h('div', { className: 'vp-container vp-split' },
+          h('div', null,
+            h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Our facility'), h('h2', { className: 'vp-h-section' }, 'Blending and storage at Mangaliya'),
+              h('p', { className: 'vp-small' }, 'Our Mangaliya facility handles blending and storage for our manufactured lines, giving us direct control over consistency and supply.'))),
+          h('div', { className: 'vp-photo-slot' }, 'Facility photograph: tanks, drums, the lab, a tanker at the gate. Real photographs only (VP-HUM-006).'))),
+      h('section', { className: 'vp-section', style: { paddingTop: 0 } },
+        h('div', { className: 'vp-container' },
+          h('div', { className: 'vp-trading' },
+            h('div', null, h('h2', { className: 'vp-h-section', style: { marginBottom: 'var(--space-3)' } }, 'Also trading'),
+              h('p', { className: 'vp-small' }, 'Beyond our own lines, we source and supply branded industrial lubricants and specialty oils, including Klüber Cassida-series products, to match what you need. Ask us for current stock.')),
+            h(V.Button, { variant: 'secondary', icon: 'whatsapp', size: 'touch' }, 'Ask on WhatsApp')))),
+      h('section', { className: 'vp-section', style: { paddingTop: 0 } },
+        h('div', { className: 'vp-container' },
+          h('div', { className: 'vp-cta-band' },
+            h('div', null, h('h2', { className: 'vp-h-section', style: { color: 'var(--on-deep)', marginBottom: 'var(--space-3)' } }, 'Get pricing within 24 hours.'),
+              h('p', { style: { margin: 0, color: 'var(--on-deep-secondary)' } }, 'Tell us the grade and quantity. The person who quotes you is the person who tracks your dispatch.')),
+            h('div', { className: 'vp-actions' },
+              h(V.Button, { variant: 'on-deep', size: 'touch' }, 'Get a quote'),
+              h(V.Button, { variant: 'outline-on-deep', size: 'touch', icon: 'whatsapp' }, 'Chat on WhatsApp'))))),
+      h(V.Footer),
+      p.phone ? h(V.MobileActionBar) : null);
+  }
+
+  function Story() {
+    var st = React.useState(0), H = st[0], setH = st[1];
+    var ref = React.useRef(null);
+    React.useLayoutEffect(function () {
+      var el = ref.current; if (!el) return;
+      var ro = new ResizeObserver(function () { setH(el.offsetHeight); });
+      ro.observe(el); return function () { ro.disconnect(); };
+    }, []);
+    var seg = H ? Math.ceil(H / 3) : 1800;
+    return h('div', { className: 'hp-story' }, [0, 1, 2].map(function (k) {
+      return h(V.Frame, { key: k, width: 390, clip: [k * seg, seg], label: 'Phone · ' + (k + 1) + ' of 3' },
+        h('div', { ref: k === 0 ? ref : null }, h(Home, { phone: true })));
+    }));
+  }
+
+  function App() {
+    var a = React.useState('laptop'), view = a[0], setView = a[1];
+    return h('div', { className: 'vp-demo' },
+      h('div', { className: 'hp-controls' },
+        h('div', { className: 'vp-switch', role: 'group', 'aria-label': 'Width' },
+          h('button', { type: 'button', 'aria-pressed': view === 'laptop', onClick: function () { setView('laptop'); } }, 'Laptop'),
+          h('button', { type: 'button', 'aria-pressed': view === 'phone', onClick: function () { setView('phone'); } }, 'Phone'))),
+      view === 'laptop' ? h(V.Frame, { width: 1280, label: 'Laptop · 1280px · /' }, h(Home)) : h(Story));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

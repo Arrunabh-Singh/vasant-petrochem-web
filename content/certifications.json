@@ -1,0 +1,5 @@
+{
+  "$schema": "./_schemas/certifications.schema.json",
+  "_note": "Only certificates actually held: number, issuing body, validity and the certificate file in content/documents/. Expired entries are hidden and fail CI if a published page cites them (MNC VP-CORP-004).",
+  "certifications": []
+}

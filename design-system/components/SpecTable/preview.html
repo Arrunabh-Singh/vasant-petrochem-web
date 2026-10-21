@@ -1,0 +1,18 @@
+<!-- @dsCard group="Product" height=560 subtitle="Typical properties with the shared disclaimer" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>SpecTable — preview</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var V = window.Vasant, h = React.createElement;
+  function pad(children, max) { return h('div', { style: { padding: '24px 0' } }, h('div', { className: 'vp-container' }, h('div', { style: { maxWidth: max } }, children))); }
+  function App() {
+    return h('div', { className: 'vp-demo vp-demo-pair' },
+      h(V.Frame, { width: 390, label: 'Phone · 390px' }, pad(h(V.SpecTable, { product: V.product('paving-bitumen-vg30') }))),
+      h(V.Frame, { width: 1280, label: 'Laptop · 1280px' }, pad(h(V.SpecTable, { product: V.product('base-oil-sn500') }), 700)));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

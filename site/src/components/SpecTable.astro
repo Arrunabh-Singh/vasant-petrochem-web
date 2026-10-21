@@ -1,0 +1,60 @@
+---
+import type { ProductEntry } from "../lib/catalog.ts";
+import { specText, packagingLine } from "../lib/catalog.ts";
+import { disclaimer } from "../lib/claims.ts";
+import { t } from "../lib/ui.ts";
+import GradeChip from "./GradeChip.astro";
+
+interface Props {
+  product: ProductEntry;
+  /** h2 on the product page; h3 under the datasheet's own section heading. */
+  headingLevel?: "h2" | "h3";
+}
+const { product, headingLevel: H = "h2" } = Astro.props;
+const p = product.data;
+// The method column appears once any value cites its test method.
+const methods = p.specs.some((s) => s.method);
+const note = await disclaimer();
+---
+<div class="vp-specs">
+  <div class="vp-specs-head">
+    <H class="vp-eyebrow">Typical properties</H>
+    <GradeChip code={p.code} tone="quiet" />
+  </div>
+  <div class="vp-specs-scroll">
+    <table>
+      <caption class="vp-sr">Typical properties of {p.name} ({p.code})</caption>
+      {
+        methods && (
+          <thead>
+            <tr>
+              <th scope="col">Property</th>
+              <th scope="col">Method</th>
+              <th scope="col">Value</th>
+            </tr>
+          </thead>
+        )
+      }
+      <tbody>
+        {
+          p.specs.map((s) => (
+            <tr>
+              <th scope="row">{s.property}</th>
+              {methods && <td class="vp-method">{s.method ?? "—"}</td>}
+              <td>{specText(s)}</td>
+            </tr>
+          ))
+        }
+        <tr class="vp-specs-pack">
+          <th scope="row">Packaging</th>
+          {methods && <td class="vp-method"></td>}
+          <td>{packagingLine(product)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="vp-specs-foot">
+    <p class="vp-disclaimer">{note}</p>
+    {p.data === "placeholder" && <p class="vp-disclaimer">{t("placeholder.note")}</p>}
+  </div>
+</div>

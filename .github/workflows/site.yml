@@ -1,0 +1,131 @@
+name: Site
+
+# The public site (site/), the content and design system it is built from,
+# and the database functions it calls. The hub keeps its own workflow (ci.yml).
+on:
+  pull_request:
+    paths: ["site/**", "content/**", "design-system/**", "supabase/**", ".github/workflows/site.yml"]
+  push:
+    branches: [main]
+    paths: ["site/**", "content/**", "design-system/**", "supabase/**", ".github/workflows/site.yml"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: site check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      # Types, unit tests, a production build, then scripts/checks.mjs on the
+      # built pages (TODO markers, inline scripts and styles, foreign hosts,
+      # broken links, JS budgets, the copyright year).
+      - run: npm run check
+      - run: npm audit --omit=dev --audit-level=high
+      # content/_schemas is generated from src/content/schema.ts for editors and
+      # agents; a schema change must ship with its regenerated JSON Schema.
+      - name: JSON Schemas are current
+        run: npm run content:schema && git diff --exit-code -- ../content/_schemas
+      # The production dependency tree as a CycloneDX SBOM, kept with the run.
+      - name: SBOM
+        run: npm sbom --sbom-format cyclonedx --omit dev > sbom.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: site/sbom.cdx.json
+          retention-days: 90
+
+  quality:
+    name: e2e, Lighthouse and ZAP
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    env:
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      # One local Worker for all three. Off the live host every form answers as
+      # a dry run, so nothing here is stored or emailed (src/server/http.ts).
+      - name: Start the site
+        run: |
+          npm run preview > preview.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf -o /dev/null http://localhost:4321/ && exit 0; sleep 1; done
+          cat preview.log; exit 1
+      # Flows, zero axe violations (WCAG 2.2 AA), no console errors or CSP
+      # reports, no sideways scroll at 390 (tests/e2e).
+      - name: End-to-end and accessibility
+        run: npm run e2e
+      # Mobile budgets on four pages (lighthouserc.json).
+      - name: Lighthouse
+        run: npx --yes @lhci/cli@0.15.1 autorun
+      # Passive OWASP ZAP baseline; any High finding fails the job.
+      - name: ZAP baseline
+        run: |
+          mkdir -p zap && chmod 777 zap
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://localhost:4321 -J zap.json -r zap.html -I
+          high=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' zap/zap.json)
+          echo "High findings: $high"
+          test "$high" -eq 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-reports
+          path: |
+            site/test-results
+            site/.lighthouseci
+            site/zap
+          retention-days: 14
+          if-no-files-found: ignore
+
+  sql:
+    name: database tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      # Each file in supabase/tests runs on its own scratch database and rolls
+      # back; the Supabase roles the migrations grant to are cluster-wide.
+      - name: Run the SQL tests
+        run: |
+          psql -X -q -v ON_ERROR_STOP=1 -d postgres -c "create role anon nologin; create role authenticated nologin; create role service_role nologin;"
+          for t in supabase/tests/*.sql; do
+            db="t_$(basename "$t" .sql | tr -c 'a-z0-9\n' '_')"
+            createdb "$db"
+            psql -X -q -v ON_ERROR_STOP=1 -d "$db" -f "$t"
+          done
