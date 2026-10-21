@@ -21,13 +21,27 @@ export type Lead = {
   message: string | null;
   status: LeadStatus;
   created_at: string;
+  // From the new public site (migration 20261021120000_site_r1); absent on
+  // older rows, and on a database the migration has not reached yet.
+  reference?: string | null;
+  request_type?: string | null;
+  delivery_city?: string | null;
+  delivery_country?: string | null;
+  required_by?: string | null;
+  offer_ref?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  landing_page?: string | null;
 };
 
 export async function getLeads(): Promise<Lead[]> {
   const supabase = await createClient();
+  // `*`, not a column list: the page keeps working whether or not the
+  // site_r1 migration has been applied yet.
   const { data, error } = await supabase
     .from("quote_requests")
-    .select("id, name, email, company, phone, product_label, quantity, message, status, created_at")
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {

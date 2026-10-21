@@ -31,6 +31,7 @@ const GROUPS: { label: string; links: { name: string; href: string }[] }[] = [
       { name: "Leads", href: "/admin" },
       { name: "Products", href: "/admin/products" },
       { name: "TDS Requests", href: "/admin/tds-requests" },
+      { name: "Offers", href: "/admin/market/offers" },
     ],
   },
   {

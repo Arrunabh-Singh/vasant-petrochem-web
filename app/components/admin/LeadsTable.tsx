@@ -16,6 +16,9 @@ const STATUS_STYLES: Record<LeadStatus, string> = {
   lost: "bg-slate-200 text-slate-500",
 };
 
+const delivery = (l: Lead) => [l.delivery_city, l.delivery_country].filter(Boolean).join(", ");
+const campaign = (l: Lead) => [l.utm_source, l.utm_medium, l.utm_campaign].filter(Boolean).join(" / ");
+
 export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
   const [leads, setLeads] = useState(initialLeads);
   const [search, setSearch] = useState("");
@@ -47,15 +50,20 @@ export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
   };
 
   const exportCsv = () => {
-    const header = ["Name", "Email", "Phone", "Company", "Product", "Quantity", "Message", "Status", "Received"];
+    const header = ["Reference", "Type", "Name", "Email", "Phone", "Company", "Product", "Quantity", "Delivery", "Needed by", "Message", "Campaign", "Status", "Received"];
     const rows = filtered.map((l) => [
+      l.reference ?? "",
+      l.request_type ?? "",
       l.name,
       l.email,
       l.phone ?? "",
       l.company ?? "",
       l.product_label ?? "",
       l.quantity ?? "",
+      delivery(l),
+      l.required_by ?? "",
       l.message ?? "",
+      campaign(l),
       l.status,
       new Date(l.created_at).toLocaleString("en-IN"),
     ]);
@@ -125,6 +133,11 @@ export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
             {filtered.map((l) => (
               <tr key={l.id} className="border-t border-slate-100 align-top">
                 <td className="px-4 py-3">
+                  {(l.reference || l.request_type) && (
+                    <p className="text-slate-400 text-[11px] font-mono uppercase tracking-wider mb-1">
+                      {[l.reference, l.request_type].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
                   <p className="font-bold text-brand-dark">{l.name}</p>
                   <a href={`mailto:${l.email}`} className="text-brand text-xs hover:underline">{l.email}</a>
                   {l.company && <p className="text-slate-400 text-xs">{l.company}</p>}
@@ -133,8 +146,16 @@ export default function LeadsTable({ leads: initialLeads }: { leads: Lead[] }) {
                   )}
                   {l.message && <p className="text-slate-500 text-xs mt-1 max-w-xs">{l.message}</p>}
                 </td>
-                <td className="px-4 py-3 text-slate-600">{l.product_label || "—"}</td>
-                <td className="px-4 py-3 text-slate-600">{l.quantity || "—"}</td>
+                <td className="px-4 py-3 text-slate-600">
+                  {l.product_label || "—"}
+                  {l.offer_ref && <p className="text-xs text-amber-700 mt-1">From a live offer</p>}
+                  {campaign(l) && <p className="text-xs text-slate-400 mt-1">via {campaign(l)}</p>}
+                </td>
+                <td className="px-4 py-3 text-slate-600">
+                  {l.quantity || "—"}
+                  {delivery(l) && <p className="text-xs text-slate-400 mt-1">to {delivery(l)}</p>}
+                  {l.required_by && <p className="text-xs text-slate-400">by {l.required_by}</p>}
+                </td>
                 <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
                   {new Date(l.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
                 </td>

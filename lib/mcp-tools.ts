@@ -8,10 +8,10 @@ export type McpIdentity = { tokenId: string; email: string; monthlyBudget: numbe
 /**
  * blueprint §3.5 / THREAT_MODEL.md C4: "no model-authored SQL" — every
  * tool here maps 1:1 to a hand-written, parameterized RPC
- * (public.ai_get_*) against a pre-aggregated view, never a general SQL
- * executor. READ_ALLOWLIST exists as an explicit, auditable list even
- * though the registration below already only exposes these five —
- * belt-and-braces against a future tool being added without updating it.
+ * (public.ai_get_*, public.ai_propose_*), never a general SQL executor.
+ * The allowlists exist as explicit, auditable lists even though the
+ * registration below already only exposes these tools — belt-and-braces
+ * against a future tool being added without updating them.
  */
 export const READ_ALLOWLIST = [
   "get_receivables",
@@ -19,7 +19,18 @@ export const READ_ALLOWLIST = [
   "get_item_stats",
   "get_gst_summary",
   "get_document_index",
+  "list_offers",
 ] as const;
+
+/**
+ * Tools that change something (CLAUDE.md §4.6: action tools behind an
+ * explicit allowlist). Each one only proposes: what it creates waits for a
+ * human in the hub, and the database refuses to let the human who asked be
+ * the one who approves (four eyes).
+ */
+export const ACTION_ALLOWLIST = ["propose_offer"] as const;
+
+const ALLOWED: readonly string[] = [...READ_ALLOWLIST, ...ACTION_ALLOWLIST];
 
 function wrapUntrusted(rows: unknown): string {
   // Prompt-injection defence: row content (party names, document names,
@@ -37,14 +48,14 @@ function wrapUntrusted(rows: unknown): string {
 async function runTool<T>(identity: McpIdentity, toolName: string, params: Record<string, unknown>, fn: () => Promise<T>) {
   const admin = createAdminClient();
 
-  if (!(READ_ALLOWLIST as readonly string[]).includes(toolName)) {
+  if (!ALLOWED.includes(toolName)) {
     await admin.rpc("log_ai_action", {
       p_mcp_token_id: identity.tokenId,
       p_requester_email: identity.email,
       p_tool_name: toolName,
       p_params: params,
       p_status: "denied",
-      p_error: "tool not on READ_ALLOWLIST",
+      p_error: "tool not on an allowlist",
     });
     throw new Error("Tool not allowed.");
   }
@@ -195,6 +206,54 @@ export function buildMcpServer(identity: McpIdentity): McpServer {
         const { data, error } = await admin.rpc("ai_get_document_index", { p_doc_class: docClass ?? null, p_limit: limit ?? 20 });
         if (error) throw new Error(error.message);
         return data;
+      });
+      return toolResult(data);
+    }
+  );
+
+  server.registerTool(
+    "list_offers",
+    {
+      title: "Live offers board",
+      description: "Lots on the public site's live offers board, and lots waiting for a person to publish them. Newest first; withdrawn lots are left out.",
+      inputSchema: { limit: z.number().int().min(1).max(100).optional() },
+      annotations: { readOnlyHint: true },
+    },
+    async ({ limit }) => {
+      const data = await runTool(identity, "list_offers", { limit }, async () => {
+        const admin = createAdminClient();
+        const { data, error } = await admin.rpc("ai_get_offers", { p_limit: limit ?? 20 });
+        if (error) throw new Error(error.message);
+        return data;
+      });
+      return toolResult(data);
+    }
+  );
+
+  server.registerTool(
+    "propose_offer",
+    {
+      title: "Propose a lot for the offers board",
+      description:
+        "Proposes a lot for the public site's live offers board, recorded under your name. It stays pending until a different person publishes it in the hub (Sales › Offers); this tool can never publish, and prices are never shown on the board.",
+      inputSchema: {
+        product_slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(80).describe("The product's catalogue slug, e.g. base-oil-sn500"),
+        title: z.string().min(3).max(120).describe("What buyers see, e.g. 20 MT Base Oil SN500 in drums"),
+        quantity: z.number().positive().max(1_000_000),
+        uom: z.enum(["MT", "kL", "L", "kg", "drums", "pails"]),
+        location: z.string().min(2).max(120),
+        basis: z.string().min(2).max(120).describe("Delivery basis, e.g. Ex-works"),
+        valid_until: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe("Last day the lot is offered (YYYY-MM-DD)"),
+        notes: z.string().max(500).optional(),
+      },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+    },
+    async (offer) => {
+      const data = await runTool(identity, "propose_offer", offer, async () => {
+        const admin = createAdminClient();
+        const { data, error } = await admin.rpc("ai_propose_offer", { p: offer, p_requester_email: identity.email });
+        if (error) throw new Error(error.message);
+        return { id: data, status: "pending", next: "A person other than you must publish it in the hub before it appears on the site." };
       });
       return toolResult(data);
     }
