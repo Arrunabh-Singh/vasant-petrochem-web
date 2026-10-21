@@ -39,7 +39,7 @@ const issued = new Date().toISOString().slice(0, 10);
     <h1>{p.name}</h1>
     <p class="vp-small">{family} · {product.body ?? p.summary}</p>
     <h2>Typical properties</h2>
-    <SpecTable product={product} />
+    <SpecTable product={product} headingLevel="h3" />
     <h2>Applications</h2>
     <p class="vp-small">{p.applications.join(" · ")}</p>
     <footer class="vp-sheet-foot">

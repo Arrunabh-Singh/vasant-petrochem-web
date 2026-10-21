@@ -29,7 +29,9 @@
       animation-timeline: view();
       animation-range: entry 0% entry 45%;
     }
-    @keyframes vp-rise { from { opacity: .01; transform: translateY(28px); } }
+    /* Below the fold they wait at 0, hidden rather than faint, so no reader or
+       checker meets them as low-contrast text before they arrive. */
+    @keyframes vp-rise { from { opacity: 0; transform: translateY(28px); } }
 
     /* A statement lights word by word as each line crosses the middle of the
        screen. Unlit words stay at line-strong, which keeps 3:1 on cream. */
@@ -55,7 +57,7 @@
     }
     @keyframes vp-wipe-bar { 0% { transform: translateX(-101%); } 45%, 55% { transform: none; } 100% { transform: translateX(101%); } }
     .vp-wipe > * { animation: vp-wipe-in linear both; animation-timeline: view(); animation-range: entry 45% entry 85%; }
-    @keyframes vp-wipe-in { from { opacity: .01; } }
+    @keyframes vp-wipe-in { from { opacity: 0; } }
 
     /* Whatever has keyboard focus is shown whole, wherever its animation is. */
     .vp-wipe:focus-within::after { animation: none; transform: translateX(101%); }

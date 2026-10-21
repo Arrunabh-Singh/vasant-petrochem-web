@@ -26,8 +26,6 @@ export default defineConfig({
       MAIL_FROM: envField.string({ context: "server", access: "secret", optional: true }),
       SALES_EMAIL_TO: envField.string({ context: "server", access: "secret", optional: true }),
       IP_HASH_SECRET: envField.string({ context: "server", access: "secret", optional: true }),
-      /** Comma-separated extra origins allowed to post forms (preview and local hosts). */
-      EXTRA_ORIGINS: envField.string({ context: "server", access: "secret", optional: true }),
       /** "1" forces a dry run (validated, answered, never stored or emailed). Off the live host it is always a dry run (server/http.ts isLive). */
       RFQ_DRY_RUN: envField.string({ context: "server", access: "secret", optional: true }),
     },

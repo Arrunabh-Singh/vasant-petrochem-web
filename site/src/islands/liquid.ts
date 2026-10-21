@@ -64,7 +64,8 @@ function compile(gl: WebGLRenderingContext): WebGLProgram | null {
 
 function start(el: HTMLElement) {
   const canvas = el.querySelector("canvas");
-  const gl = canvas?.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: "low-power" });
+  // No context where WebGL would run in software (no GPU, or a blocklisted one): the CSS liquid stays.
+  const gl = canvas?.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: "low-power", failIfMajorPerformanceCaveat: true });
   const prog = gl ? compile(gl) : null;
   if (!canvas || !gl || !prog) return;
 

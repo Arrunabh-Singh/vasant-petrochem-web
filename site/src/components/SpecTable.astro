@@ -7,8 +7,10 @@ import GradeChip from "./GradeChip.astro";
 
 interface Props {
   product: ProductEntry;
+  /** h2 on the product page; h3 under the datasheet's own section heading. */
+  headingLevel?: "h2" | "h3";
 }
-const { product } = Astro.props;
+const { product, headingLevel: H = "h2" } = Astro.props;
 const p = product.data;
 // The method column appears once any value cites its test method.
 const methods = p.specs.some((s) => s.method);
@@ -16,7 +18,7 @@ const note = await disclaimer();
 ---
 <div class="vp-specs">
   <div class="vp-specs-head">
-    <h3 class="vp-eyebrow">Typical properties</h3>
+    <H class="vp-eyebrow">Typical properties</H>
     <GradeChip code={p.code} tone="quiet" />
   </div>
   <div class="vp-specs-scroll">

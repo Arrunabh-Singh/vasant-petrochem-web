@@ -214,7 +214,7 @@
       .vp-pin span:nth-child(3) { animation-range: contain 15% contain 100%; }
       .vp-pin span:nth-child(4) { animation-range: contain 30% contain 100%; }
     }
-    @keyframes vp-step { from { opacity: .01; filter: blur(6px); transform: translateY(20px); } }
+    @keyframes vp-step { from { opacity: 0; filter: blur(6px); transform: translateY(20px); } }
     @keyframes vp-draw { from { transform: scaleY(0); } }
     @keyframes vp-ring { from { transform: scale(.4); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
 
@@ -229,6 +229,6 @@
     .vp-letters .l:nth-child(6) { animation-range: cover 21% cover 41%; }
     .vp-letters .l:nth-child(7) { animation-range: cover 24% cover 44%; }
     .vp-letters .l:nth-child(n+8) { animation-range: cover 27% cover 47%; }
-    @keyframes vp-letter { from { opacity: .01; filter: blur(14px); transform: translateY(.18em); } }
+    @keyframes vp-letter { from { opacity: 0; filter: blur(14px); transform: translateY(.18em); } }
   }
 }
