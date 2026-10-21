@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "Industries",
   "description": "Industrial oils, fuels, bitumen and solvents for road construction, paints, rubber, power, lubricants and pharmaceuticals.",
   "status": "published",

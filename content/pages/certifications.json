@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "Certifications",
   "description": "The certificates Vasant Petrochem holds, with certificate numbers, issuing bodies and validity.",
   "status": "published",

@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "Vasant Petrochem · Industrial oils, fuels and lubricants from Indore",
   "description": "Base oils, bitumen, fuel oils, process oils and solvents from Mangaliya, Indore. Browse the marketplace, compare grades and get pricing within 24 hours.",
   "status": "published",

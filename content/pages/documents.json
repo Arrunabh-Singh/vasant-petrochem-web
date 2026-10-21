@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "Documents",
   "description": "Technical and safety data sheets and printable datasheets for every Vasant Petrochem product.",
   "status": "published",

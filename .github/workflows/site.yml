@@ -37,6 +37,10 @@ jobs:
       # broken links, JS budgets, the copyright year).
       - run: npm run check
       - run: npm audit --omit=dev --audit-level=high
+      # content/_schemas is generated from src/content/schema.ts for editors and
+      # agents; a schema change must ship with its regenerated JSON Schema.
+      - name: JSON Schemas are current
+        run: npm run content:schema && git diff --exit-code -- ../content/_schemas
 
   sql:
     name: database tests

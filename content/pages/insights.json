@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "Insights",
   "description": "Notes on choosing and using industrial oils, fuels, bitumen and solvents, from the Vasant Petrochem sales desk.",
   "status": "published",

@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "Supply and logistics",
   "description": "How Vasant Petrochem supplies industrial oils, fuels and bitumen: packaging options, dispatch from Mangaliya, Indore, and delivery across Central India.",
   "status": "published",

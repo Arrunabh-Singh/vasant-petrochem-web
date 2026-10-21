@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "Live offers",
   "description": "Lots of industrial oils, fuels and bitumen ready to move from Vasant Petrochem, approved by the sales desk. Prices on request.",
   "status": "published",

@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schemas/page.schema.json",
   "title": "About us",
   "description": "Vasant Petrochem manufactures and trades base oils, bitumen, fuel oils, process oils and solvents from Mangaliya, Indore, serving Central India.",
   "status": "published",

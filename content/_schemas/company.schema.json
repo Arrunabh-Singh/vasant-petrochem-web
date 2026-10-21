@@ -1,0 +1,363 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "tradeName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "foundedYear": {
+      "type": "integer",
+      "minimum": 1900,
+      "maximum": 2100
+    },
+    "legalName": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "registeredOffice": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 300
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "gstin": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{2}[A-Z]{5}\\d{4}[A-Z][A-Z\\d]Z[A-Z\\d]$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "udyam": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^UDYAM-[A-Z]{2}-\\d{2}-\\d{7}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cin": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[LU]\\d{5}[A-Z]{2}\\d{4}[A-Z]{3}\\d{6}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "iec": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{10}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "exports": {
+      "type": "boolean"
+    },
+    "works": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "city": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "region": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "regionCode": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 4
+        },
+        "postalCode": {
+          "type": "string",
+          "pattern": "^\\d{6}$"
+        },
+        "country": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lng": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        }
+      },
+      "required": [
+        "street",
+        "city",
+        "region",
+        "regionCode",
+        "postalCode",
+        "country",
+        "lat",
+        "lng"
+      ]
+    },
+    "phone": {
+      "type": "object",
+      "properties": {
+        "display": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 24
+        },
+        "href": {
+          "type": "string",
+          "pattern": "^tel:\\+\\d{8,15}$"
+        },
+        "whatsapp": {
+          "type": "string",
+          "pattern": "^\\d{8,15}$"
+        }
+      },
+      "required": [
+        "display",
+        "href",
+        "whatsapp"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+    },
+    "mailboxes": {
+      "type": "object",
+      "properties": {
+        "sales": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "email",
+              "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "documents": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "email",
+              "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "careers": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "email",
+              "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "security": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "email",
+              "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sales",
+        "documents",
+        "careers",
+        "security"
+      ]
+    },
+    "hours": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 80
+        },
+        "days": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "time": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "opens": {
+          "type": "string",
+          "pattern": "^\\d{2}:\\d{2}$"
+        },
+        "closes": {
+          "type": "string",
+          "pattern": "^\\d{2}:\\d{2}$"
+        },
+        "dayOfWeek": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ]
+          }
+        }
+      },
+      "required": [
+        "label",
+        "days",
+        "time",
+        "opens",
+        "closes",
+        "dayOfWeek"
+      ]
+    },
+    "social": {
+      "type": "object",
+      "properties": {
+        "linkedin": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "indiamart": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "justdial": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "googleBusiness": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "linkedin",
+        "indiamart",
+        "justdial",
+        "googleBusiness"
+      ]
+    },
+    "_todo": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "tradeName",
+    "foundedYear",
+    "legalName",
+    "registeredOffice",
+    "gstin",
+    "udyam",
+    "cin",
+    "iec",
+    "exports",
+    "works",
+    "phone",
+    "email",
+    "mailboxes",
+    "hours",
+    "social"
+  ]
+}

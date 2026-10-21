@@ -13,3 +13,5 @@ public/_headers
 # Test output
 test-results/
 playwright-report/
+# Review screenshots (npm run shots)
+shots/

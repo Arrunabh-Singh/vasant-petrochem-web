@@ -1,0 +1,8 @@
+# Everything the public sees, the brand, and the database is approved by the
+# owner. Takes effect with branch protection's "Require review from Code Owners".
+/content/        @Arrunabh-Singh
+/design-system/  @Arrunabh-Singh
+/site/           @Arrunabh-Singh
+/supabase/       @Arrunabh-Singh
+/.github/        @Arrunabh-Singh
+/AGENTS.md       @Arrunabh-Singh
