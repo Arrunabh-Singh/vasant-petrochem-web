@@ -48,24 +48,24 @@ for (const file of html) {
   const fail = (what) => problems.push(`${page}: ${what}`);
   if (/TODO\(/.test(doc)) fail("contains a TODO( marker");
   if (/\{\{\s*\w+\s*\}\}/.test(doc)) fail("contains an unfilled {{token}}");
-  if (/\sstyle=/.test(doc)) fail("has an inline style attribute");
-  for (const m of doc.matchAll(/<script\b([^>]*)>/g)) {
+  if (/\sstyle=/i.test(doc)) fail("has an inline style attribute");
+  for (const m of doc.matchAll(/<script\b([^>]*)>/gi)) {
     const attrs = m[1];
-    if (/\bsrc=/.test(attrs)) continue;
-    if (/type="(application\/ld\+json|application\/json|speculationrules)"/.test(attrs)) continue;
+    if (/\bsrc=/i.test(attrs)) continue;
+    if (/type="(application\/ld\+json|application\/json|speculationrules)"/i.test(attrs)) continue;
     fail("has an inline script");
   }
   const assets = [
-    ...doc.matchAll(/<(?:script|img|source)\b[^>]*?\bsrc="([^"]+)"/g),
-    ...doc.matchAll(/<link\b(?=[^>]*\brel="(?:stylesheet|preload|modulepreload|icon|apple-touch-icon|manifest)")[^>]*?\bhref="([^"]+)"/g),
+    ...doc.matchAll(/<(?:script|img|source)\b[^>]*?\bsrc="([^"]+)"/gi),
+    ...doc.matchAll(/<link\b(?=[^>]*\brel="(?:stylesheet|preload|modulepreload|icon|apple-touch-icon|manifest)")[^>]*?\bhref="([^"]+)"/gi),
   ];
   for (const [, url] of assets) {
     if (/^(https?:)?\/\//.test(url) && !url.startsWith("https://www.vasantpetrochem.com/")) fail(`loads ${url} from another host`);
   }
-  for (const m of doc.matchAll(/<a\b[^>]*\bhref="(\/[^"]*)"/g)) {
+  for (const m of doc.matchAll(/<a\b[^>]*\bhref="(\/[^"]*)"/gi)) {
     if (!exists(m[1])) fail(`links to ${m[1]}, which does not exist`);
   }
-  const js = [...doc.matchAll(/<script\b[^>]*\bsrc="(\/_astro\/[^"]+\.js)"/g)].reduce((n, m) => n + gzSize(m[1]), 0);
+  const js = [...doc.matchAll(/<script\b[^>]*\bsrc="(\/_astro\/[^"]+\.js)"/gi)].reduce((n, m) => n + gzSize(m[1]), 0);
   if (js > BUDGET(page)) fail(`ships ${js} bytes of gzipped JS (budget ${BUDGET(page)})`);
   if (/vp-footer/.test(doc) && !doc.includes(year)) fail(`footer copyright does not reach ${year}`);
 }
