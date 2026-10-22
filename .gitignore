@@ -45,6 +45,8 @@ yarn-error.log*
 # ...except the names-only template. It holds no values, and the project's
 # conventions (CLAUDE.md §2, §8) require it to be tracked.
 !.env.example
+# Public build values only (the Turnstile site key), written by site/scripts/cutover.mjs.
+!site/.env.production
 
 # vercel
 .vercel
@@ -58,3 +60,6 @@ next-env.d.ts
 
 # Agent worktrees (Claude Code)
 .claude/worktrees/
+
+# Brand kit output (site/scripts/kit.mjs): ads, social, print, signatures
+marketing/

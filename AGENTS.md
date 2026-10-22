@@ -77,7 +77,7 @@ SQL tests run on a scratch Postgres: `createdb scratch && psql -v ON_ERROR_STOP=
 1. Work on a branch. Keep one change per pull request.
 2. Run `npm --prefix site run check`. For anything visible, also run `shots`, look at both widths, and attach the screenshots.
 3. Open a pull request with the template: say what changed and why, and give the evidence for any data or claim.
-4. CI repeats the checks, and the owner reviews and merges. A merge deploys in about a minute (browsers may keep an old logo or share image for up to a day); reverting the pull request rolls it back.
+4. CI repeats the checks, and `.github/workflows/deploy-site.yml` comments a preview link (drafts shown, forms dry runs). The owner reviews and merges. A merge deploys in about a minute (browsers may keep an old logo or share image for up to a day); reverting the pull request rolls it back. Going live and rolling back the whole site: `docs/runbooks/cloudflare-cutover.md` and `site/scripts/cutover.mjs`.
 
 ## Don'ts
 
@@ -93,4 +93,5 @@ SQL tests run on a scratch Postgres: `createdb scratch && psql -v ON_ERROR_STOP=
 - `catalog`: add or update a product;
 - `brand`: replace a logo or a token;
 - `offers`: propose a lot for the live board;
+- `ads`: ads, social images, letterhead, business cards and email signatures (`npm --prefix site run kit`);
 - `design-review`: review a page before it ships.
