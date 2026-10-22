@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
     requesterEmail,
     ttlMinutes: Number(body?.ttlMinutes),
     monthlyTokenBudget: Number(body?.monthlyTokenBudget),
+    scope: body?.scope,
   });
 
   if ("error" in result) return NextResponse.json({ error: result.error }, { status: 500 });

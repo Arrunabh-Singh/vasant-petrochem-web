@@ -41,7 +41,7 @@ export async function createShipment(formData: FormData) {
     status: str(formData.get("status")) ?? "booked",
   };
 
-  const { error } = await supabase.from("logistics.shipment").insert(payload);
+  const { error } = await supabase.schema("logistics").from("shipment").insert(payload);
   if (error) console.error("createShipment failed:", error.message);
   revalidatePath("/admin/logistics/shipments");
 }
@@ -64,7 +64,7 @@ export async function createVehicle(formData: FormData) {
     notes: str(formData.get("notes")),
   };
 
-  const { error } = await supabase.from("logistics.fleet_vehicle").insert(payload);
+  const { error } = await supabase.schema("logistics").from("fleet_vehicle").insert(payload);
   if (error) console.error("createVehicle failed:", error.message);
   revalidatePath("/admin/logistics/vehicles");
 }
@@ -82,7 +82,7 @@ export async function createSanction(formData: FormData) {
     notes: str(formData.get("notes")),
   };
 
-  const { error } = await supabase.from("logistics.counterparty_sanction").insert(payload);
+  const { error } = await supabase.schema("logistics").from("counterparty_sanction").insert(payload);
   if (error) console.error("createSanction failed:", error.message);
   revalidatePath("/admin/logistics/sanctions");
 }

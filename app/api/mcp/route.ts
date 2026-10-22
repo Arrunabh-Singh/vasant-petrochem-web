@@ -11,7 +11,8 @@ export const runtime = "nodejs";
  * proportionate choice for this wave. Tokens are minted from the admin
  * UI (app/actions/mcp.ts), hashed at rest, 15-minute TTL, scoped to the
  * requester's own Google identity so ai_action_log always records who
- * actually asked, not just "the AI."
+ * actually asked, not just "the AI." Read-only unless minted with the
+ * "propose" scope (lib/mcp-scope.ts).
  * ponytail: bearer-over-TLS, no OAuth 2.1 authorization-code flow — the
  * upgrade path if a remote connector (not just Claude Code) needs to
  * connect is documented in docs/OWNER_CHECKLIST.md.
@@ -24,12 +25,12 @@ async function resolveIdentity(req: NextRequest): Promise<McpIdentity | null> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("mcp_tokens")
-    .select("id, requester_email, monthly_token_budget, expires_at, revoked_at")
+    .select("id, requester_email, monthly_token_budget, scope, expires_at, revoked_at")
     .eq("token_hash", tokenHash)
     .maybeSingle();
 
   if (!data || data.revoked_at || new Date(data.expires_at) < new Date()) return null;
-  return { tokenId: data.id, email: data.requester_email, monthlyBudget: data.monthly_token_budget };
+  return { tokenId: data.id, email: data.requester_email, monthlyBudget: data.monthly_token_budget, scope: data.scope };
 }
 
 async function handle(req: NextRequest): Promise<Response> {

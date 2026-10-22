@@ -2,35 +2,18 @@ import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createAdminClient } from "./supabase/admin";
 import { estimateTokens } from "./ai-token-estimate";
+import { refusal } from "./mcp-scope";
 
-export type McpIdentity = { tokenId: string; email: string; monthlyBudget: number };
+export { ACTION_ALLOWLIST, READ_ALLOWLIST } from "./mcp-scope";
+
+export type McpIdentity = { tokenId: string; email: string; monthlyBudget: number; scope: string };
 
 /**
  * blueprint §3.5 / THREAT_MODEL.md C4: "no model-authored SQL" — every
  * tool here maps 1:1 to a hand-written, parameterized RPC
  * (public.ai_get_*, public.ai_propose_*), never a general SQL executor.
- * The allowlists exist as explicit, auditable lists even though the
- * registration below already only exposes these tools — belt-and-braces
- * against a future tool being added without updating them.
+ * Which tools a token may call is decided in lib/mcp-scope.ts.
  */
-export const READ_ALLOWLIST = [
-  "get_receivables",
-  "get_ledger_aging",
-  "get_item_stats",
-  "get_gst_summary",
-  "get_document_index",
-  "list_offers",
-] as const;
-
-/**
- * Tools that change something (CLAUDE.md §4.6: action tools behind an
- * explicit allowlist). Each one only proposes: what it creates waits for a
- * human in the hub, and the database refuses to let the human who asked be
- * the one who approves (four eyes).
- */
-export const ACTION_ALLOWLIST = ["propose_offer"] as const;
-
-const ALLOWED: readonly string[] = [...READ_ALLOWLIST, ...ACTION_ALLOWLIST];
 
 function wrapUntrusted(rows: unknown): string {
   // Prompt-injection defence: row content (party names, document names,
@@ -48,16 +31,17 @@ function wrapUntrusted(rows: unknown): string {
 async function runTool<T>(identity: McpIdentity, toolName: string, params: Record<string, unknown>, fn: () => Promise<T>) {
   const admin = createAdminClient();
 
-  if (!ALLOWED.includes(toolName)) {
+  const refused = refusal(identity.scope, toolName);
+  if (refused) {
     await admin.rpc("log_ai_action", {
       p_mcp_token_id: identity.tokenId,
       p_requester_email: identity.email,
       p_tool_name: toolName,
       p_params: params,
       p_status: "denied",
-      p_error: "tool not on an allowlist",
+      p_error: refused,
     });
-    throw new Error("Tool not allowed.");
+    throw new Error(refused === "token scope is read-only" ? "This token is read-only." : "Tool not allowed.");
   }
 
   const { data: usedRaw } = await admin.rpc("ai_month_token_usage", { p_mcp_token_id: identity.tokenId });

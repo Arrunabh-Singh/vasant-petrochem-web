@@ -353,6 +353,7 @@ export type McpTokenRow = {
   id: string;
   requester_email: string;
   monthly_token_budget: number;
+  scope: string;
   expires_at: string;
   revoked_at: string | null;
   created_at: string;
@@ -362,7 +363,7 @@ export async function getMcpTokens(): Promise<McpTokenRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("mcp_tokens")
-    .select("id, requester_email, monthly_token_budget, expires_at, revoked_at, created_at")
+    .select("id, requester_email, monthly_token_budget, scope, expires_at, revoked_at, created_at")
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) {

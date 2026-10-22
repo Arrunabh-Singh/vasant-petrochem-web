@@ -28,6 +28,11 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ docId: stri
   } = await sb.auth.getUser();
   if (!user?.email) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { docId } = await ctx.params;
+  const admin = createAdminClient();
+  // The audit row is written by the service role on the caller's behalf:
+  // log_event refuses signed-in callers who are not staff, and a document
+  // can be shared with someone who is not (Release 2's buyers).
+  const audit = (event: Record<string, unknown>) => admin.rpc("log_event", { ...event, p_actor_email: user.email });
 
   const { data: doc } = await sb
     .from("documents")
@@ -37,7 +42,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ docId: stri
     .maybeSingle();
 
   if (!doc) {
-    await sb.rpc("log_event", {
+    await audit({
       p_action: "download_denied",
       p_object_type: "document",
       p_object_id: docId,
@@ -58,7 +63,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ docId: stri
 
   // Audit before issuing: this row exists before any byte/URL leaves the
   // server, so a crash mid-response still leaves a true record.
-  await sb.rpc("log_event", {
+  await audit({
     p_action: "download_ok",
     p_object_type: "document",
     p_object_id: docId,
@@ -69,7 +74,6 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ docId: stri
     },
   });
 
-  const admin = createAdminClient();
   const docClass = doc.doc_class as DocClass;
 
   if (doc.encrypted) {
@@ -82,7 +86,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ docId: stri
     try {
       plain = decryptDoc(encrypted, key, docId, ver.version, docClass);
     } catch {
-      await sb.rpc("log_event", {
+      await audit({
         p_action: "integrity_failure",
         p_object_type: "document",
         p_object_id: docId,
@@ -94,7 +98,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ docId: stri
     }
 
     if (sha256Hex(plain) !== ver.checksum_sha256) {
-      await sb.rpc("log_event", {
+      await audit({
         p_action: "integrity_failure",
         p_object_type: "document",
         p_object_id: docId,

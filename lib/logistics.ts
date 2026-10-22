@@ -28,7 +28,7 @@ export type ShipmentRow = {
 export async function getAllShipmentsAdmin(): Promise<ShipmentRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("logistics.shipment")
+    .schema("logistics").from("shipment")
     .select(
       "id, shipment_no, mode, counterparty_name, origin, destination, product, qty, uom, vehicle_no, transporter_name, eway_no, eway_expiry, eta, status"
     )
@@ -58,7 +58,7 @@ export type VehicleRow = {
 export async function getVehiclesAdmin(): Promise<VehicleRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("logistics.fleet_vehicle")
+    .schema("logistics").from("fleet_vehicle")
     .select(
       "id, vehicle_no, transporter_name, tanker_type, capacity_kl, rto, insurance_expiry, fitness_expiry, puc_expiry, permit_expiry, is_active"
     )
@@ -85,7 +85,7 @@ export type SanctionRow = {
 export async function getSanctionsAdmin(): Promise<SanctionRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("logistics.counterparty_sanction")
+    .schema("logistics").from("counterparty_sanction")
     .select("id, party_name, screening_status, ofac_match, g7_pricecap_ok, source, screened_at, notes")
     .order("screened_at", { ascending: false });
 
@@ -114,7 +114,7 @@ const EWAY_WINDOW_DAYS = 3;
 export async function getShipmentAlertsAdmin(): Promise<ShipmentAlert[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("logistics.shipment")
+    .schema("logistics").from("shipment")
     .select("id, shipment_no, eway_expiry, eta, status")
     .order("created_at", { ascending: false });
 

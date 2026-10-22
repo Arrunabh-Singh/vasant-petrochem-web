@@ -22,9 +22,9 @@ export default function AiTrustPanel({ tokens, actions }: { tokens: McpTokenRow[
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <h2 className="text-xs font-bold text-brand uppercase tracking-widest mb-1">MCP tokens</h2>
         <p className="text-slate-500 text-sm mb-4">
-          Read-only, scope-pinned, 15-minute TTL — no model-authored SQL, every call logged below whether allowed or refused.
+          Read-only unless you tick &ldquo;Can propose offers&rdquo; (a proposal still needs a second person to publish it). 15-minute TTL, no model-authored SQL, and every call logged below whether allowed or refused.
         </p>
-        <form action={formAction} className="grid sm:grid-cols-3 gap-3 items-end mb-4">
+        <form action={formAction} className="grid sm:grid-cols-4 gap-3 items-end mb-4">
           <div>
             <label className="text-xs text-slate-500 block mb-1">Requester email</label>
             <input name="requesterEmail" type="email" required placeholder="you@vasantpetrochem.com" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
@@ -33,6 +33,10 @@ export default function AiTrustPanel({ tokens, actions }: { tokens: McpTokenRow[
             <label className="text-xs text-slate-500 block mb-1">TTL (minutes, max 15)</label>
             <input name="ttlMinutes" type="number" min={1} max={15} defaultValue={15} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
           </div>
+          <label className="flex items-center gap-2 text-sm text-slate-600 py-2">
+            <input name="canPropose" type="checkbox" className="h-4 w-4" />
+            Can propose offers
+          </label>
           <div>
             <button type="submit" disabled={pending} className="w-full text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-lg bg-brand-dark text-white disabled:opacity-60">
               {pending ? "Minting…" : "Mint token"}
@@ -54,6 +58,7 @@ export default function AiTrustPanel({ tokens, actions }: { tokens: McpTokenRow[
               return (
                 <tr key={t.id} className="border-t border-slate-100">
                   <td className="py-2">{t.requester_email}</td>
+                  <td className="py-2 text-xs text-slate-500">{t.scope === "propose" ? "can propose offers" : "read-only"}</td>
                   <td className="py-2 text-xs text-slate-500">budget {t.monthly_token_budget.toLocaleString("en-IN")}/mo</td>
                   <td className="py-2 text-xs text-slate-500">{isLive ? "live" : t.revoked_at ? "revoked" : "expired"}</td>
                   <td className="py-2 text-right">

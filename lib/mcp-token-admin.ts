@@ -1,7 +1,8 @@
 import { randomBytes, createHash } from "node:crypto";
 import { createClient } from "./supabase/server";
+import { parseScope } from "./mcp-scope";
 
-export type MintMcpTokenParams = { requesterEmail: string; ttlMinutes?: number; monthlyTokenBudget?: number };
+export type MintMcpTokenParams = { requesterEmail: string; ttlMinutes?: number; monthlyTokenBudget?: number; scope?: unknown };
 
 /** Shared by app/api/mcp/token/route.ts and app/actions/mcp.ts's admin-UI mint action. */
 export async function mintMcpToken(params: MintMcpTokenParams): Promise<{ token: string; expiresAt: string } | { error: string }> {
@@ -18,6 +19,7 @@ export async function mintMcpToken(params: MintMcpTokenParams): Promise<{ token:
     token_hash: tokenHash,
     requester_email: params.requesterEmail.trim().toLowerCase(),
     monthly_token_budget: monthlyTokenBudget,
+    scope: parseScope(params.scope),
     expires_at: expiresAt,
   });
   if (error) return { error: error.message };

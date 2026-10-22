@@ -19,9 +19,10 @@ Deno.serve(async () => {
   const now = Date.now();
   const windowMs = EWAY_WINDOW_DAYS * 86_400_000;
 
+  // The schema goes in Accept-Profile; the path takes only the table name.
   const res = await fetch(
-    `${supabaseUrl}/rest/v1/logistics.shipment?select=id,shipment_no,eway_expiry,eta,status`,
-    { headers: { apikey: serviceRole, Authorization: `Bearer ${serviceRole}` } }
+    `${supabaseUrl}/rest/v1/shipment?select=id,shipment_no,eway_expiry,eta,status`,
+    { headers: { apikey: serviceRole, Authorization: `Bearer ${serviceRole}`, "Accept-Profile": "logistics" } }
   );
   if (!res.ok) {
     return new Response(JSON.stringify({ error: "shipment query failed", status: res.status }), { status: 502 });
