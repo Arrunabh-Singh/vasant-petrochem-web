@@ -44,7 +44,8 @@ const server = createServer((req, res) => {
 }).listen(0);
 const base = `http://localhost:${server.address().port}`;
 
-const items = await (await fetch(`${base}/kit/items.json`)).json();
+// The list of files comes from the build itself (read from disk); the server only feeds the pages to Playwright.
+const items = JSON.parse(readFileSync(join(root, "kit/items.json"), "utf8"));
 const browser = await chromium.launch();
 for (const item of items) {
   const file = join(out, item.out);

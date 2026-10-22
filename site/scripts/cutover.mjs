@@ -163,7 +163,7 @@ async function email() {
   }
   const detail = await resend(`/domains/${domain.id}`);
   const existing = (await must(`/zones/${ctx.zone}/dns_records?per_page=500`)) ?? [];
-  const fqdn = (name) => (name === "@" || name === ZONE ? ZONE : name.endsWith(ZONE) ? name : `${name}.${ZONE}`);
+  const fqdn = (name) => (name === "@" || name === ZONE ? ZONE : name.endsWith(`.${ZONE}`) ? name : `${name}.${ZONE}`);
   for (const r of detail.records ?? []) {
     const name = fqdn(r.name);
     if (existing.some((e) => e.type === r.type && e.name === name && e.content.replace(/"/g, "") === r.value.replace(/"/g, ""))) continue;
