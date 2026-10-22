@@ -13,7 +13,7 @@ export type BenchmarkRow = {
 export async function getBenchmarksAdmin(): Promise<BenchmarkRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("market.price_benchmark")
+    .schema("market").from("price_benchmark")
     .select("id, grade, source, price, currency, uom, as_of")
     .order("as_of", { ascending: false });
 

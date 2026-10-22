@@ -40,7 +40,7 @@ export type TallySyncLog = {
 export async function getTallyCompanies(): Promise<TallyCompany[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("tally.company")
+    .schema("tally").from("company")
     .select("name, tally_guid, last_synced")
     .order("name");
   if (error) {
@@ -53,7 +53,7 @@ export async function getTallyCompanies(): Promise<TallyCompany[]> {
 export async function getTallyLedgers(q?: string): Promise<TallyLedger[]> {
   const supabase = await createClient();
   let query = supabase
-    .from("tally.ledger")
+    .schema("tally").from("ledger")
     .select("company, name, parent, closing_amount, closing_type, opening_amount, opening_type, last_synced")
     .order("company")
     .order("name");
@@ -69,7 +69,7 @@ export async function getTallyLedgers(q?: string): Promise<TallyLedger[]> {
 export async function getTallyStock(q?: string): Promise<TallyStockItem[]> {
   const supabase = await createClient();
   let query = supabase
-    .from("tally.stock_item")
+    .schema("tally").from("stock_item")
     .select("company, name, parent, closing_qty, closing_value, rate, last_synced")
     .order("company")
     .order("name");
@@ -85,7 +85,7 @@ export async function getTallyStock(q?: string): Promise<TallyStockItem[]> {
 export async function getLastTallySync(): Promise<TallySyncLog | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("tally.sync_log")
+    .schema("tally").from("sync_log")
     .select("id, ran_at, status, companies, ledgers, stock, error")
     .order("ran_at", { ascending: false })
     .limit(1)

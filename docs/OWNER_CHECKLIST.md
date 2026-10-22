@@ -35,11 +35,14 @@ it originally.
    point-in-time recovery — the nightly `pg_dump` (GitHub Actions +
    office-box `backup.sh`) is the only safety net until this is on
    (`document-storage-hardening.md` §7).
-5. **Supabase Auth settings**: enable leaked-password protection, disable
-   email/password signup (Auth → Providers → Email) since admins
-   authenticate via Google only. This is the one remaining item the
-   Supabase security advisor still flags — everything else it would
-   normally catch was fixed in migrations.
+5. **Supabase settings (2 minutes; still open on 22 Oct 2026):**
+   - Authentication → Sign In / Providers: turn off **"Allow new users to sign up"**.
+     - Staff sign in with Google and keep working. A new staff member is invited, or added to `public.app_users` and signs in once.
+     - Release 2 turns sign-ups back on for buyers, which is safe because every staff table now checks `app.is_staff()` (migration `20261022120000`).
+   - Project Settings → Data API → Exposed schemas: add **`tally`, `logistics`, `market`, `trade_finance`**.
+     - Without this, the hub's Tally, Shipments, Fleet and Benchmarks pages stay empty, and the Mac Hub's Tally sync cannot write.
+     - Row-level security keeps those schemas staff-only.
+   - Leaked-password protection is a paid-plan feature. It matters little here: staff use Google, and Release 2's buyers use email codes, not passwords.
 
 ## Set up the automated backup + keepalive chain
 

@@ -30,7 +30,7 @@ export async function createBenchmark(formData: FormData) {
     as_of: str(formData.get("as_of")) ?? today,
   };
 
-  const { error } = await supabase.from("market.price_benchmark").insert(payload);
+  const { error } = await supabase.schema("market").from("price_benchmark").insert(payload);
   if (error) console.error("createBenchmark failed:", error.message);
   revalidatePath("/admin/market/benchmarks");
 }

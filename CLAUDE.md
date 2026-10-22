@@ -46,13 +46,16 @@
 ## 3. Data model (Postgres, `public` + `finance`/`inventory`/`iot`/`control`/`logistics`/`market`/`trade_finance`/`vault` schemas)
 
 ### Existing (built)
-- **Identity/RBAC**: `profiles`, `family_members`, `membership`, `app_role`; helpers `app.has_role(VARIADIC ARRAY['admin'::app_role,'approver'::app_role])` and `app.is_admin()` (security-definer) enforce role checks in RLS. (There is no `vault.role()` function.)
+- **Identity/RBAC**:
+  - Staff are rows in `public.app_users` (`email`, `role app_role`, `groups`, `is_active`). There are no `profiles`, `family_members` or `membership` tables.
+  - Security-definer helpers: `app.is_staff()` (any active app user; from `20261022120000`), `app.has_role(VARIADIC ARRAY['admin'::app_role,'approver'::app_role])` and `app.is_admin()`. There is no `vault.role()` function.
+  - **Supabase sign-ups are open**, so `authenticated` is *not* the same as staff. Every staff table and function must check `app.is_staff()` or a role, never `using (true)`.
 - **Finance (Tally mirror)**: `company`, `ledger` (party master), `item` (stock master), `voucher`, `voucher_line`, `bill_receivable`, `gst_summary`, `bank_statement`. Sync = nightly delta XML (TDL), upsert on `tally_guid`, tombstone on delete.
 - **Inventory**: `batch`, `godown`, `stock_movement`, `inventory_level`.
 - **Production**: `production_run`, `production_step`, `run_recipe` (`yield_pct` = key KPI).
 - **IoT**: `device`, `telemetry_raw` (90d TTL, partitioned), `telemetry_1m/_1h/_1d`, `machine_event`, `alarm_history`.
 - **Control**: `control_request` (cloud writes, factory pulls; 2-person rule).
-- **Documents**: `document_meta` + Storage bucket `vault-documents`; classes + ACLs + retention.
+- **Documents**: `public.documents`, `document_versions`, `document_acl` (per document) and `class_acl` (per class), with one private Storage bucket per document class. All storage access goes through the service role; downloads are authorized by the RLS read of `documents`.
 - **Compliance**: `compliance_registry`, maker-checker `approvals`, `audit_log`, `ai_action_log`.
 - **AI**: `ai_layer` tables; MCP tools in `lib/mcp-tools.ts`.
 
@@ -67,7 +70,7 @@ Closes the gaps vs ETRM / fleet-intelligence peers. Road-tanker first; sea-ready
 - `market.crude_assay` — crude grades (API, sulphur, TAN, yields) → refinery crack-margin.
 - `trade_finance.letter_of_credit`, `trade_finance.bill_of_lading` — LC/BL/title.
 
-**RLS**: all new tables deny-by-default. Operational tables (`shipment`, `fleet_vehicle`, `vessel`, `in_transit_inventory`, `price_benchmark`, `crude_assay`, `letter_of_credit`, `bill_of_lading`) are `SELECT` to any `authenticated` user. `counterparty_sanction` is `SELECT`-restricted to admin/approver. All writes use `FOR ALL` gated by `app.has_role(VARIADIC ARRAY['admin'::app_role, 'approver'::app_role])` (the project's existing role helper — there is no `vault.role()` function). Service-role (Tally/ETL) bypasses RLS.
+**RLS**: all new tables deny-by-default. Operational tables (`shipment`, `fleet_vehicle`, `vessel`, `in_transit_inventory`, `price_benchmark`, `crude_assay`, `letter_of_credit`, `bill_of_lading`) are `SELECT` to staff (`app.is_staff()`, since `20261022120000`; they were open to any `authenticated` user before). The `tally`, `logistics`, `market` and `trade_finance` schemas must be listed under Supabase → Data API → Exposed schemas, and the hub addresses them as `.schema("tally").from("ledger")`, never `.from("tally.ledger")`. `counterparty_sanction` is `SELECT`-restricted to admin/approver. All writes use `FOR ALL` gated by `app.has_role(VARIADIC ARRAY['admin'::app_role, 'approver'::app_role])` (the project's existing role helper — there is no `vault.role()` function). Service-role (Tally/ETL) bypasses RLS.
 
 ---
 

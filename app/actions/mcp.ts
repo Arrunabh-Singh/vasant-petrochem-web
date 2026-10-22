@@ -13,7 +13,9 @@ export async function mintToken(_prevState: MintTokenState, formData: FormData):
   const ttlMinutes = Number(formData.get("ttlMinutes"));
   const monthlyTokenBudget = Number(formData.get("monthlyTokenBudget"));
 
-  const result = await mintMcpToken({ requesterEmail, ttlMinutes, monthlyTokenBudget });
+  const scope = formData.get("canPropose") === "on" ? "propose" : "read-only";
+
+  const result = await mintMcpToken({ requesterEmail, ttlMinutes, monthlyTokenBudget, scope });
   if ("error" in result) return { status: "error", message: result.error };
 
   revalidatePath("/admin/security");
