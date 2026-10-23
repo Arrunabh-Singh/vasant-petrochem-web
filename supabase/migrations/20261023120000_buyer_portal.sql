@@ -843,7 +843,8 @@ begin
     insert into portal.member (email, org_id, role, invited_by) values (invitee, p_org, p_role, actor);
   end if;
   perform portal.log('member_invited', 'member', invitee, jsonb_build_object('org_id', p_org, 'role', p_role, 'repeat', again));
-  return jsonb_build_object('email', invitee, 'org_id', p_org, 'repeat', again);
+  return jsonb_build_object('email', invitee, 'org_id', p_org, 'repeat', again, 'by_staff', staff,
+    'org_name', (select o.name from portal.organization o where o.id = p_org));
 end;
 $$;
 
