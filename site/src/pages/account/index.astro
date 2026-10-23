@@ -1,0 +1,154 @@
+---
+/**
+ * The buyer account: sign in with an emailed code (accounts are by
+ * invitation), then the overview. Private, never cached, and answered 404
+ * while content/pages/account.json is a draft outside a preview.
+ */
+import AccountShell from "../../components/AccountShell.astro";
+import Button from "../../components/Button.astro";
+import Field from "../../components/Field.astro";
+import FormGuard from "../../components/FormGuard.astro";
+import { day, money, statusLabel } from "../../lib/account.ts";
+import { livePage } from "../../lib/page.ts";
+import { t } from "../../lib/ui.ts";
+import { cfg, readPending } from "../../server/account-page.ts";
+import { account, call } from "../../server/portal.ts";
+
+export const prerender = false;
+
+const copy = await livePage("account");
+if (!copy) return new Response(null, { status: 404 });
+Astro.response.headers.set("Cache-Control", "private, no-store");
+
+const acct = await account(cfg(), Astro.cookies, Astro.request);
+if (acct.state === "mfa") return Astro.redirect("/account/mfa");
+const pending = acct.state === "out" ? readPending(Astro.cookies) : null;
+const codeStep = pending !== null && Astro.url.searchParams.get("step") === "code";
+
+type Quote = { id: string; reference: string; status: string; expired: boolean; currency: string; total: number; valid_until: string; sent_at: string };
+type Order = { id: string; reference: string; status: string; created_at: string; currency: string; total: number };
+type Enquiry = { reference: string; created_at: string; status: string; product_label: string | null; lines: { name: string }[] | null };
+
+let quotes: Quote[] = [];
+let orders: Order[] = [];
+let enquiries: Enquiry[] = [];
+if (acct.state === "in" && acct.me.org.status !== "suspended") {
+  const [q, o, r] = await Promise.all([
+    call<Quote[]>(cfg(), acct.token, "portal_quotations"),
+    call<Order[]>(cfg(), acct.token, "portal_orders"),
+    call<Enquiry[]>(cfg(), acct.token, "portal_requests"),
+  ]);
+  quotes = q.ok ? q.data.filter((x) => x.status === "sent" && !x.expired) : [];
+  orders = o.ok ? o.data.slice(0, 5) : [];
+  enquiries = r.ok ? r.data.slice(0, 5) : [];
+}
+const what = (e: Enquiry) => e.lines?.map((l) => l.name).join(", ") || e.product_label || "";
+---
+<AccountShell title={copy.title} description={copy.description} draft={copy.status === "draft"} me={acct.state === "in" ? acct.me : undefined} current="overview">
+  {acct.state === "off" && <p class="vp-account-note" role="note">{t("account.off")}</p>}
+
+  {
+    acct.state === "out" && !codeStep && (
+      <div class="vp-account-narrow vp-stack">
+        <h1 class="vp-h-page">{t("account.signin.title")}</h1>
+        <p class="vp-lead">{t("account.signin.lead")}</p>
+        <form class="vp-form" method="post" action="/api/account/code">
+          <Field name="email" label={t("account.signin.email")} type="email" required autocomplete="email" maxlength={320} />
+          <FormGuard id="signin" />
+          <Button type="submit" full>{t("account.signin.send")}</Button>
+        </form>
+        <p class="vp-hint">{t("account.signin.invite")} <a href="/contact">{t("account.contact")}</a></p>
+      </div>
+    )
+  }
+
+  {
+    codeStep && (
+      <div class="vp-account-narrow vp-stack">
+        <h1 class="vp-h-page">{t("account.code.title")}</h1>
+        <p class="vp-lead">{t("account.code.lead")}</p>
+        <form class="vp-form" method="post" action="/api/account/verify">
+          <Field name="code" label={t("account.code.label")} required autocomplete="one-time-code" inputmode="numeric" maxlength={6} />
+          <Button type="submit" full>{t("account.code.submit")}</Button>
+        </form>
+        <p class="vp-hint"><a href="/account">{t("account.code.other")}</a></p>
+      </div>
+    )
+  }
+
+  {
+    acct.state === "none" && (
+      <div class="vp-account-narrow vp-stack">
+        <p class="vp-account-note" role="note">{t("account.none")}</p>
+        <form method="post" action="/api/account/sign-out">
+          <Button type="submit" variant="secondary">{t("account.signout")}</Button>
+        </form>
+      </div>
+    )
+  }
+
+  {acct.state === "in" && acct.me.org.status === "suspended" && <p class="vp-account-note" role="note">{t("account.org.suspended")}</p>}
+
+  {
+    acct.state === "in" && acct.me.org.status !== "suspended" && (
+      <>
+        <h1 class="vp-h-page">{copy.headline}</h1>
+        <section class="vp-rows-block">
+          <h2 class="vp-rows-title">{t("account.overview.awaiting")}</h2>
+          {quotes.length === 0 ? (
+            <p class="vp-rows vp-row-empty">{t("account.overview.nothing")}</p>
+          ) : (
+            <ul class="vp-rows">
+              {quotes.map((q) => (
+                <li class="vp-row">
+                  <div class="vp-row-main">
+                    <a class="vp-row-title" href={`/account/quotations/${q.id}`}>{q.reference}</a>
+                    <p class="vp-row-sub">{t("account.quotation.valid")} {day(q.valid_until)}</p>
+                  </div>
+                  <div class="vp-row-end"><span class="vp-row-figure">{money(q.total, q.currency)}</span></div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        {orders.length > 0 && (
+          <section class="vp-rows-block">
+            <h2 class="vp-rows-title">{t("account.overview.orders")}</h2>
+            <ul class="vp-rows">
+              {orders.map((o) => (
+                <li class="vp-row">
+                  <div class="vp-row-main">
+                    <a class="vp-row-title" href={`/account/orders#${o.reference}`}>{o.reference}</a>
+                    <p class="vp-row-sub">{day(o.created_at)}</p>
+                  </div>
+                  <div class="vp-row-end">
+                    <span class="vp-row-figure">{money(o.total, o.currency)}</span>
+                    <span class="vp-tag">{statusLabel("order", o.status)}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        <section class="vp-rows-block">
+          <h2 class="vp-rows-title">{t("account.overview.requests")}</h2>
+          {enquiries.length === 0 ? (
+            <p class="vp-rows vp-row-empty">{t("account.overview.norequests")}</p>
+          ) : (
+            <ul class="vp-rows">
+              {enquiries.map((e) => (
+                <li class="vp-row">
+                  <div class="vp-row-main">
+                    <span class="vp-row-title">{what(e) || e.reference}</span>
+                    <p class="vp-row-sub">{e.reference} · {day(e.created_at)}</p>
+                  </div>
+                  <div class="vp-row-end"><span class="vp-tag">{statusLabel("request", e.status)}</span></div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </>
+    )
+  }
+</AccountShell>

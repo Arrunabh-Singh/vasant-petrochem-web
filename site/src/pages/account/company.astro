@@ -1,0 +1,52 @@
+---
+/** The organisation's KYC documents, for its admins and finance: uploaded through the portal Edge Function, checked by the sales desk. */
+import AccountShell from "../../components/AccountShell.astro";
+import Button from "../../components/Button.astro";
+import Field from "../../components/Field.astro";
+import { day, kindLabel, statusLabel } from "../../lib/account.ts";
+import { t } from "../../lib/ui.ts";
+import { cfg, signedIn } from "../../server/account-page.ts";
+import { call } from "../../server/portal.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+if (acct.me.role !== "admin" && acct.me.role !== "finance") return Astro.redirect("/account");
+type Kyc = { id: string; kind: string; file_name: string; status: string; uploaded_at: string; review_note: string | null };
+const r = acct.me.org.status === "suspended" ? null : await call<Kyc[]>(cfg(), acct.token, "portal_kyc");
+const files = r?.ok ? r.data : [];
+const kinds = ["gst-certificate", "iec", "trade-licence", "incorporation", "tax-registration", "other"].map((value) => ({ value, label: kindLabel(value) }));
+---
+<AccountShell title={`${t("account.nav.company")} · ${copy.title}`} description={copy.description} draft={copy.status === "draft"} me={acct.me} current="company">
+  <div class="vp-head">
+    <h1 class="vp-h-page">{t("account.nav.company")}</h1>
+    <p class="vp-lead">{t("account.company.lead")}</p>
+  </div>
+  {
+    files.length === 0 ? (
+      <p class="vp-hint">{t("account.company.none")}</p>
+    ) : (
+      <ul class="vp-rows">
+        {files.map((f) => (
+          <li class="vp-row">
+            <div class="vp-row-main">
+              <a class="vp-row-title" href={`/account/file/kyc/${f.id}`} download>{f.file_name}</a>
+              <p class="vp-row-sub">{kindLabel(f.kind)} · {day(f.uploaded_at)}{f.review_note ? ` · ${f.review_note}` : ""}</p>
+            </div>
+            <div class="vp-row-end"><span class="vp-tag">{statusLabel("kyc", f.status)}</span></div>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  <form class="vp-form vp-account-narrow" method="post" action="/api/account/kyc" enctype="multipart/form-data">
+    <Field name="kind" label={t("account.company.kind")} type="select" required options={kinds} value="gst-certificate" />
+    <div class="vp-field">
+      <label for="f-file">{t("account.company.file")}</label>
+      <input class="vp-input" id="f-file" name="file" type="file" required accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+    </div>
+    <Button type="submit">{t("account.company.upload")}</Button>
+  </form>
+</AccountShell>

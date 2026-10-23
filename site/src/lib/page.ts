@@ -3,11 +3,23 @@ import { showDrafts } from "./catalog.ts";
 import { claim } from "./claims.ts";
 import { company } from "./company.ts";
 
-/** A page's copy from content/pages/<id>.json; a missing or unpublished page fails the build in production. */
+async function entry(id: string) {
+  const e = await getEntry("pages", id);
+  if (!e) throw new Error(`content/pages/${id}.json is missing.`);
+  return e.data;
+}
+
+/** A page's copy from content/pages/<id>.json; a missing page, or a draft outside a preview, fails the build. */
 export async function page(id: string) {
-  const entry = await getEntry("pages", id);
-  if (!entry) throw new Error(`content/pages/${id}.json is missing.`);
-  return entry.data;
+  const data = await entry(id);
+  if (data.status !== "published" && !showDrafts) throw new Error(`content/pages/${id}.json is a draft.`);
+  return data;
+}
+
+/** The copy of an on-demand page, or null while it is a draft outside a preview: the page then answers 404. */
+export async function livePage(id: string) {
+  const data = await entry(id);
+  return data.status === "published" || showDrafts ? data : null;
 }
 
 /** A block item's text: its registered claim's wording, else its own body. */

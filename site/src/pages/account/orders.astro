@@ -1,0 +1,65 @@
+---
+/** Orders the sales desk confirmed, each with its dispatches as they happen. */
+import AccountShell from "../../components/AccountShell.astro";
+import { day, money, quantity, statusLabel } from "../../lib/account.ts";
+import { t } from "../../lib/ui.ts";
+import { cfg, signedIn } from "../../server/account-page.ts";
+import { call } from "../../server/portal.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+type Dispatch = {
+  shipment_no: string; status: string; product: string | null; qty: number | null; uom: string | null; vehicle_no: string | null;
+  transporter: string | null; eway_no: string | null; dispatch_date: string | null; eta: string | null; delivered_date: string | null;
+};
+type Order = { id: string; reference: string; status: string; po_number: string | null; created_at: string; quotation_id: string; quotation_reference: string; currency: string; total: number; shipments: Dispatch[] };
+const r = acct.me.org.status === "suspended" ? null : await call<Order[]>(cfg(), acct.token, "portal_orders");
+const orders = r?.ok ? r.data : [];
+---
+<AccountShell title={`${t("account.nav.orders")} · ${copy.title}`} description={copy.description} draft={copy.status === "draft"} me={acct.me} current="orders">
+  <h1 class="vp-h-page">{t("account.nav.orders")}</h1>
+  {orders.length === 0 && <p class="vp-lead">{t("account.orders.none")}</p>}
+  {
+    orders.map((o) => (
+      <article class="vp-panel" id={o.reference}>
+        <div class="vp-head-row">
+          <h2 class="vp-form-title vp-mono">{o.reference}</h2>
+          <span class="vp-tag">{statusLabel("order", o.status)}</span>
+        </div>
+        <dl class="vp-dl">
+          <dt>{t("account.date")}</dt><dd>{day(o.created_at)}</dd>
+          <dt>{t("account.quotation.total")}</dt><dd>{money(o.total, o.currency)}</dd>
+          <dt>{t("account.nav.quotations")}</dt><dd><a class="vp-mono" href={`/account/quotations/${o.quotation_id}`}>{o.quotation_reference}</a></dd>
+          {o.po_number && <><dt>{t("account.order.po")}</dt><dd class="vp-mono">{o.po_number}</dd></>}
+        </dl>
+        <h3 class="vp-eyebrow">{t("account.order.dispatches")}</h3>
+        {o.shipments.length === 0 ? (
+          <p class="vp-hint">{t("account.order.nodispatch")}</p>
+        ) : (
+          <ul class="vp-dispatches">
+            {o.shipments.map((s) => (
+              <li class="vp-dispatch">
+                <div class="vp-head-row">
+                  <span class="vp-mono">{s.shipment_no}</span>
+                  <span class="vp-tag">{statusLabel("shipment", s.status)}</span>
+                </div>
+                <dl class="vp-dl">
+                  {s.product && <><dt>{t("account.quotation.item")}</dt><dd>{s.product}{s.qty !== null && s.uom ? `, ${quantity(s.qty, s.uom)}` : ""}</dd></>}
+                  {s.vehicle_no && <><dt>{t("account.order.vehicle")}</dt><dd class="vp-mono">{s.vehicle_no}</dd></>}
+                  {s.transporter && <><dt>{t("account.order.transporter")}</dt><dd>{s.transporter}</dd></>}
+                  {s.eway_no && <><dt>{t("account.order.eway")}</dt><dd class="vp-mono">{s.eway_no}</dd></>}
+                  {s.dispatch_date && <><dt>{t("account.order.dispatched")}</dt><dd>{day(s.dispatch_date)}</dd></>}
+                  {s.eta && !s.delivered_date && <><dt>{t("account.order.eta")}</dt><dd>{day(s.eta)}</dd></>}
+                  {s.delivered_date && <><dt>{t("account.order.delivered")}</dt><dd>{day(s.delivered_date)}</dd></>}
+                </dl>
+              </li>
+            ))}
+          </ul>
+        )}
+      </article>
+    ))
+  }
+</AccountShell>

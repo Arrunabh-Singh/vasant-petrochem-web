@@ -1,0 +1,40 @@
+---
+/** Documents the sales desk shared with this organisation: test reports, invoices (admins and finance), datasheets. */
+import AccountShell from "../../components/AccountShell.astro";
+import { day } from "../../lib/account.ts";
+import { t } from "../../lib/ui.ts";
+import { cfg, signedIn } from "../../server/account-page.ts";
+import { call } from "../../server/portal.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+type Doc = { id: string; name: string; class: string; size: number; shared_at: string; order_reference: string | null };
+const r = acct.me.org.status === "suspended" ? null : await call<Doc[]>(cfg(), acct.token, "portal_documents");
+const docs = r?.ok ? r.data : [];
+const size = (n: number) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+---
+<AccountShell title={`${t("account.nav.documents")} · ${copy.title}`} description={copy.description} draft={copy.status === "draft"} me={acct.me} current="documents">
+  <h1 class="vp-h-page">{t("account.nav.documents")}</h1>
+  {
+    docs.length === 0 ? (
+      <p class="vp-lead">{t("account.documents.none")}</p>
+    ) : (
+      <ul class="vp-rows">
+        {docs.map((d) => (
+          <li class="vp-row">
+            <div class="vp-row-main">
+              <span class="vp-row-title">{d.name}</span>
+              <p class="vp-row-sub">{[d.order_reference, day(d.shared_at), size(d.size)].filter(Boolean).join(" · ")}</p>
+            </div>
+            <div class="vp-row-end">
+              <a class="vp-btn vp-btn-secondary vp-btn-small" href={`/account/file/document/${d.id}`} download>{t("account.documents.download")}</a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</AccountShell>

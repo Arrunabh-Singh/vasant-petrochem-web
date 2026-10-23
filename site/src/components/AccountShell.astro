@@ -1,0 +1,85 @@
+---
+/**
+ * The buyer account's frame: who is signed in, the account's sections, and
+ * one message from the last action. The message comes from a fixed list by
+ * its code (?m=), so nothing a link carries is ever shown back.
+ */
+import Base from "../layouts/Base.astro";
+import { t } from "../lib/ui.ts";
+import type { Me } from "../server/portal.ts";
+
+type Section = "overview" | "quotations" | "orders" | "documents" | "team" | "company" | "security";
+interface Props {
+  title: string;
+  description: string;
+  /** A draft page on a preview carries the draft banner. */
+  draft: boolean;
+  me?: Me | undefined;
+  current?: Section;
+}
+const { title, description, draft, me, current } = Astro.props;
+
+const code = Astro.url.searchParams.get("m") ?? "";
+const message = /^[a-z-]{2,30}$/.test(code) ? (t(`account.msg.${code}` as Parameters<typeof t>[0]) as string | undefined) : undefined;
+
+const sections: { id: Section; href: string; label: string; show: boolean }[] = me
+  ? [
+      { id: "overview", href: "/account", label: t("account.nav.overview"), show: true },
+      { id: "quotations", href: "/account/quotations", label: t("account.nav.quotations"), show: true },
+      { id: "orders", href: "/account/orders", label: t("account.nav.orders"), show: true },
+      { id: "documents", href: "/account/documents", label: t("account.nav.documents"), show: true },
+      { id: "team", href: "/account/team", label: t("account.nav.team"), show: true },
+      { id: "company", href: "/account/company", label: t("account.nav.company"), show: me.role === "admin" || me.role === "finance" },
+      { id: "security", href: "/account/security", label: t("account.nav.security"), show: true },
+    ]
+  : [];
+---
+<Base title={title} description={description} noindex draft={draft}>
+  <section class="vp-section-tight">
+    <div class="vp-container vp-account">
+      {
+        me && (
+          <>
+            <header class="vp-account-head">
+              <div>
+                <p class="vp-eyebrow">{me.org.name}</p>
+                <p class="vp-account-who">{me.email}</p>
+              </div>
+              <form method="post" action="/api/account/sign-out">
+                <button class="vp-btn vp-btn-secondary vp-btn-small" type="submit">{t("account.signout")}</button>
+              </form>
+            </header>
+            <nav class="vp-account-nav" aria-label={t("account.nav.label")}>
+              <ul>
+                {sections.filter((s) => s.show).map((s) => (
+                  <li>
+                    <a href={s.href} aria-current={s.id === current ? "page" : undefined}>{s.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            {me.org.status === "pending" && (
+              <div class="vp-account-note" role="note">
+                <p>{t("account.org.pending")}</p>
+                {(me.role === "admin" || me.role === "finance") && <p><a href="/account/company">{t("account.org.pending.kyc")}</a></p>}
+              </div>
+            )}
+          </>
+        )
+      }
+      {message && <p class="vp-account-msg" role="status">{message}</p>}
+      <slot />
+    </div>
+  </section>
+</Base>
+
+<script>
+  // On a phone the tabs scroll sideways: start with the current one in view.
+  const tab = document.querySelector(".vp-account-nav [aria-current='page']");
+  const strip = tab?.closest("ul");
+  if (tab && strip) {
+    const t = tab.getBoundingClientRect();
+    const s = strip.getBoundingClientRect();
+    strip.scrollLeft += t.left - s.left - (s.width - t.width) / 2;
+  }
+</script>

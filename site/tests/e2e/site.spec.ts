@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 const PAGES = [
@@ -107,6 +108,13 @@ test("the skip link takes keyboard users to the content", async ({ page, isMobil
 test("the offers board points to sourcing when it has no lots", async ({ page }) => {
   await page.goto("/marketplace/offers");
   await expect(page.locator("main a[href='/source']").first()).toBeVisible();
+});
+
+test("the buyer account is the site's 404 page until it launches", async ({ page }) => {
+  test.skip(JSON.parse(readFileSync("../content/pages/account.json", "utf8")).status === "published", "the portal is live");
+  const res = await page.goto("/account");
+  expect(res?.status()).toBe(404);
+  await expect(page.locator("h1")).toHaveText("This page doesn’t exist.");
 });
 
 test.describe("without JavaScript", () => {
