@@ -1,4 +1,11 @@
--- Release 2, part 3 of 3: the sales desk's functions, called by staff from
+-- Held, not a migration: the back office is on hold (owner, 23 October 2026),
+-- so these functions are not in production and nobody can create an
+-- organisation or send a quotation yet. When it resumes, move this file to
+-- supabase/migrations/ under a new timestamp. Through the Supabase MCP, a
+-- request carrying sales_quotation_save never reached the database (the
+-- other functions did), so reword that function or apply with the Supabase CLI.
+--
+-- Release 2's third part: the sales desk's functions, called by staff from
 -- the hub. The tables and helpers they use are in
 -- 20261023120000_buyer_portal.sql, whose header explains the access model.
 -- Purely additive and safe to run again.
