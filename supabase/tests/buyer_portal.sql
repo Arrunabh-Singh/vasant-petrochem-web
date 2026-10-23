@@ -1,4 +1,4 @@
--- Acceptance for 20261023120000_buyer_portal.sql: buyers see only their own
+-- Acceptance for the three 20261023 migrations: buyers see only their own
 -- organisation, a quotation is accepted only by its admin or approver, with a
 -- recent sign-in (and the authenticator app once set up), and only once the
 -- organisation is approved on a clear screening under 12 months old. Shares
@@ -86,9 +86,13 @@ grant select on public.documents, public.document_versions, public.document_acl,
 -- app.is_staff() and the staff-only log_event come from the previous migration.
 \i supabase/migrations/20261022120000_staff_only.sql
 
--- The migration, twice: running it again must change nothing ----------------------
+-- The migrations, twice: running them again must change nothing --------------------
 \i supabase/migrations/20261023120000_buyer_portal.sql
+\i supabase/migrations/20261023120100_portal_functions.sql
+\i supabase/migrations/20261023120200_sales_desk.sql
 \i supabase/migrations/20261023120000_buyer_portal.sql
+\i supabase/migrations/20261023120100_portal_functions.sql
+\i supabase/migrations/20261023120200_sales_desk.sql
 
 -- Helpers ---------------------------------------------------------------------------
 create schema t;
