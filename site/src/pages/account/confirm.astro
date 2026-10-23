@@ -1,0 +1,51 @@
+---
+/**
+ * "Confirm it is you", before accepting a quotation or managing the team:
+ * the authenticator app if the member has one, otherwise a fresh email code.
+ * The database checks the time itself (portal.require_fresh), so this page
+ * only helps the member get there.
+ */
+import AccountShell from "../../components/AccountShell.astro";
+import Button from "../../components/Button.astro";
+import Field from "../../components/Field.astro";
+import { t } from "../../lib/ui.ts";
+import { cfg, readPending, safeNext, signedIn } from "../../server/account-page.ts";
+import { factors } from "../../server/portal.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+const next = safeNext(Astro.url.searchParams.get("next"));
+const verified = (await factors(cfg(), acct.token)).find((f) => f.status === "verified");
+const codeSent = !verified && readPending(Astro.cookies) !== null && Astro.url.searchParams.get("step") === "code";
+---
+<AccountShell title={copy.title} description={copy.description} draft={copy.status === "draft"} me={acct.me}>
+  <div class="vp-account-narrow vp-stack">
+    <h1 class="vp-h-page">{t("account.confirm.title")}</h1>
+    <p class="vp-lead">{t("account.confirm.lead")}</p>
+    {
+      verified ? (
+        <form class="vp-form" method="post" action="/api/account/mfa">
+          <input type="hidden" name="factor_id" value={verified.id} />
+          <input type="hidden" name="next" value={next} />
+          <Field name="code" label={t("account.mfa.code")} required autocomplete="one-time-code" inputmode="numeric" maxlength={6} />
+          <Button type="submit" full>{t("account.mfa.submit")}</Button>
+        </form>
+      ) : codeSent ? (
+        <form class="vp-form" method="post" action="/api/account/verify">
+          <p>{t("account.code.lead")}</p>
+          <Field name="code" label={t("account.code.label")} required autocomplete="one-time-code" inputmode="numeric" maxlength={6} />
+          <Button type="submit" full>{t("account.code.submit")}</Button>
+        </form>
+      ) : (
+        <form class="vp-form" method="post" action="/api/account/code">
+          <input type="hidden" name="reauth" value="1" />
+          <input type="hidden" name="next" value={next} />
+          <Button type="submit" full>{t("account.signin.send")}</Button>
+        </form>
+      )
+    }
+  </div>
+</AccountShell>

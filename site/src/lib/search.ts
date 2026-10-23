@@ -3,7 +3,7 @@
  * /search page lists it and the search dialog loads it (/search-index.json).
  */
 import { getCollection } from "astro:content";
-import { familyName, getIndustries, getProducts } from "./catalog.ts";
+import { familyName, getIndustries, getProducts, showDrafts } from "./catalog.ts";
 import { hiddenPaths } from "./nav.ts";
 import { corporatePages, liveInsights } from "./page.ts";
 
@@ -47,7 +47,7 @@ export async function searchGroups(): Promise<Group[]> {
   );
   const pageHits = [
     ...pages.flatMap((p) => {
-      const u = PAGE_PATHS[p.id];
+      const u = p.data.status === "published" || showDrafts ? PAGE_PATHS[p.id] : undefined;
       return u && !hidden.has(u) ? [{ t: p.id === "home" ? "Home" : p.data.title, u, s: p.data.description, k: p.data.headline }] : [];
     }),
     ...corporate.map((c) => ({ t: c.data.title, u: `/${c.id}`, s: c.data.description, k: "" })),

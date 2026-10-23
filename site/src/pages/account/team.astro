@@ -1,0 +1,67 @@
+---
+/** The organisation's people. Its admins invite colleagues, change roles and remove people. */
+import AccountShell from "../../components/AccountShell.astro";
+import Button from "../../components/Button.astro";
+import Field from "../../components/Field.astro";
+import { day, roleLabel } from "../../lib/account.ts";
+import { t } from "../../lib/ui.ts";
+import { cfg, signedIn } from "../../server/account-page.ts";
+import { call, type Role } from "../../server/portal.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+type Member = { email: string; role: Role; invited_at: string; last_seen_at: string | null };
+const r = acct.me.org.status === "suspended" ? null : await call<Member[]>(cfg(), acct.token, "portal_team");
+const team = r?.ok ? r.data : [];
+const admin = acct.me.role === "admin";
+const roles = (["admin", "approver", "buyer", "finance"] as const).map((value) => ({ value, label: roleLabel(value) }));
+const roleHint = `${roles.map((r) => roleLabel(r.value, true)).join(". ")}.`;
+---
+<AccountShell title={`${t("account.nav.team")} · ${copy.title}`} description={copy.description} draft={copy.status === "draft"} me={acct.me} current="team">
+  <div class="vp-head">
+    <h1 class="vp-h-page">{t("account.nav.team")}</h1>
+    <p class="vp-lead">{t("account.team.lead")}</p>
+  </div>
+  <ul class="vp-rows">
+    {team.map((m) => (
+      <li class="vp-row">
+        <div class="vp-row-main">
+          <span class="vp-row-title">{m.email}{m.email === acct.me.email && <span class="vp-row-sub"> ({t("account.team.you")})</span>}</span>
+          <p class="vp-row-sub">{roleLabel(m.role)}{m.last_seen_at && ` · ${t("account.team.seen")} ${day(m.last_seen_at)}`}</p>
+        </div>
+        {admin && m.email !== acct.me.email && (
+          <div class="vp-row-actions">
+            <form method="post" action="/api/account/team">
+              <input type="hidden" name="action" value="role" />
+              <input type="hidden" name="email" value={m.email} />
+              <label class="vp-sr" for={`role-${m.email}`}>{t("account.team.role")}</label>
+              <select class="vp-input" id={`role-${m.email}`} name="role">
+                {roles.map((o) => <option value={o.value} selected={o.value === m.role}>{roleLabel(o.value)}</option>)}
+              </select>
+              <Button type="submit" variant="secondary" size="small">{t("account.team.change")}</Button>
+            </form>
+            <form method="post" action="/api/account/team">
+              <input type="hidden" name="action" value="remove" />
+              <input type="hidden" name="email" value={m.email} />
+              <Button type="submit" variant="secondary" size="small">{t("account.team.remove")}</Button>
+            </form>
+          </div>
+        )}
+      </li>
+    ))}
+  </ul>
+  {
+    admin && (
+      <form class="vp-form vp-account-narrow" method="post" action="/api/account/team">
+        <h2 class="vp-form-title">{t("account.team.invite")}</h2>
+        <input type="hidden" name="action" value="invite" />
+        <Field name="email" label={t("account.team.email")} type="email" required autocomplete="off" maxlength={320} />
+        <Field name="role" label={t("account.team.role")} type="select" required options={roles} value="buyer" hint={roleHint} />
+        <Button type="submit">{t("account.team.send")}</Button>
+      </form>
+    )
+  }
+</AccountShell>

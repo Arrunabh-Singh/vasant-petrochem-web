@@ -1,0 +1,54 @@
+---
+/**
+ * The authenticator app: set it up (a QR code from Supabase Auth), or confirm
+ * this sign-in with it. Admins and finance must (ADR-0003); anyone may.
+ */
+import AccountShell from "../../components/AccountShell.astro";
+import Button from "../../components/Button.astro";
+import Field from "../../components/Field.astro";
+import { livePage } from "../../lib/page.ts";
+import { t } from "../../lib/ui.ts";
+import { cfg, safeNext } from "../../server/account-page.ts";
+import { account, enroll, factors } from "../../server/portal.ts";
+
+export const prerender = false;
+
+const copy = await livePage("account");
+if (!copy) return new Response(null, { status: 404 });
+Astro.response.headers.set("Cache-Control", "private, no-store");
+
+const acct = await account(cfg(), Astro.cookies, Astro.request);
+if (acct.state !== "mfa" && acct.state !== "in") return Astro.redirect("/account");
+const next = safeNext(Astro.url.searchParams.get("next") ?? (acct.state === "in" ? "/account/security" : "/account"));
+
+const verified = (await factors(cfg(), acct.token)).find((f) => f.status === "verified");
+if (verified && acct.claims.aal === "aal2") return Astro.redirect(next);
+// Setting up creates a factor; the page is private and excluded from prerendering, so only a visit does.
+const setup = verified ? null : await enroll(cfg(), acct.token);
+const required = acct.me.role === "admin" || acct.me.role === "finance";
+---
+<AccountShell title={copy.title} description={copy.description} draft={copy.status === "draft"} me={acct.state === "in" ? acct.me : undefined}>
+  <div class="vp-account-narrow vp-stack">
+    <h1 class="vp-h-page">{t(verified ? "account.mfa.check.title" : "account.mfa.setup.title")}</h1>
+    <p class="vp-lead">{t(verified ? "account.mfa.check.lead" : required ? "account.mfa.setup.lead" : "account.mfa.setup.optional")}</p>
+    {
+      setup && (
+        <>
+          <img class="vp-qr" src={setup.qr} alt={t("account.mfa.qr")} width="200" height="200" />
+          <p class="vp-hint">{t("account.mfa.secret")}: <span class="vp-secret">{setup.secret}</span></p>
+        </>
+      )
+    }
+    {!verified && !setup && <p class="vp-account-note" role="note">{t("account.msg.error")}</p>}
+    {
+      (verified || setup) && (
+        <form class="vp-form" method="post" action="/api/account/mfa">
+          <input type="hidden" name="factor_id" value={verified?.id ?? setup?.id} />
+          <input type="hidden" name="next" value={next} />
+          <Field name="code" label={t("account.mfa.code")} required autocomplete="one-time-code" inputmode="numeric" maxlength={6} />
+          <Button type="submit" full>{t("account.mfa.submit")}</Button>
+        </form>
+      )
+    }
+  </div>
+</AccountShell>

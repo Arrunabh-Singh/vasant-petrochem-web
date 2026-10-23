@@ -1,0 +1,40 @@
+---
+/** Every quotation the sales desk has sent this organisation. */
+import AccountShell from "../../../components/AccountShell.astro";
+import { day, money, quotationStatus, statusLabel } from "../../../lib/account.ts";
+import { t } from "../../../lib/ui.ts";
+import { cfg, signedIn } from "../../../server/account-page.ts";
+import { call } from "../../../server/portal.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+type Quote = { id: string; reference: string; status: string; expired: boolean; currency: string; total: number; valid_until: string; sent_at: string };
+const r = acct.me.org.status === "suspended" ? null : await call<Quote[]>(cfg(), acct.token, "portal_quotations");
+const quotes = r?.ok ? r.data : [];
+---
+<AccountShell title={`${t("account.nav.quotations")} · ${copy.title}`} description={copy.description} draft={copy.status === "draft"} me={acct.me} current="quotations">
+  <h1 class="vp-h-page">{t("account.nav.quotations")}</h1>
+  {
+    quotes.length === 0 ? (
+      <p class="vp-lead">{t("account.quotations.none")}</p>
+    ) : (
+      <ul class="vp-rows">
+        {quotes.map((q) => (
+          <li class="vp-row">
+            <div class="vp-row-main">
+              <a class="vp-row-title" href={`/account/quotations/${q.id}`}>{q.reference}</a>
+              <p class="vp-row-sub">{day(q.sent_at)} · {t("account.quotation.valid")} {day(q.valid_until)}</p>
+            </div>
+            <div class="vp-row-end">
+              <span class="vp-row-figure">{money(q.total, q.currency)}</span>
+              <span class="vp-tag">{statusLabel("quotation", quotationStatus(q))}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</AccountShell>

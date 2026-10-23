@@ -1,0 +1,9 @@
+{
+  "$schema": "../_schemas/page.schema.json",
+  "title": "Buyer account",
+  "description": "Sign in to follow your enquiries, accept quotations, track orders and dispatches, and download your documents from Vasant Petrochem.",
+  "status": "draft",
+  "headline": "Your buyer account",
+  "lead": "Enquiries, quotations, orders, dispatches and documents in one place.",
+  "blocks": {}
+}

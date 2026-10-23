@@ -1,0 +1,44 @@
+---
+/** The authenticator app, a copy of one's data, correction or erasure requests, and signing out everywhere. */
+import AccountShell from "../../components/AccountShell.astro";
+import Button from "../../components/Button.astro";
+import Field from "../../components/Field.astro";
+import { t } from "../../lib/ui.ts";
+import { signedIn } from "../../server/account-page.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+const kinds = [
+  { value: "correction", label: t("account.security.request.correction") },
+  { value: "erasure", label: t("account.security.request.erasure") },
+];
+---
+<AccountShell title={`${t("account.nav.security")} · ${copy.title}`} description={copy.description} draft={copy.status === "draft"} me={acct.me} current="security">
+  <h1 class="vp-h-page">{t("account.nav.security")}</h1>
+  <section class="vp-panel vp-account-narrow">
+    <p>{t(acct.me.mfa ? "account.security.mfa.on" : "account.security.mfa.off")}</p>
+    {!acct.me.mfa && <p><Button href="/account/mfa?next=/account/security" variant="secondary">{t("account.security.mfa.setup")}</Button></p>}
+  </section>
+  <section class="vp-panel vp-account-narrow">
+    <h2 class="vp-form-title">{t("account.security.data")}</h2>
+    <form method="post" action="/api/account/privacy">
+      <input type="hidden" name="action" value="export" />
+      <Button type="submit" variant="secondary">{t("account.security.export")}</Button>
+    </form>
+    <form class="vp-stack" method="post" action="/api/account/privacy">
+      <h3 class="vp-eyebrow">{t("account.security.request")}</h3>
+      <p class="vp-hint">{t("account.security.request.lead")}</p>
+      <input type="hidden" name="action" value="request" />
+      <Field name="kind" label={t("account.security.request.kind")} type="select" required options={kinds} value="correction" />
+      <Field name="note" label={t("account.security.request.note")} type="textarea" maxlength={1000} />
+      <Button type="submit" variant="secondary">{t("account.security.request.send")}</Button>
+    </form>
+  </section>
+  <form method="post" action="/api/account/sign-out">
+    <input type="hidden" name="scope" value="global" />
+    <Button type="submit" variant="secondary">{t("account.security.everywhere")}</Button>
+  </form>
+</AccountShell>

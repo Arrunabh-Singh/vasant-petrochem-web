@@ -1,0 +1,95 @@
+---
+/**
+ * One quotation, and the answer to it. Only an admin or approver answers; the
+ * database also requires a recent sign-in, the authenticator app when set up,
+ * and, to accept, a verified organisation (portal_quotation_decide).
+ */
+import AccountShell from "../../../components/AccountShell.astro";
+import Button from "../../../components/Button.astro";
+import Field from "../../../components/Field.astro";
+import { day, money, quantity, quotationStatus, statusLabel } from "../../../lib/account.ts";
+import { t } from "../../../lib/ui.ts";
+import { cfg, signedIn } from "../../../server/account-page.ts";
+import { call } from "../../../server/portal.ts";
+
+export const prerender = false;
+
+const g = await signedIn(Astro);
+if ("response" in g) return g.response;
+const { copy, acct } = g;
+const id = Astro.params.id ?? "";
+if (!/^[0-9a-f-]{36}$/.test(id) || acct.me.org.status === "suspended") return new Response(null, { status: 404 });
+
+type Line = { position: number; description: string; pack: string | null; quantity: number; uom: string; unit_price: number; amount: number };
+type Quote = {
+  id: string; reference: string; status: string; expired: boolean; currency: string; basis: string; payment_terms: string;
+  valid_until: string; notes: string | null; sent_at: string; decided_by: string | null; decided_at: string | null;
+  decision_note: string | null; request_reference: string | null; order_reference: string | null; lines: Line[]; total: number;
+};
+const r = await call<Quote>(cfg(), acct.token, "portal_quotation", { p_id: id });
+if (!r.ok) return new Response(null, { status: 404 });
+const q = r.data;
+const open = q.status === "sent" && !q.expired;
+const answers = acct.me.role === "admin" || acct.me.role === "approver";
+---
+<AccountShell title={`${q.reference} · ${copy.title}`} description={copy.description} draft={copy.status === "draft"} me={acct.me} current="quotations">
+  <div class="vp-head">
+    <p class="vp-eyebrow">{t("account.nav.quotations")}</p>
+    <h1 class="vp-h-page">{q.reference}</h1>
+    <p><span class="vp-tag">{statusLabel("quotation", quotationStatus(q))}</span></p>
+  </div>
+  <dl class="vp-dl">
+    <dt>{t("account.date")}</dt><dd>{day(q.sent_at)}</dd>
+    <dt>{t("account.quotation.valid")}</dt><dd>{day(q.valid_until)}</dd>
+    <dt>{t("account.quotation.basis")}</dt><dd>{q.basis}</dd>
+    <dt>{t("account.quotation.payment")}</dt><dd>{q.payment_terms}</dd>
+    {q.request_reference && <><dt>{t("account.quotation.enquiry")}</dt><dd class="vp-mono">{q.request_reference}</dd></>}
+    {q.order_reference && <><dt>{t("account.quotation.order")}</dt><dd><a class="vp-mono" href={`/account/orders#${q.order_reference}`}>{q.order_reference}</a></dd></>}
+    {q.decided_by && <><dt>{t("account.quotation.decided")}</dt><dd>{q.decided_by}, {day(q.decided_at)}</dd></>}
+  </dl>
+  <div class="vp-table-wrap">
+    <table class="vp-table">
+      <thead>
+        <tr>
+          <th scope="col">{t("account.quotation.item")}</th>
+          <th scope="col" class="vp-wide-only">{t("account.quotation.pack")}</th>
+          <th scope="col" class="vp-num vp-wide-only">{t("account.quotation.quantity")}</th>
+          <th scope="col" class="vp-num vp-wide-only">{t("account.quotation.price")}</th>
+          <th scope="col" class="vp-num vp-narrow-only">{t("account.quotation.quantity")}</th>
+          <th scope="col" class="vp-num">{t("account.quotation.amount")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {q.lines.map((l) => (
+          <tr>
+            <th scope="row">{l.description}{l.pack && <span class="vp-sub vp-narrow-only">{l.pack}</span>}</th>
+            <td class="vp-wide-only">{l.pack ?? ""}</td>
+            <td class="vp-num vp-wide-only">{quantity(l.quantity, l.uom)}</td>
+            <td class="vp-num vp-wide-only">{money(l.unit_price, q.currency)}</td>
+            <td class="vp-num vp-narrow-only">{quantity(l.quantity, l.uom)}<span class="vp-sub">× {money(l.unit_price, q.currency)}</span></td>
+            <td class="vp-num">{money(l.amount, q.currency)}</td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr><th scope="row" colspan="4" class="vp-wide-only">{t("account.quotation.total")}</th><th scope="row" colspan="2" class="vp-narrow-only">{t("account.quotation.total")}</th><td class="vp-num">{money(q.total, q.currency)}</td></tr>
+      </tfoot>
+    </table>
+  </div>
+  {q.notes && <div class="vp-stack"><h2 class="vp-form-title">{t("account.quotation.notes")}</h2><p class="vp-lead">{q.notes}</p></div>}
+  {q.decision_note && <p class="vp-hint">{t("account.quotation.note")}: {q.decision_note}</p>}
+  {
+    open && answers && (
+      <form class="vp-form vp-account-narrow" method="post" action="/api/account/decide">
+        <input type="hidden" name="id" value={q.id} />
+        <Field name="note" label={t("account.quotation.note")} type="textarea" maxlength={500} />
+        {!acct.me.org.cleared && <p class="vp-account-note" role="note">{t("account.msg.verification")}</p>}
+        <div class="vp-account-actions">
+          {acct.me.org.cleared && <Button type="submit" name="decision" value="accept">{t("account.quotation.accept")}</Button>}
+          <Button type="submit" variant="secondary" name="decision" value="decline">{t("account.quotation.decline")}</Button>
+        </div>
+      </form>
+    )
+  }
+  {open && !answers && <p class="vp-hint">{t("account.quotation.approver")}</p>}
+</AccountShell>

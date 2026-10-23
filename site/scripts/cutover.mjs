@@ -22,7 +22,8 @@ const WORKER = "vasant-site";
 const HUB_PATHS = ["/admin*", "/auth/*", "/_next/*", "/vasant_logo*", "/api/mcp*", "/api/telemetry/*", "/api/etl/*", "/api/control/*", "/api/documents/*", "/api/cron/*"];
 // Only the site's own endpoints are rate-limited at the edge: telemetry, ETL and
 // the MCP connector post often from one address and must never be throttled.
-const RATE_LIMITED = ["/api/rfq", "/api/tds", "/api/click", "/api/csp-report"];
+// The account's sign-in steps are here too: each sends an email or checks a code.
+const RATE_LIMITED = ["/api/rfq", "/api/tds", "/api/click", "/api/csp-report", "/api/account/code", "/api/account/verify", "/api/account/mfa"];
 const MAIL_FROM = `Vasant Petrochem <enquiries@${ZONE}>`;
 
 const site = new URL("..", import.meta.url).pathname;
