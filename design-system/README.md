@@ -28,7 +28,7 @@ Plain, specific and unhurried, the way a good sales desk talks on the phone. "We
 
 ### Writing for international buyers
 
-Many readers buy in a second language, in the Middle East and beyond, often through a translation tool. Write so a translation cannot go wrong:
+Many readers buy in a second language, in the Middle East and beyond, often through a translation tool. The site is in English only, with no translated pages (owner's decision, 22 October 2026). Write so a translation cannot go wrong:
 - One idea per sentence, in plain international English. No idioms, metaphors or Indian-English office phrases ("kindly revert", "do the needful", "prepone", "lakh", "crore").
 - Units:
   - SI, with the unit always written (`210 L drum`, `20 kL tanker`, `MT` for tonnes);
@@ -179,29 +179,6 @@ Buyers who cannot visit want proof that the place and the stock are real. One mo
 - Keep the originals at full size, unedited. The site crops and compresses them itself.
 
 **Hand-off:** share the originals in a Drive folder with the owner. An agent adds the chosen ones in a pull request, with alt text describing what each shows.
-
-## Right-to-left (Arabic)
-
-Arabic pages are built as drafts and published only after a native reviewer approves the translation. The layout mirrors; the brand does not.
-
-**Mirror:**
-- the page direction (`<html lang="ar" dir="rtl">`);
-- spacing and alignment, through logical CSS properties (`margin-inline-start`, `text-align: start`), never left and right;
-- direction icons: back, forward, chevrons and arrows in links.
-
-**Never mirror:**
-- the logo (the wordmark stays in Latin letters and is never transliterated);
-- the drop;
-- product codes, spec values, units and numbers (Western digits, as on the datasheets);
-- phone and WhatsApp icons;
-- the home film's motion.
-
-**Type:**
-- Arabic text in a matching geometric sans: Noto Kufi Arabic or IBM Plex Sans Arabic, self-hosted, OFL.
-- Montserrat for any Latin within it.
-- Arabic line height about 15% looser, never letter-spaced, never in italics or capitals styling.
-
-**Mixed text:** wrap a code or value inside an Arabic sentence in `<bdi>`, so `SN-500` and `90-110 cSt` keep their order.
 
 ## Accessibility floor
 
