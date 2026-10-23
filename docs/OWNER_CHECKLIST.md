@@ -38,7 +38,7 @@ it originally.
 5. **Supabase settings (2 minutes; still open on 22 Oct 2026):**
    - Authentication → Sign In / Providers: turn off **"Allow new users to sign up"**.
      - Staff sign in with Google and keep working. A new staff member is invited, or added to `public.app_users` and signs in once.
-     - Release 2 turns sign-ups back on for buyers, which is safe because every staff table now checks `app.is_staff()` (migration `20261022120000`).
+     - Leave it off for good. Buyers never sign up: the sales desk invites them, and an organisation's admin invites colleagues (Release 2, migration `20261023120000`).
    - Project Settings → Data API → Exposed schemas: add **`tally`, `logistics`, `market`, `trade_finance`**.
      - Without this, the hub's Tally, Shipments, Fleet and Benchmarks pages stay empty, and the Mac Hub's Tally sync cannot write.
      - Row-level security keeps those schemas staff-only.

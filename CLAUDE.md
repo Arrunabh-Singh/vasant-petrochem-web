@@ -49,7 +49,12 @@
 - **Identity/RBAC**:
   - Staff are rows in `public.app_users` (`email`, `role app_role`, `groups`, `is_active`). There are no `profiles`, `family_members` or `membership` tables.
   - Security-definer helpers: `app.is_staff()` (any active app user; from `20261022120000`), `app.has_role(VARIADIC ARRAY['admin'::app_role,'approver'::app_role])` and `app.is_admin()`. There is no `vault.role()` function.
-  - **Supabase sign-ups are open**, so `authenticated` is *not* the same as staff. Every staff table and function must check `app.is_staff()` or a role, never `using (true)`.
+  - **`authenticated` is *not* the same as staff.** Supabase Auth also holds the buyer portal's invited buyers, and sign-ups may be open. Every staff table and function must check `app.is_staff()` or a role, never `using (true)`.
+- **Buyer portal (Release 2, `20261023120000_buyer_portal.sql`, ADR-0003)**:
+  - The tables are in `portal` (organisations, members, KYC files, document shares, privacy requests) and `sales` (quotations, lines, orders, counters). Neither schema is exposed by the Data API, and no role has grants on them.
+  - All access is through SECURITY DEFINER functions in `public`. `portal_*` is for a member of the organisation, `sales_*` for the sales desk (`app.is_staff()` to read, `app.has_role('admin','approver')` to change). `portal_svc_kyc_record` is for the `portal` Edge Function only.
+  - Buyers write the audit log through `portal.log`, because `log_event` refuses non-staff callers.
+  - A share in `portal.document_share` makes a vault document visible to that organisation through `app.doc_shared_with_me()` in the `documents` policy. Invoices (`sales-bills`) are visible only to its admins and finance.
 - **Finance (Tally mirror)**: `company`, `ledger` (party master), `item` (stock master), `voucher`, `voucher_line`, `bill_receivable`, `gst_summary`, `bank_statement`. Sync = nightly delta XML (TDL), upsert on `tally_guid`, tombstone on delete.
 - **Inventory**: `batch`, `godown`, `stock_movement`, `inventory_level`.
 - **Production**: `production_run`, `production_step`, `run_recipe` (`yield_pct` = key KPI).
