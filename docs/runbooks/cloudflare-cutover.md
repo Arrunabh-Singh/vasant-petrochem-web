@@ -55,7 +55,7 @@ The cutover runs in a new session, which sees the keys. Each step prints what it
 /admin*  /auth/*  /_next/*  /vasant_logo*  /api/mcp*  /api/telemetry/*  /api/etl/*  /api/control/*  /api/documents/*  /api/cron/*
 ```
 
-**The rate limit** covers only the site's own endpoints (`/api/rfq`, `/api/tds`, `/api/click` and `/api/csp-report`): 20 requests per 10 seconds per address. Telemetry, office-box uploads and the MCP connector post often from one address, so they are never throttled.
+**The rate limit** covers only the site's own endpoints (`/api/rfq`, `/api/tds`, `/api/click` and `/api/csp-report`) and the account's sign-in steps (`/api/account/code`, `/api/account/verify` and `/api/account/mfa`), each of which sends an email or checks a code: 20 requests per 10 seconds per address. Telemetry, office-box uploads and the MCP connector post often from one address, so they are never throttled.
 
 **After `live`,** Claude checks:
 - the security headers on `/`;
