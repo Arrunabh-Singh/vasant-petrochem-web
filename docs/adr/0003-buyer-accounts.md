@@ -24,6 +24,14 @@ Buyer accounts are built in Release 2, under these conditions:
 - **Anti-fraud.** The portal never shows or edits bank details. Payment instructions appear only on proformas issued from the hub, with a "confirm by phone" notice.
 - **Assurance.** Before launch: an OWASP ASVS Level 2 self-assessment, row-level security tests, and DPDP and GDPR data export and deletion requests.
 
+## Implementation (2026-10-23)
+
+- **Accounts are by invitation.** The sales desk invites a buyer, usually when a quotation is ready, and an organisation's admin invites colleagues. Supabase sign-ups stay off.
+- **No table access at all.** The portal's tables sit in schemas the Data API does not expose. Buyers reach them only through SECURITY DEFINER functions that check membership, role and organisation status. Each function is covered by `supabase/tests/buyer_portal.sql`.
+- **The authenticator app** is required for admins and finance on every call (the token's `aal2`), and for anyone else once they have set one up.
+- **"Signing in again"** means a sign-in or authenticator check in the last 15 minutes. It is read from the token's `amr` time, so the database enforces it, not only the site.
+- **Files** (KYC uploads, shared documents) go through the `portal` Edge Function, which holds the service role. The public Worker never does.
+
 ## Consequences
 
 MNC.md P6 carries a dated note pointing here. The hub gains sales-desk screens: account review, quotation builder, orders, shipment linking and document sharing.
