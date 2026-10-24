@@ -295,13 +295,13 @@
     var pr = p.product;
     return h("div", { className: "vp-docs", id: "documents" },
       h("div", { className: "vp-docs-copy" },
-        h("p", { className: "vp-eyebrow vp-eyebrow-deep" }, "Technical data sheet · " + pr.code),
+        h("p", { className: "vp-eyebrow" }, "Technical data sheet · " + pr.code),
         h("h3", null, pr.name + " TDS"),
         h("p", null, "Full specification with test methods, handling and storage guidance. Leave your email and the PDF opens straight away.")),
       h("form", { className: "vp-docs-form", onSubmit: function (e) { e.preventDefault(); } },
         h("label", { htmlFor: "tds-email-" + pr.slug }, "Work email"),
-        h("input", { id: "tds-email-" + pr.slug, type: "email", className: "vp-field-deep", placeholder: "you@company.com", autoComplete: "email" }),
-        h(Button, { type: "submit", variant: "on-deep", size: "touch", icon: "doc", full: true }, "Download the TDS")));
+        h("input", { id: "tds-email-" + pr.slug, type: "email", className: "vp-input", placeholder: "you@company.com", autoComplete: "email" }),
+        h(Button, { type: "submit", variant: "primary", size: "touch", icon: "doc", full: true }, "Download the TDS")));
   }
 
   function Field(p) {
@@ -371,9 +371,9 @@
     var f = AD_FORMATS[p.format] || AD_FORMATS.square;
     var pr = p.product || product("base-oil-sn500");
     var range = p.family === "range";
-    var ground = p.ground === "cream" ? "cream" : "deep";
+    var ground = p.ground === "ivory" ? "ivory" : "gold";
     var cls = cx("vp-ad", "vp-ad-" + (p.format || "square"), "vp-ad-" + ground, range && "vp-ad-range");
-    var logo = ground === "deep" ? LOGOS.compactReversed : LOGOS.compact;
+    var logo = LOGOS.compact;
     var claim = p.claim || CLAIMS[0];
     var copy = range
       ? [h("p", { key: "e", className: "vp-ad-eyebrow" }, "Manufacturing & trading · Indore"),

@@ -17,8 +17,8 @@ export type IconName = 'arrow' | 'phone' | 'whatsapp' | 'doc' | 'check' | 'menu'
 export type TintName = 'gold' | 'straw' | 'amber' | 'brown' | 'fuel' | 'bitumen' | 'clear' | 'white';
 
 export interface ButtonProps {
-  /** primary: the one action per view. on-deep / outline-on-deep: inside dark bands. */
-  variant?: 'primary' | 'secondary' | 'on-deep' | 'outline-on-deep';
+  /** primary: the one action per view, in gold. dark / outline-dark: on the gold band. */
+  variant?: 'primary' | 'secondary' | 'dark' | 'outline-dark';
   /** default 48px; small 44px on phone, 40px on laptop; touch 56px. */
   size?: 'small' | 'touch';
   icon?: IconName;
@@ -100,7 +100,7 @@ export interface AdCreativeProps {
   format?: 'square' | 'portrait' | 'story' | 'landscape' | 'display-square';
   family?: 'product' | 'range';
   product?: Product;
-  ground?: 'deep' | 'cream';
+  ground?: 'gold' | 'ivory';
   /** One of Vasant.claims. */
   claim?: string;
   cta?: string;
