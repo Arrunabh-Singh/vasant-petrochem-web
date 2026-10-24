@@ -93,8 +93,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   await sharp(icon).resize(32, 32).png().toFile(join(site, "public/brand/favicon-32.png"));
   await sharp(icon)
     .resize(136, 136)
-    .extend({ top: 22, bottom: 22, left: 22, right: 22, background: "#fbf8f1" })
-    .flatten({ background: "#fbf8f1" })
+    .extend({ top: 22, bottom: 22, left: 22, right: 22, background: "#fffdf8" })
+    .flatten({ background: "#fffdf8" })
     .png()
     .toFile(join(site, "public/brand/apple-touch-icon.png"));
   await sharp(icon).resize(192, 192).png().toFile(join(site, "public/brand/icon-192.png"));
@@ -107,8 +107,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         short_name: company.tradeName.split(" ")[0],
         start_url: "/",
         display: "browser",
-        background_color: "#fbf8f1",
-        theme_color: "#fbf8f1",
+        background_color: "#fffdf8",
+        theme_color: "#fffdf8",
         icons: [
           { src: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "/brand/vasant-icon-512.png", sizes: "512x512", type: "image/png" },

@@ -1,9 +1,9 @@
 ---
 /**
  * The home page as a film (design-system/README.md, "Motion"): the hero; the
- * lights go down and the drop is held to the light as it passes down the
- * colour scale, lightest grade to darkest; the company in its own words; the
- * road from Mangaliya; the doors into the site; the close. Every scene is a
+ * drop is held to the light as it passes along the colour scale, darkest grade
+ * to lightest, so the scroll ends in light; the company in its own words; the
+ * road from Mangaliya; the doors into the site; the gold close. Every scene is a
  * finished still section first; styles/film.css pins and plays them where
  * scroll-driven animations exist and motion is welcome.
  */
@@ -37,10 +37,9 @@ const supplyIcons = ["package", "phone"] as const;
 const explore = [...(b.explore?.heading ?? "Explore")];
 ---
 <Base title={home.title} description={home.description} fullTitle structured={[localBusiness()]}>
-  {/* 1–2 · The hero; then the lights go down and the drop passes down the colour scale. */}
+  {/* 1–2 · The hero; then the drop is held to the light and passes along the colour scale. */}
   <section class="vp-film" aria-labelledby="hero-title" data-fill-scene>
     <div class="vp-film-stage">
-      <div class="vp-film-dark" aria-hidden="true"></div>
       <div class="vp-film-glow" aria-hidden="true">
         {grades.map((p) => <span data-tint={p.data.tint}></span>)}
         <span class="vp-film-glow-own" data-tint="gold"></span>
@@ -52,7 +51,8 @@ const explore = [...(b.explore?.heading ?? "Explore")];
         <p class="vp-lead">{home.lead}</p>
         <div class="vp-actions">
           <a class="vp-btn vp-btn-primary vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
-          <a class="vp-btn vp-btn-secondary vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+          {/* Phones have Get a quote in the bar below. */}
+          <a class="vp-btn vp-btn-secondary vp-btn-touch vp-wide-only" href="/quote">{t("cta.quote")}</a>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
       <ColourScale grades={grades} />
 
       <div class="vp-film-scale">
-        <p class="vp-eyebrow vp-eyebrow-deep">{b.scale?.eyebrow}</p>
+        <p class="vp-eyebrow">{b.scale?.eyebrow}</p>
         <h2 class="vp-film-title" id="scale-title">{b.scale?.heading}</h2>
         <ol class="vp-oils" role="list" aria-labelledby="scale-title">
           {
@@ -83,7 +83,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
                     <span class="vp-oil-code">{p.data.code}</span>
                     {spec && <span class="vp-oil-spec">{spec.property} <span class="vp-nowrap">{specText(spec)}</span></span>}
                   </p>
-                  <a class="vp-link vp-link-deep" href={`/products/${p.id}`}>
+                  <a class="vp-link" href={`/products/${p.id}`}>
                     {t("scale.view")}<span class="vp-sr"> {p.data.name}</span><Icon name="arrow" size={16} />
                   </a>
                 </li>
@@ -97,14 +97,14 @@ const explore = [...(b.explore?.heading ?? "Explore")];
   </section>
 
   {/* 3 · The company in its registered words, lit as it is read, with bubbles rising as in a viscosity tube. */}
-  <section class="vp-statement vp-band-deep" aria-label={b.statement?.eyebrow}>
+  <section class="vp-statement vp-band-raised" aria-label={b.statement?.eyebrow}>
     <div class="vp-bubbles" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="vp-container">
-      <p class="vp-eyebrow vp-eyebrow-deep">{b.statement?.eyebrow}</p>
+      <p class="vp-eyebrow">{b.statement?.eyebrow}</p>
       <p class="vp-statement-text vp-lit">
         {statement.map((w, i) => <><span class="w">{w}</span>{i < statement.length - 1 ? " " : ""}</>)}
       </p>
-      <a class="vp-link vp-link-deep" href="/about">More about us <Icon name="arrow" size={16} /></a>
+      <a class="vp-link" href="/about">More about us <Icon name="arrow" size={16} /></a>
     </div>
   </section>
 
@@ -128,12 +128,12 @@ const explore = [...(b.explore?.heading ?? "Explore")];
               </linearGradient>
             </defs>
             <rect x="4" y="8" width="78" height="26" rx="13" fill="url(#vp-tank)" />
-            <rect x="4" y="24" width="78" height="3" fill="#daad4a" />
+            <rect x="4" y="24" width="78" height="3" fill="#cfa145" />
             <path d="M30 9v24M56 9v24" stroke="#979797" stroke-width="1" />
             <path d="M84 36V16q0-4 4-4h14q4 0 6 4l5 10q1 2 1 4v6Z" fill="#246851" />
             <path d="M90 16h11q2 0 3 2l3 7H90Z" fill="#e6f0ed" />
-            <rect x="2" y="33" width="112" height="3" rx="1.5" fill="#0f2e24" />
-            <g fill="#0f2e24"><circle cx="18" cy="39" r="6" /><circle cx="32" cy="39" r="6" /><circle cx="70" cy="39" r="6" /><circle cx="101" cy="39" r="6" /></g>
+            <rect x="2" y="33" width="112" height="3" rx="1.5" fill="#17120b" />
+            <g fill="#17120b"><circle cx="18" cy="39" r="6" /><circle cx="32" cy="39" r="6" /><circle cx="70" cy="39" r="6" /><circle cx="101" cy="39" r="6" /></g>
             <g fill="#c0c2c3"><circle cx="18" cy="39" r="2.2" /><circle cx="32" cy="39" r="2.2" /><circle cx="70" cy="39" r="2.2" /><circle cx="101" cy="39" r="2.2" /></g>
           </svg>
         </div>
@@ -209,16 +209,15 @@ const explore = [...(b.explore?.heading ?? "Explore")];
     </div>
   </section>
 
-  {/* 6 · Close, on deep, with the colour bar as the last frame. */}
-  <section class="vp-close vp-band-deep" aria-labelledby="cta-title">
+  {/* 6 · Close, on gold: the page's heaviest block, at its foot. */}
+  <section class="vp-close vp-band-gold" aria-labelledby="cta-title">
     <div class="vp-container">
       <h2 class="vp-close-title vp-reveal" id="cta-title">{b.cta?.heading}</h2>
       <p class="vp-lead">{b.cta?.body}</p>
       <div class="vp-actions">
-        <a class="vp-btn vp-btn-on-deep vp-btn-touch" href="/source">{t("cta.source")}</a>
-        <a class="vp-btn vp-btn-outline-on-deep vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+        <a class="vp-btn vp-btn-dark vp-btn-touch" href="/source">{t("cta.source")}<Icon name="arrow" size={18} /></a>
+        <a class="vp-btn vp-btn-outline-dark vp-btn-touch" href="/quote">{t("cta.quote")}</a>
       </div>
-      <ColourScale grades={grades} />
     </div>
   </section>
 </Base>

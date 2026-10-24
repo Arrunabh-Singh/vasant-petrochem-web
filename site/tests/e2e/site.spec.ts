@@ -73,7 +73,7 @@ test("the hero's buttons work over the film, and only the grade on screen takes 
   await expect(page).toHaveURL(/\/marketplace$/);
 
   await page.goto("/");
-  // The first grade, lightest on the scale, holds the middle of its slot (22% + 72% / n / 2).
+  // The first grade, darkest on the scale, holds the middle of its slot (22% + 72% / n / 2).
   const n = await page.locator(".vp-oil").count();
   await filmAt(page, 0.22 + 0.72 / n / 2);
   const first = page.locator(".vp-oil").first();
@@ -95,7 +95,7 @@ test("keyboard focus brings each grade of the film on screen", async ({ page, is
 
 test.describe("with reduced motion", () => {
   test.use({ contextOptions: { reducedMotion: "reduce" } });
-  test("the home page shows every grade, lightest to darkest, each with its link", async ({ page }) => {
+  test("the home page shows every grade, darkest to lightest, each with its link", async ({ page }) => {
     await page.goto("/");
     const grades = page.locator(".vp-oil");
     expect(await grades.count()).toBeGreaterThan(1);

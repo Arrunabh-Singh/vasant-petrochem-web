@@ -67,7 +67,7 @@ const structured = [
   <Breadcrumbs items={[{ name: "Marketplace", href: "/marketplace" }, { name: family, href: `/marketplace?family=${p.family}` }, { name: p.name, href: path }]} />
   <ProductHero product={product} industries={industries.map((i) => i.data.name)} />
 
-  <section class="vp-section vp-band-parchment" aria-label="Specifications and uses">
+  <section class="vp-section vp-band-raised" aria-label="Specifications and uses">
     <div class="vp-container vp-split">
       <div id="specs">
         <SpecTable product={product} />
@@ -101,7 +101,7 @@ const structured = [
 
   {
     p.faq.length > 0 && (
-      <section class="vp-section vp-band-parchment" aria-labelledby="faq-title">
+      <section class="vp-section vp-band-raised" aria-labelledby="faq-title">
         <div class="vp-container vp-measure vp-stack">
           <h2 class="vp-h-section" id="faq-title">Questions buyers ask</h2>
           {p.faq.map((f) => (
@@ -115,7 +115,7 @@ const structured = [
     )
   }
 
-  <section class="vp-section vp-band-parchment" aria-label="Enquiry">
+  <section class="vp-section vp-band-raised" aria-label="Enquiry">
     <div class="vp-container vp-split">
       <ProductEnquiry product={product} />
       <div class="vp-stack">

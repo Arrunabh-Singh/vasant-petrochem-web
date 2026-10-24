@@ -20,7 +20,7 @@ const grades = byColour(await getProducts());
 <section class="vp-phero" id="overview" aria-labelledby="product-name">
   <div class="vp-container vp-phero-grid">
     <div class="vp-phero-copy">
-      <p class="vp-eyebrow vp-eyebrow-product">{industries.join(" · ")}</p>
+      <p class="vp-eyebrow">{industries.join(" · ")}</p>
       <div class="vp-phero-title">
         <h1 class="vp-h-page" id="product-name">{p.name}</h1>
         <GradeChip code={p.code} />

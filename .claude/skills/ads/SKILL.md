@@ -15,7 +15,7 @@ It writes `marketing/<slug>/` at the repository root. The folder is git-ignored,
 
 | Folder | What |
 | --- | --- |
-| `ads/` | Every published product and the range, in five formats (square, portrait, story, landscape, display-square), each on `deep` and on `cream`. |
+| `ads/` | Every published product and the range, in five formats (square, portrait, story, landscape, display-square), each on `gold` and on `ivory`. |
 | `links.csv` | One row per ad and platform: the file, the platform, the format, and the link with its UTM tags. |
 | `social/` | LinkedIn banner (1584 × 396), square avatar (400 × 400) and WhatsApp profile image (640 × 640). |
 | `print/` | `letterhead.pdf` (A4); `letterhead-header.png` (its top band at 300 dpi, for a Word or Google Docs header); `business-cards.pdf` (85 × 55 mm with 3 mm bleed, front then back). |
@@ -37,7 +37,7 @@ It writes `marketing/<slug>/` at the repository root. The folder is git-ignored,
    - story text is clear of the top 250px and bottom 340px;
    - each link opens the right page.
 5. **Send the folder to the owner** (zip it).
-   - Say which ground (`deep` or `cream`) suits each platform's feed.
+   - Say which ground (`gold` or `ivory`) suits each platform's feed.
    - Ads go live from the owner's own ad accounts. Agents never buy media.
 
 ## Rules

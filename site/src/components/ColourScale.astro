@@ -1,7 +1,7 @@
 ---
 /**
- * The colour scale: every grade's illustrated colour, lightest to darkest
- * (lib/drop.ts byColour). Decoration beside text that names the grades; with
+ * The colour scale: every grade's illustrated colour, darkest to lightest
+ * (lib/drop.ts byColour), so it ends in light. Decoration beside text that names the grades; with
  * `current`, that grade's swatch is marked and its code shown under it.
  */
 import type { ProductEntry } from "../lib/catalog.ts";
@@ -14,7 +14,7 @@ interface Props {
 const { grades, current } = Astro.props;
 ---
 <div class="vp-scale" aria-hidden="true">
-  <span class="vp-scale-end">{t("scale.lighter")}</span>
+  <span class="vp-scale-end">{t("scale.darker")}</span>
   <ol class="vp-scale-swatches">
     {
       grades.map((p) => (
@@ -24,6 +24,6 @@ const { grades, current } = Astro.props;
       ))
     }
   </ol>
-  <span class="vp-scale-end">{t("scale.darker")}</span>
+  <span class="vp-scale-end">{t("scale.lighter")}</span>
   <span class="vp-scale-marker"></span>
 </div>

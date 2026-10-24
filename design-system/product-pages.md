@@ -10,7 +10,7 @@ Each page is also the landing page for that product's ads, so it has to answer t
 | --- | --- | --- | --- | --- |
 | 1 | Global navigation | `GlobalNav` | n/a | Scrolls away with the page. |
 | 2 | Local navigation | `LocalNav` | `name`, `code` | Sticky, `glass`. Overview · Specs · Uses · Documents on laptop; name and *Get a quote* on phone. |
-| 3 | Hero | `ProductHero` | `industries`, `name`, `code`, `description`, `packaging` | Eyebrow in `bronze`, name in `display-l`, grade chip, lead, *Get a quote* and *Chat on WhatsApp*, the drop on its `parchment` stage. The drop fills once. |
+| 3 | Hero | `ProductHero` | `industries`, `name`, `code`, `description`, `packaging` | Eyebrow in `gold-ink`, name in `display-l`, grade chip, lead, *Get a quote* and *Chat on WhatsApp*, the drop in its ivory light box (`ground-raised`). The drop fills once. |
 | 4 | At a glance | `AtAGlance` | first three `specs` | Label above value in `mono`. Order the catalog's specs so the three that decide a purchase come first. |
 | 5 | Typical properties | `SpecTable` + `Disclaimer` | all `specs`, `packaging` | A real `<table>` with row headers. The disclaimer sits under it, verbatim. |
 | 6 | Supply | text and list | `packaging` + allowed claims | Packaging, dispatch from Mangaliya, test reports on request, pricing within 24 hours. |
@@ -39,7 +39,7 @@ phone 390px                          laptop 1280px
 │ VISCOSITY @40°C 90-110…  │         │ │ table + disclaimer          │  packaging, dispatch…    │
 │ table + disclaimer       │         │ └─────────────────────────────┘                          │
 │ supply · uses · chips    │         │ Where it is used · industries                            │
-│ documents (deep)         │         │ Documents (deep, two columns)                            │
+│ documents (ivory)        │         │ Documents (ivory, two columns)                           │
 │ enquiry form             │         │ Enquiry form (two-column fields)                         │
 │ related (swipe rail)     │         │ Related products (three cards)                           │
 │ footer                   │         │ footer                                                   │

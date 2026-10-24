@@ -4,7 +4,7 @@ Vasant Petrochem manufactures and trades base oils, bitumen, industrial fuels, p
 
 - **A datasheet that sells.** Lead with what the product is and its numbers, then where it is used, then how to buy it. Specs are content, not decoration.
 - **One signature, spent in one place.** The drop is the brand's moment. Cards, buttons and type stay calm around it.
-- **Each colour means one thing.** `brand` green means *act*. `gold` means *the product*. `accent` emerald means *live, active or done*. Never swap them.
+- **Each colour means one thing.** `gold` means *act*: every button and link is gold. The drop's own colours mean *the product*. `live` green means *live, active or done*. Never swap them.
 - **Glass only floats.** The translucent `glass` fill is for chrome that floats over content (the product local nav, the phone action bar, the WhatsApp pill), never for cards or sections.
 - **Phone and laptop are equals.** Every component has a phone layout (below 1024px) and a laptop layout (1024px and up) in one responsive tree. Never ship two copies of the same markup.
 - **Nothing invented.** Show only the catalog's own data and the claims listed under Voice. No certifications, capacities, client names or superlatives until there is a document behind them.
@@ -40,46 +40,46 @@ Many readers buy in a second language, in the Middle East and beyond, often thro
 
 ## Colour
 
-Grounds are `cream` (every page), `parchment` (alternate bands and the drop's stage) and `paper` (cards, tables, fields). `deep` is the dark band: at most two per page (the documents card and the closing call to action), plus the footer strip and ad grounds.
+**Sunlit gold** (24 October 2026). The owner asked for light mode, a premium oil feel ("smelling like money") and vastu. The page is warm white, the type warm black, and one metallic gold marks everything that acts. There are no black or dark-grey fields anywhere; the heaviest block on a page is the gold band near its foot (see Vastu).
+
+Grounds are `ground` (every page), `ground-raised` (ivory: alternate bands, the footer, the product stage, the documents card) and `surface` (cards, tables, fields, secondary buttons). The gold band (`gold` with its `gold-sheen`) closes a page, at most once.
 
 | Role | Tokens | Rule |
 | --- | --- | --- |
-| Text on light | `ink` · `body` · `secondary` | Headings `ink`, copy `body`, labels and captions `secondary`. All pass on `cream`, `parchment` and `paper` (lowest: `secondary` on `parchment`, 4.8:1). |
-| Text on dark | `on-deep` · `on-deep-secondary` | On `deep`, `deep-raised` and `deep-field` (lowest: 6.6:1). |
-| Act | `brand` · `brand-pressed` · `on-brand` · `brand-tint` | The only action colour on light grounds: primary buttons, links, selected chips, focus. One primary button per view. |
-| Live, active, done | `accent` · `on-accent` | Status dots, success ticks, the focus ring on dark grounds. Text only on `deep` (7.6:1); on light grounds a fill with `on-accent` text. |
-| The product | `gold` · `gold-light` · `gold-deep` · `bronze` · `on-gold` | The drop, the grade chip (`on-gold` text on `gold`, 7.0:1), the product hairline. Gold-family text on light grounds is `bronze` (5.4:1 on `cream`); `gold` itself is text only on dark. |
-| Edges | `line` · `line-strong` · `line-on-deep` | `line` is decorative; any edge that identifies a control (inputs, outline buttons, chips) is `line-strong` (3.5:1 on `paper`) or `line-on-deep` on dark. |
-| Problems | `danger` · `danger-tint` · `danger-on-deep` · `warning-tint` · `warning-ink` | Always with an icon and words, never colour alone. |
+| Text | `text` · `text-2` · `text-3` | Headings `text` (warm black, never pure black), copy `text-2`, labels and captions `text-3`. All pass on every ground (lowest: `text-3` on `surface-hover`, 5.1:1). |
+| Act | `gold` · `gold-pressed` · `gold-deep` · `on-gold` | The one action colour, as a fill: primary buttons, selected chips, the closing band. A gold fill has a 1px `gold-deep` edge and `on-gold` text (7.8:1). One primary button per view. |
+| Gold text | `gold-ink` | Links, eyebrows, grade codes and the focus ring: the gold that reads (6.2:1 on `ground`, 5.3:1 at worst). `gold` itself is never text on the page. |
+| On the gold band | `on-gold` · `on-gold-2` | Headings and buttons in `on-gold`, copy in `on-gold-2` (5.5:1). Its buttons are `.vp-btn-dark` and `.vp-btn-outline-dark`. |
+| Quiet gold | `gold-tint` | Grade chips, tags, selected rows, text selection. |
+| Live, active, done | `live` | The brand's own green: status dots and success ticks (6.5:1). |
+| Edges | `line` · `line-strong` | `line` is decorative; any edge that identifies a control (inputs, secondary buttons, chips) is `line-strong` (3.8:1 on `ground`, 3.2:1 at worst). |
+| Problems | `danger` · `danger-tint` · `warning-tint` · `warning-ink` | Always with an icon and words, never colour alone. |
 
-The site's existing tokens keep their exact values: `brand` #246851, `deep-raised` (was `brand-dark`) #1a4a3a, `deep` (was `brand-deep`) #0f2e24, `brand-tint` (was `brand-light`) #e6f0ed, `accent` (was `brand-accent`) #34d399 and `brand-muted` #7e948b. `brand-muted` is 3.0:1 on `cream`, so it is decorative only.
-
-Keyboard focus is `focus-ring` on light grounds (a 2px `cream` gap, then 2px solid `brand`) and `focus-ring-deep` on dark ones (`accent`, 7.6:1 on `deep`). Every interactive element shows it on `:focus-visible`.
+Keyboard focus is `focus-ring` everywhere: a 2px `ground` gap, then 2px of `gold-ink`. Every interactive element shows it on `:focus-visible`. The same palette prints, so there is no separate print set.
 
 ## Type
 
 | Role | Style tokens (laptop / phone) | Family |
 | --- | --- | --- |
-| Film words, the home close | `film` 128/128 · `film-compact` 64/68 | `display` (Montserrat 300) |
-| Lighting statement | `statement` 40/52 · `statement-compact` 26/36 | `display` (500) |
-| Home headline | `display-xl` 56/60 · `display-xl-compact` 36/40 | `display` (Montserrat 700) |
-| Page title, product name | `display-l` 44/50 · `display-l-compact` 32/38 | `display` |
-| Section heading | `display-m` 30/36 · `display-m-compact` 24/30 | `display` |
-| Card title, form heading | `title` 21/27 | `display` (600) |
-| Lead paragraph | `lead` 19/30 (17/27 on phone) | `sans` |
-| Body | `body` 17/27 | `sans` |
+| Film words, the home close | `film` 120/112 · `film-compact` 56/54 | `display` (Schibsted Grotesk 900) |
+| Lighting statement | `statement` 44/52 · `statement-compact` 28/36 | `display` (700) |
+| Home headline | `display-xl` 84/80 · `display-xl-compact` 44/44 | `display` (900) |
+| Page title, product name | `display-l` 60/60 · `display-l-compact` 36/38 | `display` (900) |
+| Section heading | `display-m` 36/40 · `display-m-compact` 26/30 | `display` (800) |
+| Card title, form heading | `title` 22/28 | `display` (700) |
+| Lead paragraph | `lead` 20/32 | `sans` |
+| Body | `body` 17/28 | `sans` |
 | Secondary, list rows | `small` 15/23 | `sans` |
-| Eyebrow, spec label | `label` 13/18, +0.08em, capitals by CSS | `sans` |
-| Button | `button` 15/20 (16/20 at touch size) | `sans` |
+| Button | `button` 15/20 | `sans` (700) |
 | Footnote, disclaimer | `caption` 13/19 | `sans` |
-| Grade code | `grade` 13/18 | `mono` |
-| Spec value | `spec` 15/22 · `spec-large` 20/26 | `mono` |
+| Eyebrow, spec label | `label` 12/16, +0.14em, capitals by CSS | `mono` (500) |
+| Grade code | `grade` 13/18 | `mono` (600) |
+| Spec value | `spec` 15/22 · `spec-large` 20/26 | `mono` (500) |
 
-- **Montserrat** (`fonts/montserrat-latin-wght-normal.woff2`, SIL Open Font License) is the wide geometric sans of the logo's wordmark, so headlines speak in the logo's voice. Use it for display styles only.
-- **Share images** use static cuts of the same font (`fonts/montserrat-latin-500.ttf`, `-700.ttf`), made by `tools/brand/static-fonts.py` because the image renderer cannot read a variable WOFF2. Re-run it whenever the WOFF2 changes.
-- **Body, labels and controls use the device's own face** (`sans`): SF Pro on Apple devices, Segoe UI on Windows, Roboto on Android. Nothing to download, and the most legible face at small sizes on each device.
-- **`mono` is the datasheet voice**: grade codes and measured values, so digits line up in columns.
-- Never below 12px (13px in practice), never weight 300. Running text stops at `measure` (680px).
+- **Schibsted Grotesk** (`fonts/schibsted-grotesk-latin-wght-normal.woff2`, one variable file, 400 to 900, SIL Open Font License) sets everything that reads: heavy (800 to 900) and tight for display, 400 for text. The weight carries the brand: confident, heavy type, never thin.
+- **IBM Plex Mono** (`fonts/ibm-plex-mono-latin-500-normal.woff2`, `-600-normal.woff2`, SIL Open Font License) is the datasheet's voice: grade codes, measured values and the capitals of labels, read like an engraved serial number, with digits that line up in columns.
+- **Share images** use static cuts of Schibsted Grotesk (`fonts/schibsted-grotesk-latin-500-normal.woff`, `-900-normal.woff`), because the image renderer cannot read WOFF2.
+- Never below 12px, never weight 300. Running text stops at `measure` (680px).
 
 ## Layout
 
@@ -91,33 +91,46 @@ Keyboard focus is `focus-ring` on light grounds (a 2px `cream` gap, then 2px sol
 
 ## Shape, depth and material
 
-- Radii: `radius-full` for anything you press (buttons, chips, pills), `radius-sm` for inputs, `radius-md` for cards and tables, `radius-lg` for stages, dark bands and sheets, `radius-xs` for grade chips.
-- Depth: `shadow-card` at rest, `shadow-raised` under a pointer (with a 2px lift), `shadow-float` for floating chrome. Shadows are tinted with `deep`, never black.
-- Glass: `glass` fill with `glass-blur` (24px) and `glass-saturate` (1.4), only on floating chrome, and opaque `cream` under reduced transparency or increased contrast.
-- No gradients anywhere except inside the drop (its liquid, and the glint that sweeps it in the home film).
+- Radii are engineered, not soft: `radius-xs` (2px) for grade chips and swatches, `radius-sm` (4px) for buttons, inputs and chips, `radius-md` (6px) for cards and tables, `radius-lg` (10px) for stages, bands and sheets, and `radius-full` only for round things (the WhatsApp button, the basket count).
+- Depth: `shadow-card` at rest, `shadow-raised` under a pointer (with a 2px lift), `shadow-float` for floating chrome. Shadows are warm, tinted with `text`, never grey or black.
+- Glass: `glass` fill with `glass-blur` (24px) and `glass-saturate` (1.4), only on floating chrome, and opaque `ground` under reduced transparency or increased contrast.
+- Gradients are light only: inside the drop, the light behind a drop, the morning light at the top of the home page, and the sheen of a gold band.
+
+## Vastu
+
+The owner asked for vastu to be taken into account (24 October 2026). Vastu has no rules for web pages, so the site applies its widely agreed principles by analogy, reading each screen like a floor plan with north at the top, as on a map. A vastu consultant's specific guidance, if the owner brings one, overrides these choices.
+
+| Vastu principle (for buildings) | On the site |
+| --- | --- |
+| Light, bright colours; yellow and gold for prosperity, green for growth | Warm white and ivory grounds, gold for every action, the brand's green only for "live". No black or dark-grey fields. |
+| The north-east is the most auspicious corner; keep it open and light | Light always comes from a screen's upper right (the home page's morning light, the stage's sun); nothing heavy sits there. |
+| The main entrance is best in the north-east | "Get a quote" sits at the right end of the header on laptops. |
+| Heavier mass to the south and west | Headlines sit left; the heaviest blocks, the gold band and the footer, sit at the foot of the page. |
+| Rising, upward forms | The drop points up, the bubbles rise and the light grows as the visitor scrolls. |
+| Moving from darkness to light | The colour scale runs from the darkest grade to the lightest, so the home film ends in light. |
 
 ## Motion
 
 The home page is a film; every other page is a page with a light touch of the same language. (Owner direction, October 2026, after vaiiya.org: cinematic, so a visitor who scrolls wants to explore the whole site. Rebuilt on 24 October around one idea: the colour scale.)
 
-**The idea.** The oil trade grades its products by colour, from water-white to black (ASTM D1500), and a laboratory checks a sample by holding it to the light. The film does the same: the lights go down, the drop is held to the light, and as the visitor scrolls it passes down the colour scale, lightest grade to darkest. Scroll is depth; the deeper you go, the darker the oil.
+**The idea.** The oil trade grades its products by colour, from water-white to black (ASTM D1500), and a laboratory checks a sample by holding it to the light. The film does the same: the drop is held to a light box, and as the visitor scrolls it passes along the colour scale, darkest grade to lightest, so the page moves toward light and ends in it (see Vastu).
 
 **The scenes**, phone and laptop alike:
-1. **Hero.** Headline, lead and two buttons on cream; the drop beside them (below them on phones) fills gold as the page starts to move.
-2. **Lights down.** An iris of deep opens from the drop and covers the screen; the copy steps back; the drop glides to the centre-left (the upper middle on phones) and a light rises behind it.
-3. **The colour scale.** "Every oil has its colour." resolves and lifts away. Then one grade per slot (`byColour` in `site/src/lib/drop.ts`): the liquid turns to the grade's colour, sloshing as it changes, the light behind it takes that colour, and the grade's name, code, key value and link resolve beside it. A scale of swatches (down the left on laptops, across the top on phones) marks the place.
-4. **Statement.** The company in its registered claims, lit word by word on deep, with bubbles rising behind at three depths, as in a bubble-tube viscosity test.
+1. **Hero.** Headline, lead and buttons in the morning light, which comes from the upper right; the drop beside them on laptops (above the headline on phones, with one button, since Get a quote is in the bar below) fills gold as the page starts to move.
+2. **The light box.** The copy steps back; the drop grows into the light (it stays on the right on laptops and moves to the upper middle on phones) and a white light rises behind it.
+3. **The colour scale.** "Every oil has its colour." resolves and lifts away. Then one grade per slot, darkest first (`byColour` in `site/src/lib/drop.ts`): the liquid turns to the grade's colour, sloshing as it changes, the light around it takes that colour, and the grade's name, code, key value and link resolve beside it (on the left on laptops, below it on phones). A scale of swatches (low on the left on laptops, across the top on phones) marks the place. The last grade, water-white, all but disappears into the light.
+4. **Statement.** The company in its registered claims, lit word by word on ivory, with gold bubbles rising behind at three depths, as in a bubble-tube viscosity test.
 5. **The road.** A road tanker leaves the Mangaliya pin along a gold road, and each step of an order arrives as it passes: all four under the road on laptops, one at a time as a caption on phones.
-6. **Explore**, letter by letter, then the doors into the site; **Close** on deep, ending on the colour bar.
+6. **Explore**, letter by letter, then the doors into the site; **Close** on the gold band, the page's heaviest block, at its foot.
 
 - **Scroll is the clock.** Each scene's stage pins while scrolling plays it, then lets go. The film's timing lives in one place, custom properties on `.vp-film` (`--fill-end`, `--scale-from`, `--scale-span`) that `styles/film.css` and `islands/liquid.ts` both read. Elsewhere, a page title resolves as the page opens, sections rise as they enter, cards open with a gold wipe, and pages cut to each other with a short fade and rise (cross-document view transitions; the drop morphs from a card into its product hero).
 - **One signature: the drop held to the light.** On the home page and product pages the drop fills with real-time liquid (WebGL), inside the drop's own chrome and highlight; in the film the liquid also takes each grade's colour. The SVG drop is the first paint and the fallback, and without WebGL each grade's own SVG drop settles over the last.
 - **The reader stays in control.** Native scrolling is never smoothed, snapped or hijacked. No loading screens, no custom cursors, nothing that flashes or advances on its own. The only motion not driven by scroll is a title resolving (`duration-title`) and the hero drop's slow float (`duration-float`). Only the grade on screen takes a click; one that has keyboard focus shows, alone.
-- **What moves:** transform, opacity, blur, colour and the iris's clip, never layout.
-- **Type in motion:** grade names in Montserrat 300, scene words in `film`, both resolving from a blur. A statement on deep moves from `line-on-deep` (3.9:1) to `on-deep`.
-- **Light, measured.** The light behind a drop is its grade's `-light` tint at most 62% over deep, and text never sits on its core: measured from the rendered film, every text keeps 6:1 or better (grade names 11.8:1).
+- **What moves:** transform, opacity, blur and colour, never layout.
+- **Type in motion:** grade names and scene words in Schibsted Grotesk 900, resolving from a blur. A statement moves from `line-strong` (3.4:1 on ivory, large text) to `text`.
+- **Light, measured.** The light behind a drop is white at its core and its grade's `-light` tint at 38% at its rim, and text never sits on its core: measured from the rendered film, every text keeps 4.9:1 or better (grade names 9.3:1).
 - **Easing:** `ease-out` for entrances, `ease-in-out` for the float. Scrubbed motion is linear, because the reader's scroll sets the pace.
-- **Still is complete.** With reduced motion, or in a browser without scroll-driven animations, nothing pins and nothing hides: the hero, then every grade as a lit card on deep, the statement, the road with all four steps, and the close.
+- **Still is complete.** With reduced motion, or in a browser without scroll-driven animations, nothing pins and nothing hides: the hero, then every grade as a lit card on ivory, the statement, the road with all four steps, and the close.
 - Cards lift 2px under a pointer. Touch gets no hover state.
 
 ## Logo
@@ -127,9 +140,9 @@ Assets in the **Logos** group, cut from the owner's 1024px artwork: the white gr
 | File | Use |
 | --- | --- |
 | `vasant-logo.png` | The full lockup. Footer, the printable datasheet and ads, at 200px wide or more. |
-| `vasant-logo-reversed.png` | The full lockup on `deep` or photographs: green becomes `cream`, the drop stays. |
+| `vasant-logo-reversed.png` | The full lockup on photographs or any dark ground: green becomes cream, the drop stays. (The site itself has no dark grounds.) |
 | `vasant-lockup-compact.png` | Navigation, every share (link-preview) image, and anywhere under 72px tall. The same artwork, with the wordmark at 0.6× the mark's height (0.29× in the full lockup) so the letters stay legible at 40px. |
-| `vasant-lockup-compact-reversed.png` | The compact lockup on `deep`. |
+| `vasant-lockup-compact-reversed.png` | The compact lockup on photographs or any dark ground. |
 | `vasant-mark.png` | The V, arrow and drop alone: print and the social avatar. |
 | `vasant-icon-512.png` | The mark centred on a transparent 512px square. The site makes the favicon, app icons and touch icon from this file alone. |
 | `vasant-wordmark.png` | The wordmark alone, where the mark already appears nearby. |
@@ -138,7 +151,7 @@ Assets in the **Logos** group, cut from the owner's 1024px artwork: the white gr
 - Clear space on every side equals the width of the drop in the lockup.
 - A replacement keeps the file's name and aspect ratio; when a lockup changes, its `-reversed` file is replaced with it.
 - Minimum sizes: full lockup 200px wide, compact lockup 32px tall, mark 24px tall.
-- Show the logo once per view. Never retype the wordmark, recolour it (other than the reversed files), add effects, or place the green version on `deep`.
+- Show the logo once per view. Never retype the wordmark, recolour it (other than the reversed files), add effects, or place the green version on a dark ground.
 
 ## The product drop
 
@@ -147,7 +160,7 @@ Assets in the **Logos** group, cut from the owner's 1024px artwork: the white gr
 | Product | Tint | Tokens |
 | --- | --- | --- |
 | Base Oil SN150 | straw | `drop-straw`, `-light`, `-deep` |
-| Base Oil SN500 | gold (the logo's own) | `drop-gold` (aliases of `gold`, `gold-light`, `gold-deep`) |
+| Base Oil SN500 | gold (the logo's own) | `drop-gold`, `-light`, `-deep` (the logo's gold, apart from the action `gold`) |
 | Rubber Process Oil | amber | `drop-amber`… |
 | Light Diesel Oil | brown | `drop-brown`… |
 | Industrial Fuel Oil | fuel | `drop-fuel`… |
@@ -155,8 +168,8 @@ Assets in the **Logos** group, cut from the owner's 1024px artwork: the white gr
 | Mineral Turpentine Oil | clear, with the chrome rim | `drop-clear`… |
 | Petroleum Jelly | white, with the chrome rim | `drop-white`… |
 
-- **Held to the light**: wherever a drop is the subject (the film, a product hero, an industry hero) it stands on deep with a soft light of its own `-light` tint behind it, and the colour scale beneath marks the grade, captioned "Colours are illustrated, not a specification."
-- **The colour scale**: every grade's swatch, lightest to darkest (`byColour`), between "Lighter" and "Darker". It is decoration beside text that names the grades, never the only way to tell them apart.
+- **Held to the light**: wherever a drop is the subject (the film, a product hero, an industry hero) it stands in an ivory light box, lit by the sun from the upper right with a soft aura of its own `-light` tint around it, and the colour scale beneath marks the grade, captioned "Colours are illustrated, not a specification."
+- **The colour scale**: every grade's swatch, darkest to lightest (`byColour`), between "Darker" and "Lighter", so it ends in light. It is decoration beside text that names the grades, never the only way to tell them apart.
 - **Sizes**: 150px in a product hero on phone and 190px on laptop, 30px on a card, 48 to 64px in a range lineup, about 260px in an ad; in the film, up to 290px.
 - **Data**: a product with no tint yet uses gold. Add its tint to `SLUG_TINT` in the bundle and three `drop-*` tokens.
 - **Don'ts**: never fill drops to different levels (it would read as a quantity), never use a drop as a bullet or a status mark, never put text on one. Static SVGs of all eight are in the **Drops** group (`Vasant.dropMarkup(tint, {plain: true})` makes more).
