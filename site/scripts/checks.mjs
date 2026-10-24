@@ -2,7 +2,7 @@
 // production build; CI runs it on every pull request (npm run check).
 //   - a TODO(...) marker or an unfilled {{token}} on a published page
 //   - an inline script or style attribute (the strict CSP refuses them)
-//   - a script, stylesheet, image or font from another host
+//   - a script, stylesheet, image or font from another host (except Turnstile's script)
 //   - an internal link to a page that does not exist
 //   - JavaScript over the page's budget (gzipped)
 //   - a stale copyright year
@@ -14,6 +14,9 @@ import { fileURLToPath } from "node:url";
 const dist = process.argv[2] ?? fileURLToPath(new URL("../dist/client/", import.meta.url));
 // Pages rendered by the Worker on request, so not files in dist.
 const ON_DEMAND = [/^\/api\//, /^\/marketplace\/offers$/, /^\/\.well-known\/security\.txt$/];
+// The only file another host may serve: Cloudflare Turnstile's script, which
+// Cloudflare requires loading from its own origin (allowed in src/server/headers.ts).
+const FOREIGN_OK = new Set(["https://challenges.cloudflare.com/turnstile/v0/api.js"]);
 // Gzipped JS per page (the plan's performance budget).
 const BUDGET = (path) => (/^\/(marketplace|quote)(\/|$)/.test(path) ? 40_000 : /^\/($|products\/)/.test(path) ? 20_000 : 15_000);
 
@@ -60,7 +63,7 @@ for (const file of html) {
     ...doc.matchAll(/<link\b(?=[^>]*\brel="(?:stylesheet|preload|modulepreload|icon|apple-touch-icon|manifest)")[^>]*?\bhref="([^"]+)"/gi),
   ];
   for (const [, url] of assets) {
-    if (/^(https?:)?\/\//.test(url) && !url.startsWith("https://www.vasantpetrochem.com/")) fail(`loads ${url} from another host`);
+    if (/^(https?:)?\/\//.test(url) && !url.startsWith("https://www.vasantpetrochem.com/") && !FOREIGN_OK.has(url)) fail(`loads ${url} from another host`);
   }
   for (const m of doc.matchAll(/<a\b[^>]*\bhref="(\/[^"]*)"/gi)) {
     if (!exists(m[1])) fail(`links to ${m[1]}, which does not exist`);
