@@ -40,6 +40,10 @@ The run fails on horizontal overflow, console errors or CSP violations. Look at 
    - Every promise comes from `content/claims.json`.
    - No `TODO` or placeholder is visible, and nothing that says "coming soon" without a date.
 
+## Second opinion: apple-design
+
+If the `apple-design` skill is installed (user-wide, `~/.claude/skills/apple-design`), run it on the same screenshots as a web app: its principles and foundations only (accessibility, colour, typography, layout, writing), not iOS or macOS platform conventions. Merge its findings into the report with the same severities. Where it conflicts with the brand book or the lenses above, the brand book wins. If it isn't installed, skip this step.
+
 ## Report
 
 For each finding, give the severity (Critical, High, Medium or Low), what is wrong (with the numbers), why it matters, and the fix in this codebase. Critical and High findings are fixed before the pull request merges.
