@@ -1,8 +1,10 @@
 ---
 import type { ProductEntry } from "../lib/catalog.ts";
-import { packagingLine } from "../lib/catalog.ts";
+import { getProducts, packagingLine } from "../lib/catalog.ts";
+import { byColour } from "../lib/drop.ts";
 import { t } from "../lib/ui.ts";
 import AtAGlance from "./AtAGlance.astro";
+import ColourScale from "./ColourScale.astro";
 import GradeChip from "./GradeChip.astro";
 import Icon from "./Icon.astro";
 import LiquidDrop from "./LiquidDrop.astro";
@@ -13,6 +15,7 @@ interface Props {
 }
 const { product, industries } = Astro.props;
 const p = product.data;
+const grades = byColour(await getProducts());
 ---
 <section class="vp-phero" id="overview" aria-labelledby="product-name">
   <div class="vp-container vp-phero-grid">
@@ -32,9 +35,11 @@ const p = product.data;
         <a class="vp-btn vp-btn-secondary vp-btn-touch" href={`/quote?add=${product.id}&type=sample`}><Icon name="sample" />{t("cta.sample")}</a>
       </div>
     </div>
-    <div class="vp-stage">
+    <div class="vp-stage" data-tint={p.tint}>
       <div class="vp-stage-drop"><LiquidDrop tint={p.tint} fill="load" title={`${p.name}, illustrated`} vt={`drop-${product.id}`} /></div>
       <p class="vp-stage-caption">Supplied in <strong>{packagingLine(product)}</strong></p>
+      <ColourScale grades={grades} current={product.id} />
+      <p class="vp-stage-note">{t("scale.note")}</p>
     </div>
   </div>
   <div class="vp-container">

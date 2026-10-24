@@ -1,17 +1,20 @@
 ---
 /**
- * The home page as a film (design-system/README.md, "Motion"): six scenes
- * told by scrolling. Every scene is a finished still section first; the film
- * (styles/film.css) pins and plays them where scroll-driven animations exist
- * and motion is welcome.
+ * The home page as a film (design-system/README.md, "Motion"): the hero; the
+ * lights go down and the drop is held to the light as it passes down the
+ * colour scale, lightest grade to darkest; the company in its own words; the
+ * road from Mangaliya; the doors into the site; the close. Every scene is a
+ * finished still section first; styles/film.css pins and plays them where
+ * scroll-driven animations exist and motion is welcome.
  */
 import Base from "../layouts/Base.astro";
+import ColourScale from "../components/ColourScale.astro";
 import Drop from "../components/Drop.astro";
 import Icon from "../components/Icon.astro";
 import LiquidDrop from "../components/LiquidDrop.astro";
 import { getFamilies, getIndustries, getProducts, keySpecs, specText } from "../lib/catalog.ts";
-import { claim } from "../lib/claims.ts";
 import { company, whatsappHref } from "../lib/company.ts";
+import { byColour } from "../lib/drop.ts";
 import { itemText, page } from "../lib/page.ts";
 import { localBusiness } from "../lib/seo.ts";
 import { t } from "../lib/ui.ts";
@@ -20,6 +23,7 @@ import "../styles/film.css";
 const home = await page("home");
 const b = home.blocks;
 const products = await getProducts();
+const grades = byColour(products);
 const families = (await getFamilies()).filter((f) => products.some((p) => p.data.family === f.id));
 const industries = await getIndustries();
 const texts = (items: { title: string; body?: string | undefined; claim?: string | undefined }[] = []) =>
@@ -28,97 +32,112 @@ const how = await texts(b.how?.items);
 const supply = await texts(b.supply?.items);
 const statement = (await texts(b.statement?.items)).map((i) => i.text).join(" ").split(/\s+/);
 const trading = b.trading?.items?.[0] ? await itemText(b.trading.items[0]) : null;
-const dispatch = await claim("from-mangaliya");
-const supplyIcons = ["package", "clock", "phone", "pin"] as const;
-// "Compare grades" opens a real comparison: the first family with two grades.
-const pair = families.map((f) => products.filter((p) => p.data.family === f.id)).find((g) => g.length > 1);
-const compareHref = pair ? `/marketplace/compare?p=${pair[0]!.id},${pair[1]!.id}` : "/marketplace/compare";
+const place = `${company.works.street.split(", ").at(-1)}, ${company.works.city}`;
+const supplyIcons = ["package", "phone"] as const;
 const explore = [...(b.explore?.heading ?? "Explore")];
 ---
 <Base title={home.title} description={home.description} fullTitle structured={[localBusiness()]}>
-  {/* 1 · Opening and fill: the drop fills as the families resolve one by one. */}
-  <section class="vp-open" aria-labelledby="hero-title" data-fill-scene>
-    <div class="vp-open-stage">
-      <div class="vp-container vp-open-grid">
-        <div class="vp-open-copy">
-          <p class="vp-eyebrow">{company.works.street.split(", ").at(-1)}, {company.works.city} · Est. {company.foundedYear}</p>
-          <h1 class="vp-h-hero" id="hero-title">{home.headline}</h1>
-          <p class="vp-lead">{home.lead}</p>
-          <div class="vp-actions">
-            <a class="vp-btn vp-btn-primary vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
-            <a class="vp-btn vp-btn-secondary vp-btn-touch" href="/quote">{t("cta.quote")}</a>
-          </div>
+  {/* 1–2 · The hero; then the lights go down and the drop passes down the colour scale. */}
+  <section class="vp-film" aria-labelledby="hero-title" data-fill-scene>
+    <div class="vp-film-stage">
+      <div class="vp-film-dark" aria-hidden="true"></div>
+      <div class="vp-film-glow" aria-hidden="true">
+        {grades.map((p) => <span data-tint={p.data.tint}></span>)}
+        <span class="vp-film-glow-own" data-tint="gold"></span>
+      </div>
+
+      <div class="vp-film-copy">
+        <p class="vp-eyebrow">{place} · Est. {company.foundedYear}</p>
+        <h1 class="vp-h-hero" id="hero-title">{home.headline}</h1>
+        <p class="vp-lead">{home.lead}</p>
+        <div class="vp-actions">
+          <a class="vp-btn vp-btn-primary vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
+          <a class="vp-btn vp-btn-secondary vp-btn-touch" href="/quote">{t("cta.quote")}</a>
         </div>
-        <div class="vp-open-visual">
-          <div class="vp-open-drop">
-            <LiquidDrop tint="gold" fill="scroll" />
-            <span class="vp-open-glint" aria-hidden="true"></span>
-          </div>
-          <span class="vp-open-shadow" aria-hidden="true"></span>
+      </div>
+
+      <div class="vp-film-drop">
+        <div class="vp-film-float">
+          <LiquidDrop tint="gold" fill="scroll" scale={grades.map((p) => p.data.tint)} />
+          {/* Without WebGL, the film shows each grade's own drop over the last. */}
+          <span class="vp-film-drops" aria-hidden="true">{grades.map((p) => <Drop tint={p.data.tint} />)}</span>
+          <span class="vp-open-glint" aria-hidden="true"></span>
         </div>
-        <ul class="vp-open-words" aria-label={b.film?.heading}>
-          {families.map((f) => <li>{f.data.name}</li>)}
-        </ul>
+        <span class="vp-open-shadow" aria-hidden="true"></span>
+      </div>
+
+      <ColourScale grades={grades} />
+
+      <div class="vp-film-scale">
+        <p class="vp-eyebrow vp-eyebrow-deep">{b.scale?.eyebrow}</p>
+        <h2 class="vp-film-title" id="scale-title">{b.scale?.heading}</h2>
+        <ol class="vp-oils" role="list" aria-labelledby="scale-title">
+          {
+            grades.map((p) => {
+              const spec = keySpecs(p)[0];
+              return (
+                <li class="vp-oil" data-tint={p.data.tint}>
+                  <Drop tint={p.data.tint} size="l" />
+                  <h3 class="vp-oil-name">{p.data.name}</h3>
+                  <p class="vp-oil-meta">
+                    <span class="vp-oil-code">{p.data.code}</span>
+                    {spec && <span class="vp-oil-spec">{spec.property} <span class="vp-nowrap">{specText(spec)}</span></span>}
+                  </p>
+                  <a class="vp-link vp-link-deep" href={`/products/${p.id}`}>
+                    {t("scale.view")}<span class="vp-sr"> {p.data.name}</span><Icon name="arrow" size={16} />
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ol>
+        <p class="vp-film-note">{t("scale.note")}</p>
       </div>
     </div>
   </section>
 
-  {/* 2 · Statement: the company in its registered words, lit as it is read. */}
-  <section class="vp-statement" aria-label={b.statement?.eyebrow}>
+  {/* 3 · The company in its registered words, lit as it is read, with bubbles rising as in a viscosity tube. */}
+  <section class="vp-statement vp-band-deep" aria-label={b.statement?.eyebrow}>
+    <div class="vp-bubbles" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="vp-container">
-      <p class="vp-eyebrow">{b.statement?.eyebrow}</p>
+      <p class="vp-eyebrow vp-eyebrow-deep">{b.statement?.eyebrow}</p>
       <p class="vp-statement-text vp-lit">
         {statement.map((w, i) => <><span class="w">{w}</span>{i < statement.length - 1 ? " " : ""}</>)}
       </p>
-      <a class="vp-link" href="/about">More about us <Icon name="arrow" size={16} /></a>
+      <a class="vp-link vp-link-deep" href="/about">More about us <Icon name="arrow" size={16} /></a>
     </div>
   </section>
 
-  {/* 3 · The range: every product's drop crosses the screen and fills. */}
-  <section class="vp-range" aria-labelledby="range-title">
-    <div class="vp-range-stage">
-      <div class="vp-container vp-range-head">
-        <div class="vp-head">
-          <p class="vp-eyebrow">{b.range?.eyebrow}</p>
-          <h2 class="vp-h-section" id="range-title">{b.range?.heading}</h2>
-          <p class="vp-lead">{b.range?.body}</p>
-        </div>
-        <div class="vp-actions">
-          <a class="vp-btn vp-btn-primary" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
-          <a class="vp-btn vp-btn-secondary" href={compareHref}>Compare grades</a>
-        </div>
-      </div>
-      <div class="vp-range-viewport">
-        <ol class="vp-range-track" role="list">
-          {products.map((p) => {
-            const spec = keySpecs(p)[0];
-            return (
-              <li>
-                <a href={`/products/${p.id}`}>
-                  <Drop tint={p.data.tint} size="xl" vt={`drop-${p.id}`} />
-                  <span class="vp-range-name">{p.data.name}</span>
-                  <span class="vp-range-code">{p.data.code}</span>
-                  {spec && <span class="vp-range-spec">{spec.property} <span class="vp-nowrap">{specText(spec)}</span></span>}
-                </a>
-              </li>
-            );
-          })}
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  {/* 4 · How supply moves: a gold line joins the four steps, from Mangaliya out. */}
-  <section class="vp-flow" aria-labelledby="how-title">
-    <div class="vp-flow-stage">
-      <div class="vp-container vp-flow-grid">
+  {/* 4 · The road: a tanker leaves Mangaliya and each step of an order lights as it passes. */}
+  <section class="vp-road" aria-labelledby="how-title">
+    <div class="vp-road-stage">
+      <div class="vp-container vp-road-inner">
         <div class="vp-head">
           <p class="vp-eyebrow">{b.how?.eyebrow}</p>
           <h2 class="vp-h-section" id="how-title">{b.how?.heading}</h2>
-          <div class="vp-pin" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-          <p class="vp-small">{dispatch}</p>
         </div>
-        <ol class="vp-steps">
+        <div class="vp-road-track" aria-hidden="true">
+          <span class="vp-road-pin"><span></span><span></span><span></span><span></span></span>
+          <span class="vp-road-place">{place}</span>
+          <span class="vp-road-line"></span>
+          <span class="vp-road-route"></span>
+          <svg class="vp-road-tanker" viewBox="0 0 120 48" focusable="false">
+            <defs>
+              <linearGradient id="vp-tank" x1="0" y1="8" x2="0" y2="34" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#f3f4f5" /><stop offset=".45" stop-color="#c0c2c3" /><stop offset="1" stop-color="#979797" />
+              </linearGradient>
+            </defs>
+            <rect x="4" y="8" width="78" height="26" rx="13" fill="url(#vp-tank)" />
+            <rect x="4" y="24" width="78" height="3" fill="#daad4a" />
+            <path d="M30 9v24M56 9v24" stroke="#979797" stroke-width="1" />
+            <path d="M84 36V16q0-4 4-4h14q4 0 6 4l5 10q1 2 1 4v6Z" fill="#246851" />
+            <path d="M90 16h11q2 0 3 2l3 7H90Z" fill="#e6f0ed" />
+            <rect x="2" y="33" width="112" height="3" rx="1.5" fill="#0f2e24" />
+            <g fill="#0f2e24"><circle cx="18" cy="39" r="6" /><circle cx="32" cy="39" r="6" /><circle cx="70" cy="39" r="6" /><circle cx="101" cy="39" r="6" /></g>
+            <g fill="#c0c2c3"><circle cx="18" cy="39" r="2.2" /><circle cx="32" cy="39" r="2.2" /><circle cx="70" cy="39" r="2.2" /><circle cx="101" cy="39" r="2.2" /></g>
+          </svg>
+        </div>
+        <ol class="vp-road-steps">
           {how.map((s, i) => <li><span class="vp-step-n" aria-hidden="true">{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></li>)}
         </ol>
       </div>
@@ -190,18 +209,20 @@ const explore = [...(b.explore?.heading ?? "Explore")];
     </div>
   </section>
 
-  {/* 6 · Close. */}
-  <section class="vp-close" aria-labelledby="cta-title">
+  {/* 6 · Close, on deep, with the colour bar as the last frame. */}
+  <section class="vp-close vp-band-deep" aria-labelledby="cta-title">
     <div class="vp-container">
       <h2 class="vp-close-title vp-reveal" id="cta-title">{b.cta?.heading}</h2>
       <p class="vp-lead">{b.cta?.body}</p>
       <div class="vp-actions">
-        <a class="vp-btn vp-btn-primary vp-btn-touch" href="/source">{t("cta.source")}</a>
-        <a class="vp-btn vp-btn-secondary vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+        <a class="vp-btn vp-btn-on-deep vp-btn-touch" href="/source">{t("cta.source")}</a>
+        <a class="vp-btn vp-btn-outline-on-deep vp-btn-touch" href="/quote">{t("cta.quote")}</a>
       </div>
+      <ColourScale grades={grades} />
     </div>
   </section>
 </Base>
 <script>
   import "../islands/offers-teaser.ts";
+  import "../islands/film-focus.ts";
 </script>

@@ -6,69 +6,119 @@
 /* Room the phone's action bar takes at the bottom of the screen (global.css). */
 :root { --vp-bar: calc(var(--target-touch) + var(--space-3) + max(var(--space-4), env(safe-area-inset-bottom))); }
 
-/* ------------------------------------------------------ 1 opening and fill */
-.vp-open { padding: var(--space-8) 0 var(--space-12); }
-.vp-open-grid { display: grid; gap: var(--space-8); grid-template-areas: "copy" "drop" "words"; align-items: center; }
-.vp-open-copy { grid-area: copy; }
-.vp-open-copy .vp-h-hero { margin-top: var(--space-3); }
-.vp-open-copy .vp-lead { margin: var(--space-5) 0 var(--space-8); }
-.vp-open-visual { grid-area: drop; display: grid; justify-items: center; }
-.vp-open-drop { position: relative; width: min(40vw, 170px); line-height: 0; }
-.vp-open-drop .vp-liquid { width: 100%; }
-.vp-open-glint { display: none; }
+/* The film's timing, read by islands/liquid.ts too: the drop is full at
+   --fill-end, and the grades share the stretch from --scale-from, one slot each. */
+.vp-film { --n: 1; --fill-end: 10%; --scale-from: 22%; --scale-span: 72%; }
+.vp-film:has(.vp-oil:nth-child(2)) { --n: 2; }
+.vp-film:has(.vp-oil:nth-child(3)) { --n: 3; }
+.vp-film:has(.vp-oil:nth-child(4)) { --n: 4; }
+.vp-film:has(.vp-oil:nth-child(5)) { --n: 5; }
+.vp-film:has(.vp-oil:nth-child(6)) { --n: 6; }
+.vp-film:has(.vp-oil:nth-child(7)) { --n: 7; }
+.vp-film:has(.vp-oil:nth-child(8)) { --n: 8; }
+.vp-film:has(.vp-oil:nth-child(9)) { --n: 9; }
+.vp-film:has(.vp-oil:nth-child(10)) { --n: 10; }
+.vp-film:has(.vp-oil:nth-child(11)) { --n: 11; }
+.vp-film:has(.vp-oil:nth-child(12)) { --n: 12; }
+/* Each grade's slot: its text, swatch, light and fallback drop share it. */
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > * {
+  --i: 0;
+  --slot-start: calc(var(--scale-from) + var(--i) * var(--scale-span) / var(--n));
+  --slot-in: calc(var(--scale-from) + (var(--i) + .25) * var(--scale-span) / var(--n));
+  --slot-end: calc(var(--scale-from) + (var(--i) + 1) * var(--scale-span) / var(--n));
+  --slot-out: calc(var(--scale-from) + (var(--i) + 1.25) * var(--scale-span) / var(--n));
+}
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(2) { --i: 1; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(3) { --i: 2; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(4) { --i: 3; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(5) { --i: 4; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(6) { --i: 5; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(7) { --i: 6; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(8) { --i: 7; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(9) { --i: 8; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(10) { --i: 9; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(11) { --i: 10; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(12) { --i: 11; }
+
+/* ------------------------------------------- 1–2 the hero and the colour scale */
+/* Still: the hero on cream, then every grade on deep, each lit in its own colour. */
+.vp-film-stage { display: grid; grid-template-columns: [full-start] var(--space-gutter) [main-start] minmax(0, 1fr) [main-end] var(--space-gutter) [full-end]; }
+.vp-film-copy { grid-column: main; padding-top: var(--space-8); }
+.vp-film-copy .vp-h-hero { margin-top: var(--space-3); }
+.vp-film-copy .vp-lead { margin: var(--space-5) 0 var(--space-8); }
+.vp-film-drop { grid-column: main; justify-self: center; display: grid; justify-items: center; padding: var(--space-10) 0 var(--space-12); }
+.vp-film-float { position: relative; width: min(40vw, 170px); line-height: 0; }
+.vp-film-float .vp-liquid { width: 100%; }
+.vp-film-dark, .vp-film-glow, .vp-film-drops, .vp-film .vp-scale, .vp-open-glint { display: none; }
 .vp-open-shadow { width: 64%; height: 16px; margin-top: var(--space-4); border-radius: 50%; background: var(--deep); opacity: .14; filter: blur(9px); }
-.vp-open-words { grid-area: words; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-4); margin: 0; padding: 0; list-style: none; font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--bronze); }
+.vp-film-scale { grid-column: full; display: grid; gap: var(--space-3); padding: var(--space-14) var(--space-gutter); background: var(--deep); color: var(--on-deep); }
+.vp-film-title { font: var(--t-display-m-compact); letter-spacing: var(--t-display-m-compact-tracking); color: var(--on-deep); text-wrap: balance; }
+.vp-oils { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-3); margin: var(--space-5) 0 var(--space-2); padding: 0; list-style: none; }
+.vp-oil { position: relative; isolation: isolate; display: grid; align-content: start; justify-items: start; gap: var(--space-2); padding: var(--space-5) var(--space-4) var(--space-3); overflow: hidden; border: 1px solid var(--line-on-deep); border-radius: var(--radius-md); }
+.vp-oil::before { content: ""; position: absolute; left: -48px; top: -48px; z-index: -1; width: 168px; height: 168px; background: radial-gradient(closest-side, color-mix(in srgb, var(--tint-light) 30%, transparent), transparent); }
+.vp-oil .vp-drop { width: 36px; margin-bottom: var(--space-2); }
+.vp-oil-name { font: var(--t-title); color: var(--on-deep); text-wrap: balance; }
+.vp-oil-meta { display: grid; gap: var(--space-1); font: var(--t-caption); color: var(--on-deep-secondary); }
+.vp-oil-code { font: var(--t-grade); letter-spacing: var(--t-grade-tracking); color: var(--gold); }
+.vp-film-note { font: var(--t-caption); color: var(--on-deep-secondary); }
 @media (min-width: 1024px) {
-  .vp-open { padding: var(--space-16) 0 var(--space-24); }
-  .vp-open-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "copy drop" "copy words"; gap: var(--space-6) var(--space-12); }
-  .vp-open-drop { width: min(17vw, 240px); }
+  .vp-film-stage { grid-template-columns: [full-start] minmax(var(--space-8), 1fr) [main-start] minmax(0, 584px) [half] minmax(0, 584px) [main-end] minmax(var(--space-8), 1fr) [full-end]; }
+  .vp-film-copy { grid-column: main-start / half; grid-row: 1; align-self: center; padding: var(--space-16) var(--space-12) var(--space-24) 0; }
+  .vp-film-drop { grid-column: half / main-end; grid-row: 1; align-self: center; padding: 0; }
+  .vp-film-float { width: min(17vw, 240px); }
+  .vp-film-scale { padding: var(--space-24) max(var(--space-8), calc((100% - var(--container)) / 2 + var(--space-8))); gap: var(--space-4); }
+  .vp-film-title { font: var(--t-display-m); letter-spacing: var(--t-display-m-tracking); }
+  .vp-oils { grid-template-columns: repeat(4, 1fr); gap: var(--space-5); margin-top: var(--space-8); }
+  .vp-oil { padding: var(--space-6) var(--space-6) var(--space-4); }
 }
 
-/* ---------------------------------------------------------- 2 statement */
-.vp-statement { padding: var(--space-14) 0; }
-.vp-statement-text { margin: var(--space-4) 0 var(--space-8); max-width: 30ch; font: var(--t-statement-compact); letter-spacing: var(--t-statement-compact-tracking); color: var(--ink); text-wrap: pretty; }
+/* ---------------------------------------------------------- 3 statement */
+.vp-statement { position: relative; overflow: hidden; padding: var(--space-16) 0; }
+.vp-statement .vp-container { position: relative; }
+.vp-statement-text { margin: var(--space-4) 0 var(--space-8); max-width: 30ch; font: var(--t-statement-compact); letter-spacing: var(--t-statement-compact-tracking); color: var(--on-deep); text-wrap: pretty; --lit-from: var(--line-on-deep); --lit-to: var(--on-deep); }
+/* Bubbles at three depths, as they rise in a viscosity tube. */
+.vp-bubbles span { position: absolute; inset: -40% 0; pointer-events: none; }
+.vp-bubbles span:nth-child(1) { background: radial-gradient(circle, #fbf8f124 0 1.5px, transparent 2.2px) 0 0 / 70px 110px, radial-gradient(circle, #fbf8f11a 0 1.2px, transparent 2px) 35px 60px / 70px 110px; }
+.vp-bubbles span:nth-child(2) { background: radial-gradient(circle, transparent 0 3px, #fbf8f12e 3.6px 4.6px, transparent 5.2px) 20px 40px / 150px 210px, radial-gradient(circle, transparent 0 2.4px, #fbf8f126 3px 3.8px, transparent 4.4px) 95px 150px / 150px 210px; }
+.vp-bubbles span:nth-child(3) { background: radial-gradient(circle, transparent 0 6px, #fbf8f124 6.6px 8.2px, transparent 8.8px) 60px 90px / 260px 340px; }
 @media (min-width: 1024px) {
   .vp-statement { padding: var(--space-24) 0; }
   .vp-statement-text { font: var(--t-statement); letter-spacing: var(--t-statement-tracking); }
 }
 
-/* ----------------------------------------------------------- 3 the range */
-.vp-range { padding: var(--space-14) 0; background: var(--parchment); }
-.vp-range-head { display: grid; gap: var(--space-6); }
-.vp-range-head .vp-head { margin-bottom: 0; }
-.vp-range-track { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6) var(--space-3); margin: var(--space-10) auto 0; padding: 0 var(--space-gutter); max-width: var(--container); list-style: none; }
-.vp-range-track a { display: grid; justify-items: center; gap: var(--space-2); padding: var(--space-4) var(--space-2); border-radius: var(--radius-md); color: var(--ink); text-align: center; text-decoration: none; }
-.vp-range-track a:hover { background: var(--cream); }
-.vp-range-track .vp-drop { width: 64px; margin-bottom: var(--space-2); }
-.vp-range-name { font: var(--t-button); }
-.vp-range-code { font: var(--t-grade); letter-spacing: var(--t-grade-tracking); color: var(--bronze); }
-.vp-range-spec { font: var(--t-caption); color: var(--secondary); }
+/* ------------------------------------------------------------- 4 the road */
+.vp-road { padding: var(--space-14) 0; }
+.vp-road-inner { display: grid; gap: var(--space-6); }
+.vp-road-inner .vp-head { margin-bottom: 0; }
+.vp-road-track { position: relative; height: 80px; container-type: inline-size; }
+/* The road, dashed, with a gold dot at each step; the route lights gold behind the tanker. */
+.vp-road-line { position: absolute; left: 0; right: 0; top: 49px; height: 2px; background: repeating-linear-gradient(90deg, var(--line-strong) 0 8px, transparent 8px 16px); }
+.vp-road-track::after { content: ""; position: absolute; left: 0; right: 0; top: 44px; height: 12px; background: radial-gradient(circle at 12.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 37.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 62.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 87.5% 50%, var(--gold) 0 5px, transparent 5.6px); }
+.vp-road-route { position: absolute; left: 0; right: 0; top: 48px; height: 4px; border-radius: 2px; background: var(--gold); transform-origin: left; }
+.vp-road-pin { position: absolute; left: 0; top: 50px; width: 0; height: 0; }
+.vp-road-pin span { position: absolute; left: -24px; top: -24px; width: 48px; height: 48px; border: 1.5px solid var(--gold); border-radius: 50%; opacity: .35; }
+.vp-road-pin span:nth-child(1) { left: -6px; top: -6px; width: 12px; height: 12px; border: 0; background: var(--gold-deep); opacity: 1; }
+.vp-road-pin span:nth-child(2) { left: -12px; top: -12px; width: 24px; height: 24px; opacity: .6; }
+.vp-road-pin span:nth-child(3) { left: -18px; top: -18px; width: 36px; height: 36px; opacity: .45; }
+.vp-road-place { position: absolute; left: 0; top: 60px; font: var(--t-caption); color: var(--secondary); white-space: nowrap; }
+.vp-road-tanker { position: absolute; left: var(--space-6); top: 11px; z-index: 1; width: 100px; height: 40px; overflow: visible; }
+.vp-road-steps { display: grid; gap: var(--space-6); margin: 0; padding: 0; list-style: none; }
+.vp-road-steps li { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-3); align-items: center; padding-top: var(--space-4); border-top: 2px solid var(--gold); }
+.vp-road-steps p { grid-column: 2; font: var(--t-small); color: var(--secondary); max-width: 44ch; }
+.vp-road-steps h3 { font: var(--t-title); color: var(--ink); }
+.vp-step-n { display: grid; place-items: center; width: 32px; height: 32px; border: 2px solid var(--gold); border-radius: 50%; background: var(--cream); font: 600 .875rem/1 var(--font-display); color: var(--ink); }
 @media (min-width: 1024px) {
-  .vp-range { padding: var(--space-24) 0; }
-  .vp-range-head { grid-template-columns: 1fr auto; align-items: end; }
-  .vp-range-track { grid-template-columns: repeat(4, 1fr); gap: var(--space-8) var(--space-6); padding: 0 var(--space-8); }
-  .vp-range-track .vp-drop { width: 84px; }
-}
-
-/* -------------------------------------------------- 4 how supply moves */
-.vp-flow { padding: var(--space-14) 0; }
-.vp-flow-grid { display: grid; gap: var(--space-8); }
-.vp-flow .vp-head { margin-bottom: 0; }
-.vp-pin { position: relative; width: 80px; height: 80px; margin: var(--space-4) 0 var(--space-2); }
-.vp-pin span { position: absolute; inset: 0; border: 1.5px solid var(--gold); border-radius: 50%; opacity: .35; }
-.vp-pin span:nth-child(1) { inset: 33px; border: 0; background: var(--gold-deep); opacity: 1; }
-.vp-pin span:nth-child(2) { inset: 22px; opacity: .6; }
-.vp-pin span:nth-child(3) { inset: 11px; opacity: .45; }
-.vp-steps { position: relative; display: grid; gap: var(--space-8); margin: 0; padding: 0 0 0 var(--space-12); list-style: none; }
-.vp-steps::before { content: ""; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; border-radius: 2px; background: var(--gold); transform-origin: top; }
-.vp-steps li { position: relative; }
-.vp-step-n { position: absolute; left: calc(-1 * var(--space-12)); top: -3px; display: grid; place-items: center; width: 32px; height: 32px; border: 2px solid var(--gold); border-radius: 50%; background: var(--cream); font: 600 .875rem/1 var(--font-display); color: var(--ink); }
-.vp-steps h3 { font: var(--t-title); color: var(--ink); }
-.vp-steps p { max-width: 44ch; margin-top: var(--space-2); font: var(--t-small); color: var(--secondary); }
-@media (min-width: 1024px) {
-  .vp-flow { padding: var(--space-24) 0; }
-  .vp-flow-grid { grid-template-columns: 5fr 7fr; gap: var(--space-16); align-items: center; }
-  .vp-steps { gap: var(--space-10); }
+  .vp-road { padding: var(--space-24) 0; }
+  .vp-road-inner { gap: var(--space-10); }
+  .vp-road-track { height: 124px; }
+  .vp-road-line { top: 91px; }
+  .vp-road-track::after { top: 86px; }
+  .vp-road-route { top: 90px; }
+  .vp-road-pin { top: 92px; }
+  .vp-road-place { top: 104px; }
+  .vp-road-tanker { width: 180px; height: 72px; top: 25px; }
+  .vp-road .vp-h-section { font: var(--t-display-l); letter-spacing: var(--t-display-l-tracking); }
+  .vp-road-steps { grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
 }
 
 /* --------------------------------------------------------------- 5 explore */
@@ -92,12 +142,14 @@
 }
 
 /* ----------------------------------------------------------------- 6 close */
-.vp-close { padding: var(--space-14) 0 var(--space-16); border-top: 1px solid var(--line); }
-.vp-close-title { max-width: 13ch; font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); color: var(--ink); text-wrap: balance; }
+.vp-close { padding: var(--space-14) 0 var(--space-16); }
+.vp-close-title { max-width: 13ch; font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); color: var(--on-deep); text-wrap: balance; }
 .vp-close .vp-lead { margin: var(--space-6) 0 var(--space-8); }
+.vp-close .vp-scale { margin-top: var(--space-14); }
 @media (min-width: 1024px) {
   .vp-close { padding: var(--space-24) 0; }
   .vp-close-title { font: var(--t-film); letter-spacing: var(--t-film-tracking); }
+  .vp-close .vp-scale { margin-top: var(--space-16); }
 }
 
 /* ======================================================================
@@ -107,116 +159,177 @@
    ====================================================================== */
 @media screen and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    /* 1 · Opening and fill. The copy steps back while the families resolve
-       one at a time in its place; the drop fills; then the copy returns. */
-    .vp-open { height: 250svh; padding: 0; view-timeline: --open block; }
-    .vp-open-stage { position: sticky; top: 0; display: grid; height: calc(100svh - var(--vp-bar)); overflow: hidden; container-type: size; }
-    /* Phones: one stage. The drop peeks in under the buttons, rises to the
-       middle as the copy steps back, fills, and settles back at the end. */
-    .vp-open-grid { grid-template-areas: "stage"; height: 100%; gap: 0; }
-    .vp-open-copy, .vp-open-visual, .vp-open-words { grid-area: stage; }
-    .vp-open-copy { align-self: center; animation: vp-copy linear both; animation-timeline: --open; animation-range: contain 0% contain 100%; }
-    .vp-open-copy:focus-within { animation: none; }
-    .vp-open-visual { align-self: end; animation: vp-drop-up linear both; animation-timeline: --open; animation-range: contain 0% contain 100%; }
-    .vp-open-words { align-self: start; display: grid; margin-top: var(--space-8); font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); text-transform: none; color: var(--gold-deep); text-align: center; pointer-events: none; }
-    .vp-open-words li { grid-area: 1 / 1; animation: vp-word linear both; animation-timeline: --open; }
-    .vp-open-words li::after { content: "."; }
-    .vp-open-words li:nth-child(1) { animation-range: contain 9% contain 24%; }
-    .vp-open-words li:nth-child(2) { animation-range: contain 21% contain 36%; }
-    .vp-open-words li:nth-child(3) { animation-range: contain 33% contain 48%; }
-    .vp-open-words li:nth-child(4) { animation-range: contain 45% contain 60%; }
-    .vp-open-words li:nth-child(5) { animation-range: contain 57% contain 72%; }
-    .vp-open-words li:nth-child(6) { animation-range: contain 69% contain 84%; }
-    .vp-open-words li:nth-child(n+7) { display: none; }
-    .vp-open-drop { width: min(40vw, 170px); animation: vp-float var(--duration-float) var(--ease-in-out) infinite alternate; }
-    .vp-open-drop .vp-drop-liquid { transform-box: fill-box; animation: vp-level linear both; animation-timeline: --open; animation-range: contain 4% contain 84%; }
-    .vp-open-shadow { animation: vp-shadow var(--duration-float) var(--ease-in-out) infinite alternate; }
+    /* 1–2 · One stage: the hero; the lights go down; the drop is held to the
+       light and passes down the colour scale, one grade per slot. Positions
+       are in the stage's own units: --hx/--hy where the drop sits in the
+       hero, --fx/--fy where it is held to the light. */
+    .vp-film { height: calc(100svh + var(--n) * 83svh); view-timeline: --film block; }
+    .vp-film-stage {
+      position: sticky; top: 0; height: 100svh; overflow: hidden; container-type: size;
+      grid-template: "stage" 100% / 100%;
+      --free: calc(100cqb - var(--vp-bar));
+      --dw: min(44cqi, 190px); --hs: .85;
+      --hx: 50cqi; --hy: calc(var(--free) - var(--dw) * .15);
+      --fx: 50cqi; --fy: calc(var(--free) * .38);
+      --glow: min(60cqi, 300px);
+      --edge: var(--space-gutter);
+    }
+    .vp-film-stage > * { grid-area: stage; }
+    .vp-film-stage > :not(.vp-film-copy) { pointer-events: none; }
+    /* Short phones: the drop peeks in lower, clear of the buttons. */
+    @media (max-height: 700px) { .vp-film-stage { --hy: calc(var(--free) + var(--dw) * .5); } }
+
+    .vp-film-dark { display: block; background: var(--deep); animation: vp-iris linear both; animation-timeline: --film; animation-range: contain 10% contain 17%; }
+
+    /* The light behind the drop takes each grade's colour; the drop's own gold first. */
+    .vp-film-glow { display: block; position: relative; animation: vp-off linear both; animation-timeline: --film; animation-range: contain 94% contain 100%; }
+    .vp-film-glow > span { position: absolute; left: var(--fx); top: var(--fy); z-index: 1; width: calc(var(--glow) * 2); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--tint-light) 62%, transparent), color-mix(in srgb, var(--tint-mid) 24%, transparent) 62%, transparent); animation: vp-glow linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-out); }
+    .vp-film-glow > .vp-film-glow-own { z-index: 0; animation-name: vp-glow-own; animation-range: contain 12% contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 4); }
+
+    .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: var(--space-6) var(--edge) 0; animation: vp-copy-out linear both; animation-timeline: --film; animation-range: contain 10% contain 15%; }
+    .vp-film:has(.vp-film-copy :focus-visible) :is(.vp-film-dark, .vp-film-glow, .vp-film-scale, .vp-scale) { visibility: hidden; }
+    .vp-film-copy:focus-within { animation: none; }
+
+    .vp-film-drop { position: relative; place-self: start; display: block; width: var(--dw); padding: 0; animation: vp-film-glide linear both, vp-off linear both; animation-timeline: --film, --film; animation-range: contain 10% contain 17%, contain 94% contain 100%; }
+    .vp-film-float { width: 100%; animation: vp-float var(--duration-float) var(--ease-in-out) infinite alternate; }
+    .vp-film-drop .vp-open-shadow { position: absolute; left: 18%; top: 100%; width: 64%; margin-top: var(--space-4); animation: vp-shadow var(--duration-float) var(--ease-in-out) infinite alternate; }
+    .vp-film-float .vp-drop-liquid { transform-box: fill-box; animation: vp-level linear both; animation-timeline: --film; animation-range: contain 0% contain var(--fill-end); }
+    /* Without WebGL, each grade's own drop settles over the one before. */
+    .vp-film-drops { display: block; position: absolute; inset: 0; }
+    .vp-film-drops > .vp-drop { position: absolute; inset: 0; width: 100%; animation: vp-on linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-in); }
+    .vp-film-drops .vp-drop-liquid { animation: none; }
+    .vp-film-float:has(.vp-liquid.is-live) .vp-film-drops { display: none; }
     .vp-open-glint { position: absolute; inset: 0; display: block; overflow: hidden; pointer-events: none; -webkit-mask: url("/brand/drop-mask.svg") 0 0 / 100% 100% no-repeat; mask: url("/brand/drop-mask.svg") 0 0 / 100% 100% no-repeat; }
-    .vp-open-glint::before { content: ""; position: absolute; inset: -10% -80%; background: linear-gradient(100deg, transparent 44%, #ffffff8c 50%, transparent 56%); animation: vp-glint linear both; animation-timeline: --open; animation-range: contain 0% contain 40%; }
+    .vp-open-glint::before { content: ""; position: absolute; inset: -10% -80%; background: linear-gradient(100deg, transparent 44%, #ffffff8c 50%, transparent 56%); animation: vp-glint linear both; animation-timeline: --film; animation-range: contain 0% contain 12%; }
+
+    /* The colour scale: across the top on phones, down the left on laptops; the marker follows the grades. */
+    .vp-film .vp-scale { display: flex; align-self: start; justify-self: center; margin-top: calc(var(--space-12) + var(--space-1)); animation: vp-show linear both; animation-timeline: --film; animation-range: contain 15% contain 100%; --sw: 22px; --pitch: 28px; }
+    .vp-film .vp-scale-end { position: absolute; top: 50%; translate: 0 -50%; }
+    .vp-film .vp-scale > .vp-scale-end:first-child { right: 100%; margin-right: var(--space-2); }
+    .vp-film .vp-scale > ol + .vp-scale-end { left: 100%; margin-left: var(--space-2); }
+    .vp-film .vp-swatch { animation: vp-swatch linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-end); }
+    .vp-film .vp-scale-marker { display: block; position: absolute; left: calc(var(--sw) / 2 - 6px); top: calc(100% + 4px); width: 0; height: 0; border: 6px solid transparent; border-top: 0; border-bottom-color: var(--gold); animation: vp-marker-x linear both; animation-timeline: --film; animation-range: contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 2) contain calc(var(--scale-from) + var(--scale-span) - var(--scale-span) / var(--n) / 2); }
+
+    /* The words: the scale's name, then one grade at a time. */
+    .vp-film-scale { display: grid; grid-template: "x" 100% / 100%; gap: 0; padding: 0; background: none; }
+    .vp-film-scale > * { grid-area: x; }
+    .vp-film-scale > .vp-eyebrow { align-self: start; justify-self: center; margin-top: var(--space-6); animation: vp-show linear both; animation-timeline: --film; animation-range: contain 18% contain 100%; }
+    .vp-film-title, .vp-oils { align-self: start; margin: calc(var(--free) * .66) var(--edge) 0; }
+    .vp-film-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); animation: vp-word linear both; animation-timeline: --film; animation-range: contain 15% contain 23%; }
+    .vp-oils { display: grid; grid-template: "g" auto / 100%; }
+    .vp-oil { grid-area: g; padding: 0; border: 0; overflow: visible; animation: vp-oil linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-end); }
+    .vp-oil::before, .vp-oil .vp-drop { display: none; }
+    .vp-oil .vp-link { animation: vp-hit linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-end); }
+    .vp-oil-name { font: 300 clamp(2.25rem, 10cqi, 3.5rem)/1.05 var(--font-display); letter-spacing: -0.03em; }
+    .vp-oil-name::after { content: "."; content: "." / ""; }
+    .vp-oil-meta { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); margin-top: var(--space-2); font: 500 .9375rem/1.375rem var(--font-mono); }
+    .vp-oil-code { font: inherit; letter-spacing: var(--t-grade-tracking); }
+    /* Only the grade on screen is clicked; one that has keyboard focus shows, alone. */
+    .vp-oil:focus-within { animation: none; z-index: 3; }
+    .vp-oils:has(:focus-visible) .vp-oil:not(:focus-within) { opacity: 0 !important; }
+    .vp-film-note { display: none; }
+
     @media (min-width: 1024px) {
-      .vp-open-stage { height: 100svh; }
-      .vp-open-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "copy drop"; gap: var(--space-12); align-items: center; }
-      .vp-open-copy, .vp-open-words { grid-area: copy; }
-      .vp-open-visual { grid-area: drop; align-self: center; animation: none; }
-      .vp-open-words { align-self: center; margin-top: 0; font: var(--t-film); letter-spacing: var(--t-film-tracking); text-align: start; }
-      .vp-open-drop { width: min(17vw, 240px); }
+      .vp-film-stage {
+        --dw: min(19cqi, 290px); --hs: .82;
+        --hx: calc(50cqi + min(25cqi, 304px)); --hy: 50cqb;
+        --fx: calc(50cqi - min(22cqi, 300px)); --fy: 52cqb;
+        --glow: min(40cqb, 380px);
+        --edge: max(var(--space-8), calc((100cqi - var(--container)) / 2 + var(--space-8)));
+      }
+      .vp-film-copy { align-self: center; justify-self: start; width: min(46cqi, 600px); margin-left: var(--edge); padding: 0; }
+      .vp-film .vp-scale { flex-direction: column; align-self: center; justify-self: start; margin: 0 0 0 calc(var(--edge) + var(--space-4)); --sw: 18px; --pitch: 26px; }
+      .vp-film .vp-scale-swatches { flex-direction: column; gap: 8px; }
+      .vp-film .vp-swatch { width: 26px; height: 18px; }
+      .vp-film .vp-scale > .vp-scale-end:first-child { left: 50%; right: auto; top: auto; bottom: 100%; translate: -50% 0; margin: 0 0 var(--space-3); }
+      .vp-film .vp-scale > ol + .vp-scale-end { left: 50%; top: 100%; translate: -50% 0; margin: var(--space-3) 0 0; }
+      .vp-film .vp-scale-marker { left: -18px; top: calc(var(--sw) / 2 - 6px); border: 6px solid transparent; border-right: 0; border-left-color: var(--gold); animation-name: vp-marker-y; }
+      .vp-film-scale > .vp-eyebrow { justify-self: start; margin: var(--space-10) 0 0 var(--edge); }
+      .vp-film-title, .vp-oils { align-self: center; justify-self: start; width: min(44cqi, 640px); margin: 0 0 0 calc(50cqi + 2cqi); }
+      .vp-film-title { font: 300 clamp(3.5rem, 5.4cqi, 6rem)/1.05 var(--font-display); letter-spacing: -0.035em; }
+      .vp-oil-name { font-size: clamp(3rem, 4.6cqi, 5.5rem); }
+      .vp-oil-meta { margin-top: var(--space-4); font: var(--t-spec-large); }
+      .vp-oil .vp-link { margin-top: var(--space-4); }
+      .vp-film-note { display: block; align-self: end; justify-self: end; margin: 0 var(--edge) var(--space-8) 0; animation: vp-show linear both; animation-timeline: --film; animation-range: contain 20% contain 100%; }
     }
-    @keyframes vp-drop-up {
-      0%, 100% { transform: translateY(calc(100% - 132px)); }
-      10%, 86% { transform: translateY(calc((100% - 100cqb) / 2 + 56px)); }
+
+    @keyframes vp-on { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes vp-off { to { opacity: 0; } }
+    @keyframes vp-show { 0% { opacity: 0; } 8%, 92% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes vp-glow { 0% { opacity: 0; } 20%, 80% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes vp-glow-own { 0% { opacity: 0; } 50%, 75% { opacity: 1; } 100% { opacity: 0; } }
+    /* The lights go down as an iris that opens from the drop and follows it to the centre. */
+    @keyframes vp-iris {
+      from { clip-path: circle(0% at var(--hx) var(--hy)); }
+      to { clip-path: circle(150% at var(--fx) var(--fy)); }
     }
-    @keyframes vp-copy {
-      0% { opacity: 1; filter: none; transform: none; }
-      7%, 88% { opacity: 0; filter: blur(12px); transform: translateY(-12px); }
-      100% { opacity: 1; filter: none; transform: none; }
+    @keyframes vp-copy-out { to { opacity: 0; filter: blur(12px); translate: 0 -24px; pointer-events: none; } }
+    @keyframes vp-film-glide {
+      from { translate: calc(var(--hx) - 50%) calc(var(--hy) - 50%); scale: var(--hs); }
+      to { translate: calc(var(--fx) - 50%) calc(var(--fy) - 50%); scale: 1; }
     }
     @keyframes vp-word {
-      0% { opacity: 0; filter: blur(16px); transform: translateY(28px) scale(.96); }
-      30%, 70% { opacity: 1; filter: none; transform: none; }
-      100% { opacity: 0; filter: blur(16px); transform: translateY(-28px) scale(1.02); }
+      0% { opacity: 0; filter: blur(16px); translate: 0 28px; scale: .96; }
+      30%, 70% { opacity: 1; filter: none; translate: 0 0; scale: 1; }
+      100% { opacity: 0; filter: blur(16px); translate: 0 -28px; scale: 1.02; }
     }
+    @keyframes vp-oil {
+      0% { opacity: 0; filter: blur(14px); translate: 0 28px; z-index: 0; }
+      22%, 80% { opacity: 1; filter: none; translate: 0 0; z-index: 2; }
+      100% { opacity: 0; filter: blur(14px); translate: 0 -28px; z-index: 0; }
+    }
+    @keyframes vp-hit { 0%, 100% { pointer-events: none; } 22%, 80% { pointer-events: auto; } }
+    @keyframes vp-swatch { 0%, 100% { scale: 1; } 25%, 75% { scale: 1.3; } }
+    @keyframes vp-marker-x { from { translate: 0 0; } to { translate: calc((var(--n) - 1) * var(--pitch)) 0; } }
+    @keyframes vp-marker-y { from { translate: 0 0; } to { translate: 0 calc((var(--n) - 1) * var(--pitch)); } }
     /* The liquid starts low in the drop (the island's LOW) and rises to the brand level. */
     @keyframes vp-level { from { transform: translateY(55%); } to { transform: none; } }
     @keyframes vp-float { to { transform: translateY(-8px); } }
     @keyframes vp-shadow { to { transform: scaleX(.86); opacity: .08; } }
     @keyframes vp-glint { from { transform: translateX(-38%); } to { transform: translateX(38%); } }
 
-    /* 3 · The range. The track crosses the pinned stage; the drops fill in a wave. */
-    .vp-range { height: calc(100svh + var(--n, 8) * 26svh); padding: 0; view-timeline: --range block; }
-    .vp-range:has(li:nth-child(2)) { --n: 2; }
-    .vp-range:has(li:nth-child(3)) { --n: 3; }
-    .vp-range:has(li:nth-child(4)) { --n: 4; }
-    .vp-range:has(li:nth-child(5)) { --n: 5; }
-    .vp-range:has(li:nth-child(6)) { --n: 6; }
-    .vp-range:has(li:nth-child(7)) { --n: 7; }
-    .vp-range:has(li:nth-child(8)) { --n: 8; }
-    .vp-range:has(li:nth-child(9)) { --n: 9; }
-    .vp-range:has(li:nth-child(10)) { --n: 10; }
-    .vp-range:has(li:nth-child(11)) { --n: 11; }
-    .vp-range:has(li:nth-child(12)) { --n: 12; }
-    .vp-range-stage { position: sticky; top: 0; display: grid; align-content: center; gap: var(--space-8); height: calc(100svh - var(--vp-bar)); overflow: hidden; }
-    .vp-range-viewport { container-type: inline-size; }
-    .vp-range-track { display: flex; width: max-content; max-width: none; gap: var(--space-4); margin: 0; animation: vp-track linear both; animation-timeline: --range; animation-range: contain 0% contain 100%; }
-    .vp-range-track li { width: clamp(150px, 42vw, 280px); }
-    .vp-range-track .vp-drop { width: clamp(84px, 11vw, 150px); }
-    .vp-range-track .vp-drop-liquid { transform-box: fill-box; animation: vp-pour linear both; animation-timeline: --range; }
-    .vp-range-track li:nth-child(1) .vp-drop-liquid { animation-range: contain 0% contain 12%; }
-    .vp-range-track li:nth-child(2) .vp-drop-liquid { animation-range: contain 6% contain 18%; }
-    .vp-range-track li:nth-child(3) .vp-drop-liquid { animation-range: contain 12% contain 24%; }
-    .vp-range-track li:nth-child(4) .vp-drop-liquid { animation-range: contain 18% contain 30%; }
-    .vp-range-track li:nth-child(5) .vp-drop-liquid { animation-range: contain 27% contain 39%; }
-    .vp-range-track li:nth-child(6) .vp-drop-liquid { animation-range: contain 36% contain 48%; }
-    .vp-range-track li:nth-child(7) .vp-drop-liquid { animation-range: contain 45% contain 57%; }
-    .vp-range-track li:nth-child(8) .vp-drop-liquid { animation-range: contain 54% contain 66%; }
-    .vp-range-track li:nth-child(9) .vp-drop-liquid { animation-range: contain 63% contain 75%; }
-    .vp-range-track li:nth-child(10) .vp-drop-liquid { animation-range: contain 72% contain 84%; }
-    .vp-range-track li:nth-child(n+11) .vp-drop-liquid { animation-range: contain 80% contain 92%; }
-    @media (min-width: 1024px) {
-      .vp-range-stage { height: 100svh; gap: var(--space-12); }
-      .vp-range-track { gap: var(--space-8); }
-    }
-    @keyframes vp-track { to { transform: translateX(calc(-100% + 100cqi)); } }
-    @keyframes vp-pour { from { transform: translateY(100%); } to { transform: none; } }
+    /* 3 · The statement lights as it is read (motion.css); the bubbles rise at three speeds. */
+    .vp-statement { view-timeline: --statement block; }
+    .vp-bubbles span { animation: vp-bubbles linear both; animation-timeline: --statement; animation-range: cover 0% cover 100%; }
+    .vp-bubbles span:nth-child(1) { --rise: 6%; }
+    .vp-bubbles span:nth-child(2) { --rise: 14%; }
+    .vp-bubbles span:nth-child(3) { --rise: 24%; }
+    @keyframes vp-bubbles { from { translate: 0 var(--rise); } to { translate: 0 calc(-1 * var(--rise)); } }
 
-    /* 4 · How supply moves (pinned on laptops; on phones each step rises as it enters). */
-    .vp-steps li { animation: vp-step linear both; animation-timeline: view(); animation-range: entry 10% entry 70%; }
-    .vp-steps::before { animation: vp-draw linear both; animation-timeline: view(); animation-range: entry 20% cover 60%; }
+    /* 4 · The road: pinned on both sizes; the tanker drives, the route lights behind it, and each step arrives as it passes. */
+    .vp-road { height: 240svh; padding: 0; view-timeline: --road block; }
+    .vp-road-stage { position: sticky; top: 0; display: grid; align-content: center; height: 100svh; padding-bottom: var(--vp-bar); }
+    .vp-road-route { animation: vp-route linear both; animation-timeline: --road; animation-range: contain 6% contain 92%; }
+    .vp-road-tanker { animation: vp-drive linear both; animation-timeline: --road; animation-range: contain 6% contain 92%; }
+    .vp-road-pin span:nth-child(n+2) { animation: vp-ring linear both; animation-timeline: --road; animation-range: contain 0% contain 100%; }
+    .vp-road-pin span:nth-child(3) { animation-range: contain 15% contain 100%; }
+    .vp-road-pin span:nth-child(4) { animation-range: contain 30% contain 100%; }
+    /* Phones: one step at a time under the road, as a caption. */
+    .vp-road-steps { grid-template: "s" auto / 100%; }
+    .vp-road-steps li { grid-area: s; animation: vp-caption linear both; animation-timeline: --road; }
+    .vp-road-steps li:nth-child(1) { animation-range: contain 4% contain 30%; }
+    .vp-road-steps li:nth-child(2) { animation-range: contain 30% contain 52%; }
+    .vp-road-steps li:nth-child(3) { animation-range: contain 52% contain 74%; }
+    .vp-road-steps li:nth-child(n+4) { animation-name: vp-rise-in; animation-range: contain 74% contain 82%; }
     @media (min-width: 1024px) {
-      .vp-flow { height: 190svh; padding: 0; view-timeline: --flow block; }
-      .vp-flow-stage { position: sticky; top: 0; display: grid; align-items: center; height: 100svh; }
-      .vp-steps::before { animation-timeline: --flow; animation-range: contain 0% contain 78%; }
-      .vp-steps li { animation-timeline: --flow; }
-      .vp-steps li:nth-child(1) { animation-range: contain 0% contain 10%; }
-      .vp-steps li:nth-child(2) { animation-range: contain 20% contain 30%; }
-      .vp-steps li:nth-child(3) { animation-range: contain 40% contain 50%; }
-      .vp-steps li:nth-child(n+4) { animation-range: contain 60% contain 70%; }
-      .vp-pin span:nth-child(n+2) { animation: vp-ring linear both; animation-timeline: --flow; animation-range: contain 0% contain 100%; }
-      .vp-pin span:nth-child(3) { animation-range: contain 15% contain 100%; }
-      .vp-pin span:nth-child(4) { animation-range: contain 30% contain 100%; }
+      /* Laptops: every step under its dot, arriving as the tanker reaches it. */
+      .vp-road-steps { grid-template: auto / repeat(4, 1fr); }
+      .vp-road-steps li { grid-area: auto; justify-items: center; grid-template-columns: 1fr; padding-top: var(--space-2); border-top: 0; text-align: center; animation-name: vp-rise-in; }
+      .vp-road-steps li p { grid-column: 1; }
+      .vp-road-steps li:nth-child(1) { animation-range: contain 10% contain 18%; }
+      .vp-road-steps li:nth-child(2) { animation-range: contain 32% contain 40%; }
+      .vp-road-steps li:nth-child(3) { animation-range: contain 54% contain 62%; }
+      .vp-road-steps li:nth-child(n+4) { animation-range: contain 76% contain 84%; }
     }
-    @keyframes vp-step { from { opacity: 0; filter: blur(6px); transform: translateY(20px); } }
-    @keyframes vp-draw { from { transform: scaleY(0); } }
+    @keyframes vp-route { from { scale: 0 1; } to { scale: 1 1; } }
+    @keyframes vp-drive { to { translate: calc(100cqi - 100% - 2 * var(--space-6)) 0; } }
     @keyframes vp-ring { from { transform: scale(.4); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+    @keyframes vp-caption {
+      0% { opacity: 0; translate: 0 16px; }
+      15%, 85% { opacity: 1; translate: 0 0; }
+      100% { opacity: 0; translate: 0 -16px; }
+    }
+    @keyframes vp-rise-in { from { opacity: 0; translate: 0 16px; } }
 
     /* 5 · Explore resolves letter by letter. */
     .vp-explore-word { view-timeline: --explore block; }

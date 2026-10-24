@@ -1,5 +1,5 @@
 ---
-/** Phone: call, WhatsApp and quote in a bar within thumb reach. Laptop: a WhatsApp pill. */
+/** Phone: call, WhatsApp and quote in a bar within thumb reach. Laptop: a round WhatsApp button in the margin. */
 import { company, whatsappHref } from "../lib/company.ts";
 import { t } from "../lib/ui.ts";
 import Icon from "./Icon.astro";
@@ -17,4 +17,4 @@ const wa = whatsappHref(message);
   <a class="vp-btn vp-btn-secondary vp-icon-btn" href={wa} target="_blank" rel="noopener" aria-label={t("cta.whatsapp")}><Icon name="whatsapp" /></a>
   <a class="vp-btn vp-btn-primary vp-btn-touch" href={quoteHref}>{t("cta.quote")}<Icon name="arrow" size={18} /></a>
 </nav>
-<a class="vp-wa-pill" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t("cta.whatsapp")}</a>
+<a class="vp-wa-pill" href={wa} target="_blank" rel="noopener" aria-label={t("cta.whatsapp")} title={t("cta.whatsapp")}><Icon name="whatsapp" size={24} /></a>

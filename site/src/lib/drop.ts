@@ -26,6 +26,13 @@ export const TINT_COLOURS: Record<Tint, { mid: string; light: string; deep: stri
   white: { mid: "#f5efe1", light: "#fffdf8", deep: "#dacfb7", rim: true },
 };
 
+/** Each tint's place on the colour scale, lightest to darkest (the oil trade grades by colour, ASTM D1500). */
+const SCALE: Record<Tint, number> = { clear: 0, white: 1, straw: 2, gold: 3, amber: 4, brown: 5, fuel: 6, bitumen: 7 };
+
+/** Grades from lightest to darkest by their illustrated colour; grades that share a tint keep their order. */
+export const byColour = <T extends { data: { tint: Tint } }>(grades: readonly T[]): T[] =>
+  [...grades].sort((a, b) => SCALE[a.data.tint] - SCALE[b.data.tint]);
+
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const stop = (offset: number, colour: string, opacity?: number) =>
   `<stop offset="${offset}" stop-color="${colour}"${opacity == null ? "" : ` stop-opacity="${opacity}"`}/>`;

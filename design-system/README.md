@@ -98,15 +98,26 @@ Keyboard focus is `focus-ring` on light grounds (a 2px `cream` gap, then 2px sol
 
 ## Motion
 
-The home page is a film; every other page is a page with a light touch of the same language. (Owner direction, October 2026, after vaiiya.org: cinematic, so a visitor who scrolls wants to explore the whole site.)
+The home page is a film; every other page is a page with a light touch of the same language. (Owner direction, October 2026, after vaiiya.org: cinematic, so a visitor who scrolls wants to explore the whole site. Rebuilt on 24 October around one idea: the colour scale.)
 
-- **Scroll is the clock.** On the home page, each scene's stage pins while scrolling plays it, then lets go: the opening, where the families resolve one at a time as the hero drop fills; a statement that lights as it is read; the range of drops crossing the screen as they fill; a gold line joining the four steps of supply; "Explore", letter by letter. Elsewhere, a page title resolves as the page opens, sections rise as they enter, and cards open with a gold wipe.
-- **One signature: the drop fills.** On the home page and product pages the drop fills with real-time liquid (WebGL), inside the drop's own chrome and highlight. The SVG drop is the first paint and the fallback.
-- **The reader stays in control.** Native scrolling is never smoothed, snapped or hijacked. No loading screens, no custom cursors, nothing that flashes or advances on its own. The only motion not driven by scroll is a title resolving (`duration-title`) and the hero drop's slow float (`duration-float`).
-- **What moves:** transform, opacity, blur and colour, never layout.
-- **Type in motion:** scene words in `film` (Montserrat 300, `gold-deep`, 4:1 on cream), resolving from a 16px blur. A statement in `statement` moves from `line-strong` to `ink`, so even unlit words keep 3:1.
+**The idea.** The oil trade grades its products by colour, from water-white to black (ASTM D1500), and a laboratory checks a sample by holding it to the light. The film does the same: the lights go down, the drop is held to the light, and as the visitor scrolls it passes down the colour scale, lightest grade to darkest. Scroll is depth; the deeper you go, the darker the oil.
+
+**The scenes**, phone and laptop alike:
+1. **Hero.** Headline, lead and two buttons on cream; the drop beside them (below them on phones) fills gold as the page starts to move.
+2. **Lights down.** An iris of deep opens from the drop and covers the screen; the copy steps back; the drop glides to the centre-left (the upper middle on phones) and a light rises behind it.
+3. **The colour scale.** "Every oil has its colour." resolves and lifts away. Then one grade per slot (`byColour` in `site/src/lib/drop.ts`): the liquid turns to the grade's colour, sloshing as it changes, the light behind it takes that colour, and the grade's name, code, key value and link resolve beside it. A scale of swatches (down the left on laptops, across the top on phones) marks the place.
+4. **Statement.** The company in its registered claims, lit word by word on deep, with bubbles rising behind at three depths, as in a bubble-tube viscosity test.
+5. **The road.** A road tanker leaves the Mangaliya pin along a gold road, and each step of an order arrives as it passes: all four under the road on laptops, one at a time as a caption on phones.
+6. **Explore**, letter by letter, then the doors into the site; **Close** on deep, ending on the colour bar.
+
+- **Scroll is the clock.** Each scene's stage pins while scrolling plays it, then lets go. The film's timing lives in one place, custom properties on `.vp-film` (`--fill-end`, `--scale-from`, `--scale-span`) that `styles/film.css` and `islands/liquid.ts` both read. Elsewhere, a page title resolves as the page opens, sections rise as they enter, cards open with a gold wipe, and pages cut to each other with a short fade and rise (cross-document view transitions; the drop morphs from a card into its product hero).
+- **One signature: the drop held to the light.** On the home page and product pages the drop fills with real-time liquid (WebGL), inside the drop's own chrome and highlight; in the film the liquid also takes each grade's colour. The SVG drop is the first paint and the fallback, and without WebGL each grade's own SVG drop settles over the last.
+- **The reader stays in control.** Native scrolling is never smoothed, snapped or hijacked. No loading screens, no custom cursors, nothing that flashes or advances on its own. The only motion not driven by scroll is a title resolving (`duration-title`) and the hero drop's slow float (`duration-float`). Only the grade on screen takes a click; one that has keyboard focus shows, alone.
+- **What moves:** transform, opacity, blur, colour and the iris's clip, never layout.
+- **Type in motion:** grade names in Montserrat 300, scene words in `film`, both resolving from a blur. A statement on deep moves from `line-on-deep` (3.9:1) to `on-deep`.
+- **Light, measured.** The light behind a drop is its grade's `-light` tint at most 62% over deep, and text never sits on its core: measured from the rendered film, every text keeps 6:1 or better (grade names 11.8:1).
 - **Easing:** `ease-out` for entrances, `ease-in-out` for the float. Scrubbed motion is linear, because the reader's scroll sets the pace.
-- **Still is complete.** With reduced motion, or in a browser without scroll-driven animations, nothing pins and nothing hides: the drops are full, every word is lit, and the page reads top to bottom.
+- **Still is complete.** With reduced motion, or in a browser without scroll-driven animations, nothing pins and nothing hides: the hero, then every grade as a lit card on deep, the statement, the road with all four steps, and the close.
 - Cards lift 2px under a pointer. Touch gets no hover state.
 
 ## Logo
@@ -144,7 +155,9 @@ Assets in the **Logos** group, cut from the owner's 1024px artwork: the white gr
 | Mineral Turpentine Oil | clear, with the chrome rim | `drop-clear`… |
 | Petroleum Jelly | white, with the chrome rim | `drop-white`… |
 
-- **Sizes**: 150px in a product hero on phone and 190px on laptop, 30px on a card, 48 to 64px in a range lineup, about 260px in an ad.
+- **Held to the light**: wherever a drop is the subject (the film, a product hero, an industry hero) it stands on deep with a soft light of its own `-light` tint behind it, and the colour scale beneath marks the grade, captioned "Colours are illustrated, not a specification."
+- **The colour scale**: every grade's swatch, lightest to darkest (`byColour`), between "Lighter" and "Darker". It is decoration beside text that names the grades, never the only way to tell them apart.
+- **Sizes**: 150px in a product hero on phone and 190px on laptop, 30px on a card, 48 to 64px in a range lineup, about 260px in an ad; in the film, up to 290px.
 - **Data**: a product with no tint yet uses gold. Add its tint to `SLUG_TINT` in the bundle and three `drop-*` tokens.
 - **Don'ts**: never fill drops to different levels (it would read as a quantity), never use a drop as a bullet or a status mark, never put text on one. Static SVGs of all eight are in the **Drops** group (`Vasant.dropMarkup(tint, {plain: true})` makes more).
 
