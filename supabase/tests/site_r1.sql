@@ -63,6 +63,7 @@ create table public.tds_requests (
 \i supabase/migrations/20261017130000_enquiry_capture.sql
 \i supabase/migrations/20261017140000_enquiry_reference.sql
 \i supabase/migrations/20261021120000_site_r1.sql
+\i supabase/migrations/20261023180000_site_token_hash.sql
 
 -- Helpers: run a statement, report its SQLSTATE (or 'ok') ---------------------------
 create function pg_temp.try(q text) returns text language plpgsql as $$
@@ -84,6 +85,9 @@ declare
   too_many jsonb := (select jsonb_agg(jsonb_build_object('slug', 'base-oil-sn150', 'qty', '1')) from generate_series(1, 21));
 begin
   assert tok ~ '^[0-9a-f]{64}$', 'the migration creates a 32-byte site token';
+  -- Vault keeps only the token's SHA-256 (20261023180000). Until it does, even the right token is refused.
+  assert pg_temp.try(format($q$select public.submit_enquiry('{"name":"A","email":"a@example.com"}', %L)$q$, tok)) = '42501', 'no stored hash: refused';
+  perform vault.create_secret(encode(extensions.digest(tok, 'sha256'), 'hex'), 'site-token-sha256:public-site', 'test');
 
   -- Enquiries --------------------------------------------------------------------
   assert pg_temp.try($q$select public.submit_enquiry('{"name":"A","email":"a@example.com"}', '')$q$) = '42501', 'no token: refused';

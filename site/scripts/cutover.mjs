@@ -7,16 +7,19 @@
 //   node scripts/cutover.mjs live       hub routes first, then www/* to the Worker; HTTPS, rate limit, apex 301
 //   node scripts/cutover.mjs rollback   remove the www/* route: Vercel serves www again within a minute
 //
-// Reads CLOUDFLARE_API_TOKEN. deploy also reads SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
-// and SITE_TOKEN; email reads RESEND_API_KEY. Secrets go to Cloudflare's API
-// directly: never to disk, never printed.
+// Reads CLOUDFLARE_API_TOKEN; email also reads RESEND_API_KEY. deploy creates the
+// site token itself and prints only its SHA-256, which Vault keeps. Secrets go to
+// Cloudflare's API directly: never to disk, never printed.
 import { execFileSync } from "node:child_process";
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ZONE = "vasantpetrochem.com";
 const WWW = `www.${ZONE}`;
+// Public by design: the project's address and its publishable key.
+const SUPABASE_URL = process.env.SUPABASE_URL ?? "https://jwycpgugyapkihuikrwl.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY ?? "sb_publishable_geeByh-cvZ7FBmnlDGTcww_HYsNRb92"; // gitleaks:allow
 const WORKER = "vasant-site";
 // What the staff hub (Vercel) keeps on www until it moves to hub.vasantpetrochem.com.
 const HUB_PATHS = ["/admin*", "/auth/*", "/_next/*", "/vasant_logo*", "/api/mcp*", "/api/telemetry/*", "/api/etl/*", "/api/control/*", "/api/documents/*", "/api/cron/*"];
@@ -107,7 +110,6 @@ async function check() {
 }
 
 async function deploy() {
-  for (const v of ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SITE_TOKEN"]) if (!process.env[v]) fail(`${v} is not set`);
   const ctx = await context();
   if (!ctx.sub) {
     say("registering a workers.dev subdomain");
@@ -122,17 +124,20 @@ async function deploy() {
   wrangler(["deploy"], ctx);
 
   const have = await secretNames(ctx);
+  // Made once and kept: only the Worker ever holds it.
+  const siteToken = have.has("SITE_TOKEN") ? undefined : randomBytes(32).toString("hex");
   await putSecrets(
     {
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY,
-      SITE_TOKEN: process.env.SITE_TOKEN,
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY,
+      SITE_TOKEN: siteToken,
       TURNSTILE_SECRET_KEY: widget.secret,
       // Kept once set: changing it would reset every visitor's rate-limit bucket.
       IP_HASH_SECRET: have.has("IP_HASH_SECRET") ? undefined : randomBytes(32).toString("hex"),
     },
     ctx,
   );
+  if (siteToken) say(`new site token: store its SHA-256 in Vault as 'site-token-sha256:public-site': ${createHash("sha256").update(siteToken).digest("hex")}`);
   await smoke(`https://${WORKER}.${ctx.sub}.workers.dev`);
 }
 

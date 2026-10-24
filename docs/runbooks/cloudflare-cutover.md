@@ -45,7 +45,7 @@ The cutover runs in a new session, which sees the keys. Each step prints what it
 | Step | What happens |
 | --- | --- |
 | `check` | Reads the zone, settings, routes, Worker and Turnstile, and changes nothing. |
-| `deploy` | Creates the Turnstile widget and writes its public site key to `site/.env.production` (committed). Builds, then deploys to workers.dev. Sets the Worker secrets:<br>• `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`;<br>• `SITE_TOKEN`, read from Vault;<br>• `TURNSTILE_SECRET_KEY`;<br>• `IP_HASH_SECRET`, generated.<br>Then smoke-tests the pages, headers and `/api/offers`. |
+| `deploy` | Creates the Turnstile widget and writes its public site key to `site/.env.production` (committed). Builds, then deploys to workers.dev. Sets the Worker secrets:<br>• `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`, the project's public values;<br>• `SITE_TOKEN`, generated once: Vault keeps only its SHA-256 (`site-token-sha256:public-site`), which `deploy` prints for Claude to store;<br>• `TURNSTILE_SECRET_KEY`;<br>• `IP_HASH_SECRET`, generated.<br>Then smoke-tests the pages, headers and `/api/offers`. |
 | `email` | Adds `vasantpetrochem.com` to Resend, then adds its SPF and DKIM records to Cloudflare DNS (DNS only), plus `_dmarc` `p=none` if missing. Verifies the domain, then sets `RESEND_API_KEY` and `MAIL_FROM`. |
 | `live` | Adds the hub's paths as routes with no Worker **first**, then `www.vasantpetrochem.com/*` to the Worker. Turns on Always Use HTTPS, sets minimum TLS 1.2, adds a rate-limit rule (below) and a 301 from the apex to `www`. Checks that `/` is the new site and `/admin` is the hub. |
 
