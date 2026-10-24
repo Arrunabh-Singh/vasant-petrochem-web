@@ -50,11 +50,60 @@ test.describe("every page", () => {
 test("the home film plays without errors", async ({ page }) => {
   const problems = watch(page);
   await page.goto("/");
-  for (let y = 0; y < 12; y++) {
+  for (let y = 0; y < 24; y++) {
     await page.mouse.wheel(0, 900);
     await page.waitForTimeout(80);
   }
   expect(problems).toEqual([]);
+});
+
+/** Scrolls the film to a share of its pinned stretch (CSS's `contain` range). */
+async function filmAt(page: Page, share: number) {
+  await page.evaluate((share) => {
+    const film = document.querySelector<HTMLElement>(".vp-film")!;
+    const top = film.getBoundingClientRect().top + scrollY;
+    scrollTo({ top: top + share * (film.offsetHeight - innerHeight), behavior: "instant" });
+  }, share);
+  await page.waitForTimeout(300);
+}
+
+test("the hero's buttons work over the film, and only the grade on screen takes a click", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /^Browse the marketplace/ }).first().click();
+  await expect(page).toHaveURL(/\/marketplace$/);
+
+  await page.goto("/");
+  // The first grade, darkest on the scale, holds the middle of its slot (22% + 72% / n / 2).
+  const n = await page.locator(".vp-oil").count();
+  await filmAt(page, 0.22 + 0.72 / n / 2);
+  const first = page.locator(".vp-oil").first();
+  const name = (await first.locator("h3").textContent())?.trim() ?? "";
+  await first.getByRole("link").click();
+  await expect(page).toHaveURL(/\/products\//);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
+});
+
+test("keyboard focus brings each grade of the film on screen", async ({ page, isMobile }) => {
+  test.skip(isMobile, "phones have no keyboard to tab with");
+  await page.goto("/");
+  for (const grade of (await page.locator(".vp-oil").all()).slice(0, 3)) {
+    await grade.getByRole("link").focus();
+    await expect(grade.locator("h3")).toBeInViewport();
+    await expect.poll(() => grade.evaluate((el) => Number(getComputedStyle(el).opacity))).toBeGreaterThan(0.99);
+  }
+});
+
+test.describe("with reduced motion", () => {
+  test.use({ contextOptions: { reducedMotion: "reduce" } });
+  test("the home page shows every grade, darkest to lightest, each with its link", async ({ page }) => {
+    await page.goto("/");
+    const grades = page.locator(".vp-oil");
+    expect(await grades.count()).toBeGreaterThan(1);
+    for (const grade of await grades.all()) {
+      await expect(grade.getByRole("heading", { level: 3 })).toBeVisible();
+      await expect(grade.getByRole("link")).toBeVisible();
+    }
+  });
 });
 
 test("filters narrow the marketplace, and the view survives a reload", async ({ page, isMobile }) => {

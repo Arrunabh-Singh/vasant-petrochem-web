@@ -4,7 +4,8 @@
  * first paint and the fallback; the canvas takes over its liquid only once
  * the island has started and its frames are fast. `fill` is "scroll" on the
  * home film (the level follows its opening scene) or "load" (fills once as
- * the page opens, like a product hero).
+ * the page opens, like a product hero). `scale` lists the tints the film's
+ * drop passes through, lightest to darkest, after its own.
  */
 import { dropSvg, DROP_H, HIGHLIGHT, TINT_COLOURS, type Tint } from "../lib/drop.ts";
 
@@ -13,15 +14,17 @@ interface Props {
   fill: "scroll" | "load";
   title?: string;
   vt?: string;
+  scale?: Tint[];
 }
-const { tint, fill, title, vt } = Astro.props;
+const { tint, fill, title, vt, scale } = Astro.props;
+const scaleData = scale && JSON.stringify(scale.map((s) => [TINT_COLOURS[s].light, TINT_COLOURS[s].mid, TINT_COLOURS[s].deep]));
 // Gradient and clip ids must be unique within a page (the counter Drop.astro uses).
 const g = globalThis as { __vpDrop?: number };
 g.__vpDrop = (g.__vpDrop ?? 0) + 1;
 const svg = dropSvg(tint, { id: `vpd${g.__vpDrop}`, ...(title ? { title } : {}), animate: fill === "load" });
 const c = TINT_COLOURS[tint];
 ---
-<div class="vp-liquid" data-liquid={fill} data-light={c.light} data-mid={c.mid} data-deep={c.deep}>
+<div class="vp-liquid" data-liquid={fill} data-light={c.light} data-mid={c.mid} data-deep={c.deep} data-scale={scaleData}>
   <span class="vp-drop" data-vt={vt} set:html={svg} />
   <canvas class="vp-liquid-canvas" aria-hidden="true"></canvas>
   <svg class="vp-liquid-glint" viewBox={`0 0 100 ${DROP_H}`} aria-hidden="true" focusable="false">

@@ -1,8 +1,10 @@
 ---
 import Base from "../../layouts/Base.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Drop from "../../components/Drop.astro";
 import ProductCard from "../../components/ProductCard.astro";
 import { familyName, getIndustries, getProducts, type ProductEntry } from "../../lib/catalog.ts";
+import { byColour } from "../../lib/drop.ts";
 import { breadcrumbs } from "../../lib/seo.ts";
 import { t } from "../../lib/ui.ts";
 import type { CollectionEntry } from "astro:content";
@@ -23,6 +25,7 @@ const { industry, products } = Astro.props;
 const families = await Promise.all(products.map((p) => familyName(p.data.family)));
 const applications = [...new Set(products.flatMap((p) => p.data.applications))];
 const path = `/industries/${industry.id}`;
+const lit = byColour(products);
 ---
 <Base
   title={industry.data.name}
@@ -32,13 +35,20 @@ const path = `/industries/${industry.id}`;
 >
   <Breadcrumbs items={[{ name: "Industries", href: "/industries" }, { name: industry.data.name, href: path }]} />
   <section class="vp-section-tight">
-    <div class="vp-container vp-stack">
-      <h1 class="vp-h-page">{industry.data.name}</h1>
-      <p class="vp-lead">{industry.body ?? industry.data.summary}</p>
-      {applications.length > 0 && (
-        <ul class="vp-chips" aria-label="Applications">
-          {applications.map((a) => <li><span class="vp-tag">{a}</span></li>)}
-        </ul>
+    <div class="vp-container vp-ind-hero">
+      <div class="vp-stack">
+        <h1 class="vp-h-page">{industry.data.name}</h1>
+        <p class="vp-lead">{industry.body ?? industry.data.summary}</p>
+        {applications.length > 0 && (
+          <ul class="vp-chips" aria-label="Applications">
+            {applications.map((a) => <li><span class="vp-tag">{a}</span></li>)}
+          </ul>
+        )}
+      </div>
+      {lit[0] && (
+        <div class="vp-stage vp-stage-row" data-tint={lit[0].data.tint}>
+          {lit.map((p) => <Drop tint={p.data.tint} title={`${p.data.name}, illustrated`} />)}
+        </div>
       )}
     </div>
   </section>

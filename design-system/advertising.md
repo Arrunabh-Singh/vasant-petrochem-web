@@ -1,6 +1,6 @@
 # Advertising
 
-Ads are built from `AdCreative` in two families. **Product** shows one product's drop, name and grade with one claim. **Range** shows all eight drops and the line *Industrial oils, fuels & lubricants.* Both sit on `deep` by default; `cream` is the alternative where the platform's feed is already dark.
+Ads are built from `AdCreative` in two families. **Product** shows one product's drop, name and grade with one claim. **Range** shows all eight drops and the line *Industrial oils, fuels & lubricants.* Both come on two grounds (Sunlit gold, 24 October 2026): `gold`, the metallic band, where the ad should stop the scroll, and `ivory` where the feed is already busy or bright.
 
 ## Formats
 
@@ -12,15 +12,15 @@ Ads are built from `AdCreative` in two families. **Product** shows one product's
 | `landscape` | 1200 × 628 | Link ads, LinkedIn, Google responsive display (landscape image), and every product's OG image |
 | `display-square` | 1200 × 1200 | Google responsive display (square image) |
 
-Google responsive display also asks for a square logo (use `vasant-icon-512.png` on `cream`, or the mark at 1200 × 1200) and a landscape logo (`vasant-logo.png` at 1200 × 300 with clear space).
+Google responsive display also asks for a square logo (use `vasant-icon-512.png` on ivory, or the mark at 1200 × 1200) and a landscape logo (`vasant-logo.png` at 1200 × 300 with clear space).
 
 ## Composition
 
-- The compact lockup sits top left (reversed on `deep`), with the clear space of the drop around it.
-- Eyebrow: the grade code and industries, in capitals (`gold` on `deep`, `bronze` on `cream`). The rendered ads set it in Montserrat, like everything else on them, so they look the same from any machine.
-- Title in `display` 700: the product's name exactly as the catalog has it, or the range line.
+- The compact lockup sits top left on both grounds, with the clear space of the drop around it.
+- Eyebrow: the grade code and industries, in IBM Plex Mono capitals (`gold-ink` on ivory, `on-gold-2` on gold). The rendered ads use the site's own fonts, so they look the same from any machine.
+- Title in `display` 900: the product's name exactly as the catalog has it, or the range line.
 - One claim in `sans` at about 40px, from the allowed list only.
-- One call to action, the only pill on the canvas: *Get a quote* for Product, *See the range* for Range.
+- One call to action, the only button on the canvas: *Get a quote* for Product, *See the range* for Range (gold on ivory, warm black on gold).
 - The drop at about 260px, never cropped, never on its side.
 - The domain `vasantpetrochem.com` bottom right (not in `landscape`, where space is short).
 - Nothing else: no stickers, no starbursts, no prices, no phone numbers in the art. The platform's own text fields carry offers and contact details.
@@ -44,7 +44,7 @@ Google responsive display also asks for a square logo (use `vasant-icon-512.png`
 
 ## Making the files
 
-`npm --prefix site run kit -- --campaign <slug> [--claim <id>]` renders every product and the range in all five formats, on `deep` and on `cream`, plus `links.csv`, into `marketing/<slug>/`. The steps are in the `ads` skill. The ads are the site's own `/kit` pages (preview builds only), which follow `AdCreative`'s layout and are saved at native size with Playwright. The site's share images (`/og/`) are a separate, cream card, drawn at build time.
+`npm --prefix site run kit -- --campaign <slug> [--claim <id>]` renders every product and the range in all five formats, on `gold` and on `ivory`, plus `links.csv`, into `marketing/<slug>/`. The steps are in the `ads` skill. The ads are the site's own `/kit` pages (preview builds only), which follow `AdCreative`'s layout and are saved at native size with Playwright. The site's share images (`/og/`) are a separate, light card, drawn at build time.
 
 ## Before an ad goes live
 

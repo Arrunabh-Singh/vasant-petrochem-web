@@ -1,5 +1,5 @@
 // The brand kit, saved at exact sizes into marketing/<campaign>/ at the repo root (git-ignored):
-//   ads/       every product and the range, in the five ad formats, on deep and on cream
+//   ads/       every product and the range, in the five ad formats, on gold and on ivory
 //   links.csv  each ad's link per platform, with its UTM tags (design-system/advertising.md)
 //   social/    LinkedIn banner, square avatar, WhatsApp profile image
 //   print/     A4 letterhead (PDF, plus its top band as a PNG for Word or Google Docs headers)
@@ -76,11 +76,11 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 const email = company.mailboxes.sales ?? company.email;
 const w = company.works;
 const signature = (name, role) =>
-  `<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:19px;color:#2e3b35">` +
-  (name ? `<tr><td style="padding:0 0 10px"><strong style="font-size:14px;color:#0f2e24">${esc(name)}</strong><br>${esc(role)}</td></tr>` : "") +
-  `<tr><td style="padding:10px 0 8px;border-top:2px solid #daad4a"><a href="${SITE}/"><img src="${SITE}/brand/vasant-lockup-compact.png" width="146" height="42" alt="${esc(company.tradeName)}" style="display:block;border:0"></a></td></tr>` +
-  `<tr><td><a href="${company.phone.href}" style="color:#2e3b35;text-decoration:none">${esc(company.phone.display)}</a> · <a href="mailto:${esc(email)}" style="color:#246851">${esc(email)}</a> · <a href="${SITE}/" style="color:#246851">vasantpetrochem.com</a></td></tr>` +
-  `<tr><td style="font-size:12px;color:#5c6a63">${esc(`${w.street}, ${w.city}, ${w.region} ${w.postalCode}, India`)}</td></tr></table>\n`;
+  `<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:19px;color:#4a4136">` +
+  (name ? `<tr><td style="padding:0 0 10px"><strong style="font-size:14px;color:#17120b">${esc(name)}</strong><br>${esc(role)}</td></tr>` : "") +
+  `<tr><td style="padding:10px 0 8px;border-top:2px solid #cfa145"><a href="${SITE}/"><img src="${SITE}/brand/vasant-lockup-compact.png" width="146" height="42" alt="${esc(company.tradeName)}" style="display:block;border:0"></a></td></tr>` +
+  `<tr><td><a href="${company.phone.href}" style="color:#4a4136;text-decoration:none">${esc(company.phone.display)}</a> · <a href="mailto:${esc(email)}" style="color:#7a5a20">${esc(email)}</a> · <a href="${SITE}/" style="color:#7a5a20">vasantpetrochem.com</a></td></tr>` +
+  `<tr><td style="font-size:12px;color:#6b6052">${esc(`${w.street}, ${w.city}, ${w.region} ${w.postalCode}, India`)}</td></tr></table>\n`;
 mkdirSync(join(out, "signature"), { recursive: true });
 for (const p of people.length ? people : [{ id: "company", name: null, role: null }]) writeFileSync(join(out, "signature", `${p.id}.html`), signature(p.name, p.role));
 

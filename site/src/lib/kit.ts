@@ -16,7 +16,7 @@ export const AD_FORMATS = {
   "display-square": { w: 1200, h: 1200, sources: ["google"] },
 } as const;
 export type AdFormat = keyof typeof AD_FORMATS;
-export const GROUNDS = ["deep", "cream"] as const;
+export const GROUNDS = ["gold", "ivory"] as const;
 export type Ground = (typeof GROUNDS)[number];
 
 export const SOCIAL = {

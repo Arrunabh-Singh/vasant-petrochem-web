@@ -34,13 +34,14 @@
     @keyframes vp-rise { from { opacity: 0; transform: translateY(28px); } }
 
     /* A statement lights word by word as each line crosses the middle of the
-       screen. Unlit words stay at line-strong, which keeps 3:1 on cream. */
+       screen. Unlit words stay at line-strong: 3.4:1 on ivory, the floor for
+       large text. A statement on another ground sets --lit-from and --lit-to. */
     .vp-lit .w {
       animation: vp-lit linear both;
       animation-timeline: view();
       animation-range: cover 30% cover 48%;
     }
-    @keyframes vp-lit { from { color: var(--line-strong); } to { color: var(--ink); } }
+    @keyframes vp-lit { from { color: var(--lit-from, var(--line-strong)); } to { color: var(--lit-to, var(--text)); } }
 
     /* Cards open with a gold wipe as they enter. */
     .vp-wipe { position: relative; overflow: hidden; }

@@ -19,10 +19,10 @@ const valueItems = await Promise.all((values?.items ?? []).map(async (i) => ({ t
     </div>
   </section>
 
-  <section class="vp-section vp-band-deep" aria-labelledby="facility-title">
+  <section class="vp-section vp-band-raised" aria-labelledby="facility-title">
     <div class="vp-container vp-split">
       <div class="vp-stack">
-        <p class="vp-eyebrow vp-eyebrow-deep">{facility?.eyebrow}</p>
+        <p class="vp-eyebrow">{facility?.eyebrow}</p>
         <h2 class="vp-h-section" id="facility-title">{facility?.heading}</h2>
         <p class="vp-lead">{lead?.text}</p>
       </div>
@@ -54,8 +54,8 @@ const valueItems = await Promise.all((values?.items ?? []).map(async (i) => ({ t
           <p>Send your grade and quantity, or browse the marketplace first.</p>
         </div>
         <div class="vp-actions">
-          <a class="vp-btn vp-btn-on-deep vp-btn-touch" href="/quote">{t("cta.quote")}</a>
-          <a class="vp-btn vp-btn-outline-on-deep vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
+          <a class="vp-btn vp-btn-dark vp-btn-touch" href="/quote">{t("cta.quote")}</a>
+          <a class="vp-btn vp-btn-outline-dark vp-btn-touch" href="/marketplace">{t("cta.browse")}<Icon name="arrow" size={18} /></a>
         </div>
       </div>
     </div>
