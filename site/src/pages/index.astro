@@ -38,7 +38,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
 ---
 <Base title={home.title} description={home.description} fullTitle structured={[localBusiness()]}>
   {/* 1–2 · The hero; then the drop is held to the light and passes along the colour scale. */}
-  <section class="vp-film" aria-labelledby="hero-title" data-fill-scene>
+  <section class="vp-film" aria-labelledby="hero-title" data-fill-scene data-timeline="--film">
     <div class="vp-film-stage">
       <div class="vp-film-glow" aria-hidden="true">
         {grades.map((p) => <span data-tint={p.data.tint}></span>)}
@@ -97,7 +97,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
   </section>
 
   {/* 3 · The company in its registered words, lit as it is read, with bubbles rising as in a viscosity tube. */}
-  <section class="vp-statement vp-band-raised" aria-label={b.statement?.eyebrow}>
+  <section class="vp-statement vp-band-raised" aria-label={b.statement?.eyebrow} data-timeline="--statement">
     <div class="vp-bubbles" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="vp-container">
       <p class="vp-eyebrow">{b.statement?.eyebrow}</p>
@@ -109,7 +109,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
   </section>
 
   {/* 4 · The road: a tanker leaves Mangaliya and each step of an order lights as it passes. */}
-  <section class="vp-road" aria-labelledby="how-title">
+  <section class="vp-road" aria-labelledby="how-title" data-timeline="--road">
     <div class="vp-road-stage">
       <div class="vp-container vp-road-inner">
         <div class="vp-head">
@@ -147,7 +147,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
   {/* 5 · Explore: the doors into the rest of the site. */}
   <section class="vp-explore" aria-labelledby="explore-title">
     <div class="vp-container">
-      <h2 class="vp-explore-word" id="explore-title">
+      <h2 class="vp-explore-word" id="explore-title" data-timeline="--explore">
         <span class="vp-sr">{explore.join("")}</span><span class="vp-letters" aria-hidden="true">{explore.map((ch) => <span class="l">{ch}</span>)}</span>
       </h2>
 

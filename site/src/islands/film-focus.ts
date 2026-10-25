@@ -5,8 +5,10 @@
  * scroll back to the top. Only where the film itself plays, and only for
  * keyboard focus (:focus-visible), never a tap.
  */
+import { filmPlays } from "../lib/film.ts";
+
 const film = document.querySelector<HTMLElement>(".vp-film");
-if (film && CSS.supports("animation-timeline: view()") && matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+if (film && filmPlays()) {
   const grades = [...film.querySelectorAll<HTMLElement>(".vp-oil")];
   const css = getComputedStyle(film);
   const share = (name: string) => parseFloat(css.getPropertyValue(name)) / 100;

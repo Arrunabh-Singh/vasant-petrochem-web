@@ -10,6 +10,8 @@
  * its first second or the GPU drops the context.
  */
 
+import { filmPlays } from "../lib/film.ts";
+
 // Drop units, as in lib/drop.ts: x 0..100 across, y 0..176.26 from the tip down.
 const H = 176.26;
 const FULL = 107.07; // the brand level (LEVEL in lib/drop.ts)
@@ -118,7 +120,7 @@ function start(el: HTMLElement) {
   const from = pct("--scale-from", 0);
   const span = pct("--scale-span", 1);
   // The colour scale the film plays (each grade's light, mid and deep), only where the film itself runs.
-  const scale = scene && CSS.supports("animation-timeline: view()") ? parseScale(el.dataset.scale) : [];
+  const scale = scene && filmPlays() ? parseScale(el.dataset.scale) : [];
   // Scroll through the scene's pinned stretch, 0 to 1: CSS's `contain` range.
   const progress = () => {
     if (!scene) return 0;
