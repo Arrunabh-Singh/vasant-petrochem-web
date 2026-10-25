@@ -15,7 +15,7 @@
 import { parseRange, rangeOffsets, splitTop, type Point } from "../lib/scroll-range.ts";
 
 const DURATION = 1000;
-type Track = { anim: Animation; subject: HTMLElement; from: Point; to: Point; last: number };
+type Track = { anim: Animation; subject: HTMLElement; from: Point; to: Point; last: number; owned: boolean };
 
 // ------------------------------------------------------------------ engine
 
@@ -62,7 +62,7 @@ function collect() {
     }
     effect.updateTiming({ duration: DURATION, fill: "both" });
     anim.pause();
-    found.push({ anim, subject, from: range[0], to: range[1], last: -1 });
+    found.push({ anim, subject, from: range[0], to: range[1], last: -1, owned: anim.timeline === document.timeline });
   }
   tracks = found;
   measure();
@@ -72,6 +72,8 @@ function frame() {
   pending = false;
   const y = scrollY;
   for (const t of tracks) {
+    // A style change can replace an animation or hand it back to a scroll timeline: take it again.
+    if (t.owned && t.anim.timeline !== document.timeline) return rescan();
     const g = geometry.get(t.subject);
     if (!g) continue;
     const [a0, a1] = rangeOffsets(t.from.name, g.top, g.h, viewport);
@@ -81,7 +83,11 @@ function frame() {
     const p = end > start ? Math.min(1, Math.max(0, (y - start) / (end - start))) : y >= end ? 1 : 0;
     if (p === t.last) continue;
     t.last = p;
-    t.anim.currentTime = p * DURATION;
+    try {
+      t.anim.currentTime = p * DURATION;
+    } catch {
+      t.last = -1;
+    }
   }
 }
 
@@ -96,13 +102,24 @@ const refresh = () => {
   measure();
   schedule();
 };
-// Focus changes add and remove animations (a grade with keyboard focus holds still).
-const rescan = () => requestAnimationFrame(() => (collect(), frame()));
+// Focus changes add and remove animations (a grade with keyboard focus holds still),
+// and a new screen height (a phone's toolbar collapsing) restyles the film.
+let rescanning = false;
+function rescan() {
+  if (rescanning) return;
+  rescanning = true;
+  requestAnimationFrame(() => {
+    rescanning = false;
+    collect();
+    frame();
+  });
+}
 
 collect();
 frame();
 addEventListener("scroll", schedule, { passive: true });
-addEventListener("resize", refresh);
+addEventListener("resize", rescan);
+visualViewport?.addEventListener("resize", rescan);
 addEventListener("load", refresh);
 addEventListener("pageshow", refresh);
 document.addEventListener("focusin", rescan);

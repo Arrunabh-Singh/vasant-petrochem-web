@@ -19,6 +19,8 @@ for (const file of ["film.css", "motion.css"]) {
       const uses = [...css.matchAll(new RegExp(`(?<![-\\w(])${prop}:\\s*([^;{}()]+(?:\\([^;{}]*\\))?[^;{}]*);`, "g"))];
       assert.ok(uses.length > 0, `${prop} not found`);
       for (const m of uses) {
+        // Safari's override back to a time animation (motion.css) is not a scroll-linked rule.
+        if (m[1]!.includes("!important")) continue;
         const before = css.slice(Math.max(0, m.index! - 300), m.index);
         const last = [...before.matchAll(new RegExp(`${copy}:\\s*([^;]+);`, "g"))].at(-1);
         assert.equal(last?.[1]?.trim(), m[1]!.trim(), `${prop}: ${m[1]} has no matching ${copy}`);

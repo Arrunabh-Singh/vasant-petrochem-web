@@ -116,3 +116,32 @@ test("a tapped link leaves nothing frozen on the way back", async ({ page, hasTo
   });
   await expect.poll(() => page.locator(".vp-film-copy").evaluate((el) => Number(getComputedStyle(el).opacity))).toBeLessThan(0.05);
 });
+
+// iOS Safari's toolbar collapses mid-scroll and the screen grows taller: the
+// film must keep playing (the hero's words fading, the drop growing), never
+// freeze at its first frame. In Safari only the engine moves the film.
+test("the film keeps playing when the phone's toolbar collapses", async ({ page, hasTouch, browserName }) => {
+  test.skip(!hasTouch, "phone projects only");
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 393, height: 659 });
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  const to = (share: number) =>
+    page.evaluate((share) => {
+      const film = document.querySelector<HTMLElement>(".vp-film")!;
+      scrollTo({ top: film.getBoundingClientRect().top + scrollY + share * (film.offsetHeight - innerHeight), behavior: "instant" });
+    }, share);
+  await to(0.02);
+  await page.setViewportSize({ width: 393, height: 780 });
+  await page.waitForTimeout(200);
+  await to(0.3);
+  await expect.poll(() => page.locator(".vp-film-copy").evaluate((el) => Number(getComputedStyle(el).opacity))).toBeLessThan(0.05);
+  if (browserName === "webkit") {
+    const native = await page.evaluate(() => document.getAnimations().filter((a) => a.timeline !== document.timeline).length);
+    expect(native).toBe(0);
+  }
+  const shares = Array.from({ length: 21 }, (_, i) => i / 20);
+  const problems = new Set<string>();
+  for (const s of [...shares, ...shares.slice().reverse()]) for (const p of await problemsAt(page, s, true)) problems.add(p);
+  expect([...problems]).toEqual([]);
+});
