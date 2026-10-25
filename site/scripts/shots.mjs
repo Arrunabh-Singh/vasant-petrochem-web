@@ -54,7 +54,9 @@ for (const [width, height, tag, thumb, cols] of SIZES) {
   page.on("console", (m) => (m.type() === "error" || /Content Security Policy/.test(m.text())) && !(engine === "webkit" && webkitNoise.test(m.text())) && errors.push(m.text().slice(0, 200)));
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
   for (const path of film ? ["/"] : pages.length ? pages : DEFAULT) {
-    await page.goto(base + path, { waitUntil: "networkidle" });
+    // "load", not "networkidle": a page with a Turnstile widget keeps the network busy.
+    await page.goto(base + path, { waitUntil: "load" });
+    await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(800);
     const name = `${out}${(path.replace(/[/?=&#]+/g, "_") || "_") + (film ? "film" : "")}-${tag}${reduce ? "-still" : ""}${engine === "chromium" ? "" : `-${engine}`}.png`;
     if (film) {
