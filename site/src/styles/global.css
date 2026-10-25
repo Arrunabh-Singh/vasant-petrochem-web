@@ -36,7 +36,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .vp-section-tight { padding: var(--space-10) 0; }
 /* Bands: ivory for a change of scene; gold, the heaviest block, near the foot of a page. */
 .vp-band-raised { background: var(--ground-raised); }
-.vp-band-gold { background: linear-gradient(105deg, var(--gold), var(--gold-sheen) 55%, var(--gold)); color: var(--on-gold); }
+/* The gold band carries engraved line-work, as a banknote or a certificate does. */
+.vp-band-gold { background: url("/textures/guilloche-ink.svg") center 70% / max(1600px, 130%) auto no-repeat, linear-gradient(105deg, var(--gold), var(--gold-sheen) 55%, var(--gold)); color: var(--on-gold); }
 .vp-measure { max-width: var(--measure); }
 .vp-stack { display: grid; gap: var(--space-4); }
 @media (min-width: 1024px) {
@@ -281,7 +282,7 @@ body { padding-bottom: calc(var(--target-touch) + var(--space-3) + max(var(--spa
 .vp-phero-grid { display: grid; gap: var(--space-8); }
 .vp-phero-title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-3) 0 var(--space-4); }
 .vp-phero-copy .vp-lead { margin-bottom: var(--space-8); }
-.vp-stage { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-5); min-height: 300px; padding: var(--space-8) var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--ground-raised); color: var(--text); }
+.vp-stage { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-5); min-height: 300px; padding: var(--space-8) var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-lg); background: url("/textures/guilloche-soft.svg") center 128% / 1100px auto no-repeat, var(--ground-raised); color: var(--text); }
 .vp-stage::before, .vp-stage::after { content: ""; position: absolute; z-index: -1; aspect-ratio: 1; translate: -50% -50%; }
 .vp-stage::before { left: 74%; top: 14%; width: min(130%, 600px); background: radial-gradient(closest-side, color-mix(in srgb, var(--drop-gold-light) 48%, transparent), color-mix(in srgb, var(--drop-gold-light) 14%, transparent) 50%, transparent); }
 .vp-stage::after { left: 50%; top: 40%; width: min(90%, 380px); background: radial-gradient(closest-side, color-mix(in srgb, var(--tint-light, var(--drop-gold-light)) 40%, transparent), transparent); }
@@ -478,7 +479,7 @@ textarea.vp-input { min-height: 112px; padding: 14px var(--space-4); resize: ver
 .vp-supply li { display: flex; gap: var(--space-3); align-items: flex-start; font: var(--t-small); color: var(--text-2); }
 .vp-supply .vp-icon { margin-top: 2px; color: var(--gold-ink); }
 .vp-supply strong { color: var(--text); }
-.vp-cta-band { display: grid; gap: var(--space-6); padding: var(--space-10) var(--space-6); border-radius: var(--radius-lg); background: linear-gradient(105deg, var(--gold), var(--gold-sheen) 55%, var(--gold)); color: var(--on-gold); }
+.vp-cta-band { display: grid; gap: var(--space-6); padding: var(--space-10) var(--space-6); border-radius: var(--radius-lg); background: url("/textures/guilloche-ink.svg") center 60% / max(1400px, 140%) auto no-repeat, linear-gradient(105deg, var(--gold), var(--gold-sheen) 55%, var(--gold)); color: var(--on-gold); }
 .vp-cta-band .vp-h-section { color: var(--on-gold); }
 .vp-cta-band p { color: var(--on-gold-2); }
 @media (min-width: 1024px) { .vp-cta-band { grid-template-columns: 1fr auto; align-items: center; padding: var(--space-16); } }
@@ -486,7 +487,7 @@ textarea.vp-input { min-height: 112px; padding: 14px var(--space-4); resize: ver
 @media (min-width: 1024px) { .vp-panel { padding: var(--space-10); } .vp-panel-row { grid-template-columns: 1fr auto; align-items: center; } }
 
 /* -------------------------------------------------------------- footer */
-.vp-footer { padding: var(--space-14) 0 var(--space-8); border-top: 1px solid color-mix(in srgb, var(--gold-deep) 45%, transparent); background: var(--ground-raised); color: var(--text-2); }
+.vp-footer { padding: var(--space-14) 0 var(--space-8); border-top: 1px solid color-mix(in srgb, var(--gold-deep) 45%, transparent); background: url("/textures/guilloche-soft.svg") right -240px top -160px / 1400px auto no-repeat, var(--ground-raised); color: var(--text-2); }
 .vp-footer-inner { display: grid; gap: var(--space-10); max-width: var(--container); margin: 0 auto; padding: 0 var(--space-gutter); }
 .vp-footer-logo { display: block; width: 220px; height: auto; margin-bottom: var(--space-4); }
 .vp-footer-brand p { max-width: 360px; font: var(--t-small); color: var(--text-3); }
@@ -594,4 +595,11 @@ a.vp-row-title { color: var(--gold-ink); }
   .vp-table th, .vp-table td { padding: var(--space-3) var(--space-2); }
   .vp-table th:first-child, .vp-table td:first-child { padding-inline-start: var(--space-3); }
   .vp-table th:last-child, .vp-table td:last-child { padding-inline-end: var(--space-3); }
+}
+
+/* Increased contrast: the engraved line-work goes, the grounds stay. */
+@media (prefers-contrast: more) {
+  .vp-band-gold, .vp-cta-band { background: linear-gradient(105deg, var(--gold), var(--gold-sheen) 55%, var(--gold)); }
+  .vp-footer, .vp-stage { background: var(--ground-raised); }
+  .vp-guilloche { display: none; }
 }
