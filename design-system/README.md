@@ -130,7 +130,8 @@ The home page is a film; every other page is a page with a light touch of the sa
 - **Type in motion:** grade names and scene words in Schibsted Grotesk 900, resolving from a blur. A statement moves from `line-strong` (3.4:1 on ivory, large text) to `text`.
 - **Light, measured.** The light behind a drop is white at its core and its grade's `-light` tint at 38% at its rim, and text never sits on its core: measured from the rendered film, every text keeps 4.9:1 or better (grade names 9.3:1).
 - **Easing:** `ease-out` for entrances, `ease-in-out` for the float. Scrubbed motion is linear, because the reader's scroll sets the pace.
-- **Still is complete.** With reduced motion, or in a browser without scroll-driven animations, nothing pins and nothing hides: the hero, then every grade as a lit card on ivory, the statement, the road with all four steps, and the close.
+- **The same film everywhere.** Browsers with scroll-driven animations (Chrome, Edge, Samsung Internet, Safari 26 and later) play it natively. Firefox and older iPhones play the same animations through `site/src/islands/scrub.ts`, which reads each animation's timeline and range from the `--tl` and `--ar` written beside it in the CSS. Write each range literally as well: Safari drops an `animation-range` that is a single `var()` (a unit test keeps the two copies equal).
+- **Still is complete.** With reduced motion, without JavaScript, or in a browser without container queries (iOS 15 and earlier), nothing pins and nothing hides: the hero, then every grade as a lit card on ivory, the statement, the road with all four steps, and the close.
 - Cards lift 2px under a pointer. Touch gets no hover state.
 
 ## Logo

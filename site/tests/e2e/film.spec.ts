@@ -4,8 +4,9 @@ import { expect, test, type Page } from "@playwright/test";
  * The home film, frame by frame, scrolled down and back up: one grade at a
  * time, no words on the drop or under the phone's action bar, the drop
  * centred on phones, and the road's pin quiet until the tanker leaves.
- * Runs in every project (Chromium, WebKit on an iPhone, Firefox, laptop) and
- * on the shortest common phone screens.
+ * Runs in every project (Chromium, WebKit on an iPhone, Firefox, laptop), on
+ * the shortest common phone screens, and through islands/scrub.ts (?film=scrub),
+ * the engine that plays the film where scroll-driven animations are missing.
  */
 
 async function problemsAt(page: Page, share: number, phone: boolean): Promise<string[]> {
@@ -49,10 +50,9 @@ async function problemsAt(page: Page, share: number, phone: boolean): Promise<st
   );
 }
 
-async function playFilm(page: Page, phone: boolean) {
-  await page.goto("/");
-  // Browsers without scroll-driven animations get the still page until the film has an engine of its own there.
-  test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no scroll-driven animations in this browser");
+async function playFilm(page: Page, phone: boolean, path = "/") {
+  await page.goto(path);
+  await page.waitForLoadState("networkidle");
   const shares = Array.from({ length: 41 }, (_, i) => i / 40);
   const problems = new Set<string>();
   for (const s of [...shares, ...shares.slice().reverse()]) for (const p of await problemsAt(page, s, phone)) problems.add(p);
@@ -62,6 +62,12 @@ async function playFilm(page: Page, phone: boolean) {
 test("the film plays cleanly down and back up", async ({ page, isMobile, hasTouch }) => {
   test.setTimeout(120_000);
   await playFilm(page, isMobile || hasTouch);
+});
+
+// islands/scrub.ts, the engine for browsers without scroll-driven animations, forced on here.
+test("the film plays the same through the scroll engine", async ({ page, isMobile, hasTouch }) => {
+  test.setTimeout(120_000);
+  await playFilm(page, isMobile || hasTouch, "/?film=scrub");
 });
 
 test.describe("on the shortest phones", () => {
@@ -83,7 +89,7 @@ test.describe("on the shortest phones", () => {
 
 test("the road's pin is a quiet dot until the tanker leaves", async ({ page }) => {
   await page.goto("/");
-  test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no scroll-driven animations in this browser");
+  await page.waitForLoadState("networkidle");
   await page.evaluate(() => {
     const road = document.querySelector(".vp-road")!;
     scrollTo({ top: road.getBoundingClientRect().top + scrollY - innerHeight / 2, behavior: "instant" });
@@ -95,7 +101,7 @@ test("the road's pin is a quiet dot until the tanker leaves", async ({ page }) =
 
 test("a tapped link leaves nothing frozen on the way back", async ({ page, hasTouch }) => {
   await page.goto("/");
-  test.skip(!(await page.evaluate(() => CSS.supports("animation-timeline: view()"))), "no scroll-driven animations in this browser");
+  await page.waitForLoadState("networkidle");
   const cta = page.locator(".vp-film-copy .vp-btn-primary");
   if (hasTouch) await cta.tap();
   else await cta.click();

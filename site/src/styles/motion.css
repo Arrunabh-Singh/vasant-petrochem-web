@@ -22,12 +22,13 @@
   main h1 { animation: vp-title-in var(--duration-title) var(--ease-out) both; }
   @keyframes vp-title-in { from { opacity: .01; filter: blur(10px); transform: translateY(10px); } }
 
-  @supports (animation-timeline: view()) {
+  @supports (container-type: size) {
+  @media (scripting: enabled) {
     /* Sections rise as they enter. */
     .vp-section .vp-head, .vp-card, .vp-panel, .vp-reveal {
       animation: vp-rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 45%;
+      --tl: view(); animation-timeline: view();
+      --ar: entry 0% entry 45%; animation-range: entry 0% entry 45%;
     }
     /* Below the fold they wait at 0, hidden rather than faint, so no reader or
        checker meets them as low-contrast text before they arrive. */
@@ -38,8 +39,8 @@
        large text. A statement on another ground sets --lit-from and --lit-to. */
     .vp-lit .w {
       animation: vp-lit linear both;
-      animation-timeline: view();
-      animation-range: cover 30% cover 48%;
+      --tl: view(); animation-timeline: view();
+      --ar: cover 30% cover 48%; animation-range: cover 30% cover 48%;
     }
     @keyframes vp-lit { from { color: var(--lit-from, var(--line-strong)); } to { color: var(--lit-to, var(--text)); } }
 
@@ -53,16 +54,36 @@
       transform: translateX(-101%);
       pointer-events: none;
       animation: vp-wipe-bar linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 85%;
+      --tl: view(); animation-timeline: view();
+      --ar: entry 0% entry 85%; animation-range: entry 0% entry 85%;
     }
     @keyframes vp-wipe-bar { 0% { transform: translateX(-101%); } 45%, 55% { transform: none; } 100% { transform: translateX(101%); } }
-    .vp-wipe > * { animation: vp-wipe-in linear both; animation-timeline: view(); animation-range: entry 45% entry 85%; }
+    .vp-wipe > * { animation: vp-wipe-in linear both; --tl: view(); animation-timeline: view(); --ar: entry 45% entry 85%; animation-range: entry 45% entry 85%; }
     @keyframes vp-wipe-in { from { opacity: 0; } }
 
     /* Whatever has keyboard focus is shown whole, wherever its animation is.
        Only keyboard focus: a tap that focuses a link must never freeze anything. */
     .vp-wipe:has(:focus-visible)::after { animation: none; transform: translateX(101%); }
     .vp-wipe:has(:focus-visible) > *, .vp-card:has(:focus-visible), .vp-panel:has(:focus-visible) { animation: none; }
+  }
+  }
+}
+
+/* Each scroll-linked animation names its timeline (--tl) and range (--ar)
+   once; native CSS reads them, and so does islands/scrub.ts where the browser
+   has no scroll-driven animations. Never inherited, so time-based motion
+   inside a scene (the float, a title resolving) stays time-based. */
+@property --tl { syntax: "*"; inherits: false; }
+@property --ar { syntax: "*"; inherits: false; }
+main h1, .vp-film-float, .vp-open-shadow, .vp-drop-animate .vp-drop-liquid { --tl: initial; --ar: initial; }
+
+/* Without scroll-driven animations (Firefox, Safari before 26) islands/scrub.ts
+   plays the same animations from scroll. Until it runs, each one waits at its
+   first frame, so the page paints exactly as the film opens. */
+@media screen and (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+  @supports (container-type: size) and (not (animation-timeline: view())) {
+    main :not(h1, .vp-film-float, .vp-open-shadow, .vp-drop-animate .vp-drop-liquid),
+    .vp-open-glint::before,
+    .vp-wipe::after { animation-duration: 1s; animation-play-state: paused; }
   }
 }
