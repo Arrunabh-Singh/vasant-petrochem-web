@@ -87,4 +87,12 @@ main h1, .vp-film-float, .vp-open-shadow, .vp-drop-animate .vp-drop-liquid { --t
     .vp-open-glint::before,
     .vp-wipe::after { animation-duration: 1s; animation-play-state: paused; }
   }
+  /* Safari never gets a native scroll timeline: iOS re-applied it whenever the
+     toolbar collapsed and the screen's height changed, taking the hero's words
+     and the drop back from the engine and freezing them at their first frame. */
+  @supports (container-type: size) and (font: -apple-system-body) {
+    main :not(h1, .vp-film-float, .vp-open-shadow, .vp-drop-animate .vp-drop-liquid),
+    .vp-open-glint::before,
+    .vp-wipe::after { animation-timeline: auto !important; }
+  }
 }
