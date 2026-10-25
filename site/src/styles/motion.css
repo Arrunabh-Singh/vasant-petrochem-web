@@ -60,8 +60,9 @@
     .vp-wipe > * { animation: vp-wipe-in linear both; animation-timeline: view(); animation-range: entry 45% entry 85%; }
     @keyframes vp-wipe-in { from { opacity: 0; } }
 
-    /* Whatever has keyboard focus is shown whole, wherever its animation is. */
-    .vp-wipe:focus-within::after { animation: none; transform: translateX(101%); }
-    .vp-wipe:focus-within > *, .vp-card:focus-within, .vp-panel:focus-within { animation: none; }
+    /* Whatever has keyboard focus is shown whole, wherever its animation is.
+       Only keyboard focus: a tap that focuses a link must never freeze anything. */
+    .vp-wipe:has(:focus-visible)::after { animation: none; transform: translateX(101%); }
+    .vp-wipe:has(:focus-visible) > *, .vp-card:has(:focus-visible), .vp-panel:has(:focus-visible) { animation: none; }
   }
 }

@@ -29,7 +29,7 @@ Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
   <section class="vp-section-tight">
     <div class="vp-container vp-stack">
       <div class="vp-head">
-        <p class="vp-eyebrow"><span class="vp-tag vp-tag-live">Available now</span></p>
+        {offers.length > 0 && <p class="vp-eyebrow"><span class="vp-tag vp-tag-live">Available now</span></p>}
         <h1 class="vp-h-page">{copy.headline}</h1>
         <p class="vp-lead">{copy.lead}</p>
       </div>
@@ -48,12 +48,13 @@ Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
                     </div>
                   </div>
                   <dl>
-                    <div><dt>Quantity</dt><dd>{o.quantity} {o.uom}</dd></div>
+                    <div><dt>Quantity</dt><dd>{Number(o.quantity).toLocaleString("en-IN")} {o.uom}</dd></div>
                     <div><dt>Location</dt><dd>{o.location}</dd></div>
                     <div><dt>Basis</dt><dd>{o.basis}</dd></div>
                     <div><dt>Valid until</dt><dd><time datetime={o.valid_until}>{date(o.valid_until)}</time></dd></div>
                   </dl>
                   <a class="vp-btn vp-btn-primary" href={`/quote?add=${encodeURIComponent(o.product_slug)}&offer=${encodeURIComponent(o.id)}`}>Request this lot</a>
+                  {o.notes && <p class="vp-small vp-offer-notes">{o.notes}</p>}
                 </li>
               );
             })}

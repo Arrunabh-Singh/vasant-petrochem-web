@@ -64,11 +64,11 @@ All from the repository root.
 | `npm --prefix site run dev` | Local site at `http://localhost:4321` (Astro dev server). |
 | `npm --prefix site run check` | Types, unit tests, a production build, then the built pages (no TODO markers, no inline scripts or styles, no foreign hosts, no broken links, JS budgets). CI also runs `npm audit`, the JSON Schema step, the end-to-end tests, Lighthouse and a ZAP scan. |
 | `npm --prefix site run preview` | The built site in the local Cloudflare runtime, at `http://localhost:4321`. Wait for "Ready on", and restart it after every build: it keeps serving the Worker it started with. |
-| `npm --prefix site run shots` | Phone and laptop screenshots of the main pages, against `preview`. Add page paths to limit it, or `--film` for the home page's scroll film. |
+| `npm --prefix site run shots` | Phone and laptop screenshots of the main pages, against `preview`. Add page paths to limit it, or `--film` for the home page's scroll film. `--browser webkit` (an iPhone) or `--browser firefox` checks another engine. |
 | `npm --prefix site run e2e` | End-to-end and accessibility tests (Playwright and axe) against `preview`. |
 | `DRAFT_PREVIEW=1 npm --prefix site run build` | A build that includes drafts, as previews show them. |
 
-Built pages land in `site/dist/client/` as `<path>.html` (for example `products/base-oil-sn500.html`), and share images in `site/dist/client/og/`. `shots` and `e2e` need Playwright's Chromium; if it is missing, run `npx --prefix site playwright install chromium` once.
+Built pages land in `site/dist/client/` as `<path>.html` (for example `products/base-oil-sn500.html`), and share images in `site/dist/client/og/`. `shots` and `e2e` need Playwright's browsers; if they are missing, run `npx --prefix site playwright install chromium webkit firefox` once. The e2e projects are `phone`, `laptop`, `webkit-iphone` and `firefox-phone` (the last two run the film tests, `tests/e2e/film.spec.ts`).
 
 SQL tests run on a scratch Postgres: `createdb scratch && psql -v ON_ERROR_STOP=1 -d scratch -f supabase/tests/<file>.sql`.
 

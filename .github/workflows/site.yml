@@ -70,7 +70,7 @@ jobs:
           cache: npm
           cache-dependency-path: site/package-lock.json
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit firefox
       - run: npm run build
       # One local Worker for all three. Off the live host every form answers as
       # a dry run, so nothing here is stored or emailed (src/server/http.ts).
