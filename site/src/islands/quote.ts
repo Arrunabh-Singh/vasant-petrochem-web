@@ -24,20 +24,27 @@ if (form) {
   const wa = document.querySelector<HTMLAnchorElement>("[data-wa-list]");
 
   // Links into the page: ?list= (a shared list), ?add= (one product), ?type=, ?offer=.
-  const params = new URLSearchParams(location.search);
-  const shared = decodeLines(params.get("list")).filter(known);
-  if (shared.length) {
-    const mine = readBasket();
-    writeBasket([...mine, ...shared.filter((s) => !mine.some((m) => m.slug === s.slug))]);
-  }
-  const added = params.get("add");
-  if (added && bySlug.has(added)) addLine(added);
-  const type = params.get("type");
-  const radio = form.querySelector<HTMLInputElement>(`input[name="type"][value="${CSS.escape(type ?? "")}"]`);
-  if (radio) radio.checked = true;
-  const offer = params.get("offer");
-  if (offer && /^[0-9a-f-]{36}$/.test(offer)) offerRef.value = offer;
-  if (params.size) history.replaceState(null, "", location.pathname);
+  // Applied only once the page is really shown: a page prerendered while a link
+  // is hovered must not add anything to the buyer's list.
+  const takeLinks = () => {
+    const params = new URLSearchParams(location.search);
+    const shared = decodeLines(params.get("list")).filter(known);
+    if (shared.length) {
+      const mine = readBasket();
+      writeBasket([...mine, ...shared.filter((s) => !mine.some((m) => m.slug === s.slug))]);
+    }
+    const added = params.get("add");
+    if (added && bySlug.has(added)) addLine(added);
+    const type = params.get("type");
+    const radio = form.querySelector<HTMLInputElement>(`input[name="type"][value="${CSS.escape(type ?? "")}"]`);
+    if (radio) radio.checked = true;
+    const offer = params.get("offer");
+    if (offer && /^[0-9a-f-]{36}$/.test(offer)) offerRef.value = offer;
+    if (params.size) history.replaceState(null, "", location.pathname);
+    syncType();
+    render();
+  };
+
 
   const lines = () => readBasket().filter(known);
 
@@ -143,4 +150,6 @@ if (form) {
   });
 
   render();
+  if ((document as Document & { prerendering?: boolean }).prerendering) document.addEventListener("prerenderingchange", takeLinks, { once: true });
+  else takeLinks();
 }

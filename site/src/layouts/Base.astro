@@ -44,9 +44,10 @@ const pageTitle = fullTitle ? title : `${title} · ${company.tradeName}`;
 const canonical = new URL(path, SITE_URL).toString();
 const ld = [organization(), ...structured];
 // Instant navigation: prerender a same-site page when the pointer rests on its link
-// (never the buyer account, whose pages are private and change state).
+// (never the buyer account, whose pages are private and change state, nor the
+// quote list, whose links add products to the buyer's list).
 const speculation = {
-  prerender: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/api/*" } }, { not: { href_matches: "/account*" } }] }, eagerness: "moderate" }],
+  prerender: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/api/*" } }, { not: { href_matches: "/account*" } }, { not: { href_matches: "/quote*" } }] }, eagerness: "moderate" }],
 };
 ---
 <!doctype html>

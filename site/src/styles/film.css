@@ -91,18 +91,18 @@
 .vp-road { padding: var(--space-14) 0; }
 .vp-road-inner { display: grid; gap: var(--space-6); }
 .vp-road-inner .vp-head { margin-bottom: 0; }
-.vp-road-track { position: relative; height: 80px; container-type: inline-size; }
+.vp-road-track { position: relative; height: 100px; container-type: inline-size; }
 /* The road, dashed, with a gold dot at each step; the route lights gold behind the tanker. */
 .vp-road-line { position: absolute; left: 0; right: 0; top: 49px; height: 2px; background: repeating-linear-gradient(90deg, var(--line-strong) 0 8px, transparent 8px 16px); }
 .vp-road-track::after { content: ""; position: absolute; left: 0; right: 0; top: 44px; height: 12px; background: radial-gradient(circle at 12.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 37.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 62.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 87.5% 50%, var(--gold) 0 5px, transparent 5.6px); }
 .vp-road-route { position: absolute; left: 0; right: 0; top: 48px; height: 4px; border-radius: 2px; background: var(--gold); transform-origin: left; }
-.vp-road-pin { position: absolute; left: 0; top: 50px; width: 0; height: 0; }
-.vp-road-pin span { position: absolute; left: -24px; top: -24px; width: 48px; height: 48px; border: 1.5px solid var(--gold); border-radius: 50%; opacity: .35; }
+/* The Mangaliya pin: a gold dot with one quiet ring; in the film, three ripples leave it as the tanker departs. */
+.vp-road-pin { position: absolute; left: 10px; top: 50px; width: 0; height: 0; }
+.vp-road-pin span { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; border: 1.5px solid var(--gold); border-radius: 50%; opacity: .45; }
 .vp-road-pin span:nth-child(1) { left: -6px; top: -6px; width: 12px; height: 12px; border: 0; background: var(--gold-deep); opacity: 1; }
-.vp-road-pin span:nth-child(2) { left: -12px; top: -12px; width: 24px; height: 24px; opacity: .6; }
-.vp-road-pin span:nth-child(3) { left: -18px; top: -18px; width: 36px; height: 36px; opacity: .45; }
-.vp-road-place { position: absolute; left: 0; top: 60px; font: var(--t-caption); color: var(--text-3); white-space: nowrap; }
-.vp-road-tanker { position: absolute; left: var(--space-6); top: 11px; z-index: 1; width: 100px; height: 40px; overflow: visible; }
+.vp-road-pin span:nth-child(n+3) { display: none; }
+.vp-road-place { position: absolute; left: 0; top: 78px; font: var(--t-caption); color: var(--text-3); white-space: nowrap; }
+.vp-road-tanker { position: absolute; left: 44px; top: 11px; z-index: 1; width: 100px; height: 40px; overflow: visible; }
 .vp-road-steps { display: grid; gap: var(--space-6); margin: 0; padding: 0; list-style: none; }
 .vp-road-steps li { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-3); align-items: center; padding-top: var(--space-4); border-top: 2px solid var(--gold); }
 .vp-road-steps p { grid-column: 2; font: var(--t-small); color: var(--text-3); max-width: 44ch; }
@@ -111,12 +111,12 @@
 @media (min-width: 1024px) {
   .vp-road { padding: var(--space-24) 0; }
   .vp-road-inner { gap: var(--space-10); }
-  .vp-road-track { height: 124px; }
+  .vp-road-track { height: 150px; }
   .vp-road-line { top: 91px; }
   .vp-road-track::after { top: 86px; }
   .vp-road-route { top: 90px; }
   .vp-road-pin { top: 92px; }
-  .vp-road-place { top: 104px; }
+  .vp-road-place { top: 124px; }
   .vp-road-tanker { width: 180px; height: 72px; top: 25px; }
   .vp-road .vp-h-section { font: var(--t-display-l); letter-spacing: var(--t-display-l-tracking); }
   .vp-road-steps { grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
@@ -167,10 +167,17 @@
       position: sticky; top: 0; height: 100svh; overflow: hidden; container-type: size;
       grid-template: "stage" 100% / 100%;
       --free: calc(100cqb - var(--vp-bar));
-      /* Phones: the drop opens small above the headline, then grows into the light. */
-      --dw: min(44cqi, 190px); --hs: .55;
+      /* Phones, in three bands that never overlap whatever the screen's height:
+         the colour scale across the top, the drop in the light below it, and a
+         block reserved for the grade's words above the action bar. */
+      --top: calc(var(--space-12) + var(--space-8));
+      --text-h: clamp(204px, 36cqb, 252px);
+      --zone: max(120px, calc(var(--free) - var(--top) - var(--text-h) - var(--space-4)));
+      --text-top: calc(var(--top) + var(--zone) + var(--space-4));
+      /* The drop opens small above the headline, then grows into the light. */
+      --dw: min(44cqi, 190px, calc(var(--zone) / 1.7626)); --hs: .55;
       --hx: 50cqi; --hy: calc(var(--space-5) + var(--dw) * 1.7626 * var(--hs) / 2);
-      --fx: 50cqi; --fy: calc(var(--free) * .38);
+      --fx: 50cqi; --fy: calc(var(--top) + var(--zone) / 2);
       --glow: min(60cqi, 300px);
       --edge: var(--space-gutter);
     }
@@ -179,29 +186,42 @@
     /* The light behind the drop takes each grade's colour, as light through a sample
        would; it sits a little up and right of the drop, towards the light source. */
     .vp-film-glow { display: block; position: relative; animation: vp-off linear both; animation-timeline: --film; animation-range: contain 94% contain 100%; }
-    .vp-film-glow > span { position: absolute; left: calc(var(--fx) + var(--glow) * .12); top: calc(var(--fy) - var(--glow) * .12); z-index: 1; width: calc(var(--glow) * 2.2); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, #fff 0%, #ffffffe6 26%, color-mix(in srgb, var(--tint-light) 38%, transparent) 58%, color-mix(in srgb, var(--tint-light) 12%, transparent) 80%, transparent); animation: vp-glow linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-out); }
+    .vp-film-glow > span { position: absolute; left: var(--fx); top: var(--fy); z-index: 1; opacity: 0; width: calc(var(--glow) * 2.2); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, #fff 0%, #ffffffe6 26%, color-mix(in srgb, var(--tint-light) 38%, transparent) 58%, color-mix(in srgb, var(--tint-light) 12%, transparent) 80%, transparent); animation: vp-glow linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-out); }
     .vp-film-glow > .vp-film-glow-own { z-index: 0; animation-name: vp-glow-own; animation-range: contain 12% contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 4); }
 
-    .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: calc(var(--space-5) * 2 + var(--dw) * 1.7626 * var(--hs)) var(--edge) 0; animation: vp-copy-out linear both; animation-timeline: --film; animation-range: contain 10% contain 15%; }
+    .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: calc(var(--space-5) * 2 + var(--space-6) + var(--dw) * 1.7626 * var(--hs)) var(--edge) 0; animation: vp-copy-out linear both; animation-timeline: --film; animation-range: contain 9% contain 13%; }
     .vp-film:has(.vp-film-copy :focus-visible) :is(.vp-film-glow, .vp-film-scale, .vp-scale) { visibility: hidden; }
     /* Short phones: no room above the headline, so the drop waits below the screen and rises in. */
-    @media (max-height: 700px) { .vp-film-stage { --hs: .85; --hy: calc(var(--free) + var(--dw) * .5); } .vp-film-copy { padding-top: var(--space-6); } }
-    .vp-film-copy:focus-within { animation: none; }
+    @media (max-height: 760px) {
+      .vp-film-stage { --hs: .42; }
+      .vp-film-copy .vp-h-hero { font-size: clamp(2.25rem, 6.2cqb, 2.75rem); line-height: 1; }
+      .vp-film-copy .vp-lead { margin: var(--space-4) 0 var(--space-6); }
+    }
+    /* The shortest phones: the drop waits just below the screen and rises in, and the hero's type tightens so its buttons stay above the bar. */
+    @media (max-height: 620px) {
+      .vp-film-stage { --hs: .85; --hy: calc(100cqb + var(--dw) * 1.7626 * var(--hs) / 2); }
+      .vp-film-copy { padding-top: var(--space-5); }
+      .vp-film-copy .vp-h-hero { font-size: clamp(1.875rem, 6.6cqb, 2.75rem); line-height: 1; }
+      .vp-film-copy .vp-lead { font-size: .9375rem; line-height: 1.45; margin: var(--space-3) 0 var(--space-5); }
+      .vp-film .vp-oil-name { font-size: clamp(2rem, 9.5cqi, 2.75rem); }
+      .vp-film .vp-oil-meta { font-size: .875rem; line-height: 1.25rem; }
+    }
+    .vp-film-copy:has(:focus-visible) { animation: none; }
 
-    .vp-film-drop { position: relative; place-self: start; display: block; width: var(--dw); padding: 0; animation: vp-film-glide linear both, vp-off linear both; animation-timeline: --film, --film; animation-range: contain 10% contain 17%, contain 94% contain 100%; }
+    .vp-film-drop { position: relative; place-self: start; display: block; width: var(--dw); padding: 0; animation: vp-film-glide linear both, vp-off linear both; animation-timeline: --film, --film; animation-range: contain 10.5% contain 16.5%, contain 94% contain 100%; }
     .vp-film-float { width: 100%; animation: vp-float var(--duration-float) var(--ease-in-out) infinite alternate; }
     .vp-film-drop .vp-open-shadow { position: absolute; left: 18%; top: 100%; width: 64%; margin-top: var(--space-4); animation: vp-shadow var(--duration-float) var(--ease-in-out) infinite alternate; }
     .vp-film-float .vp-drop-liquid { transform-box: fill-box; animation: vp-level linear both; animation-timeline: --film; animation-range: contain 0% contain var(--fill-end); }
     /* Without WebGL, each grade's own drop settles over the one before. */
     .vp-film-drops { display: block; position: absolute; inset: 0; }
-    .vp-film-drops > .vp-drop { position: absolute; inset: 0; width: 100%; animation: vp-on linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-in); }
+    .vp-film-drops > .vp-drop { position: absolute; inset: 0; width: 100%; opacity: 0; animation: vp-on linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-in); }
     .vp-film-drops .vp-drop-liquid { animation: none; }
     .vp-film-float:has(.vp-liquid.is-live) .vp-film-drops { display: none; }
     .vp-open-glint { position: absolute; inset: 0; display: block; overflow: hidden; pointer-events: none; -webkit-mask: url("/brand/drop-mask.svg") 0 0 / 100% 100% no-repeat; mask: url("/brand/drop-mask.svg") 0 0 / 100% 100% no-repeat; }
     .vp-open-glint::before { content: ""; position: absolute; inset: -10% -80%; background: linear-gradient(100deg, transparent 44%, #ffffff8c 50%, transparent 56%); animation: vp-glint linear both; animation-timeline: --film; animation-range: contain 0% contain 12%; }
 
     /* The colour scale: across the top on phones, low on the left on laptops; the marker follows the grades. */
-    .vp-film .vp-scale { display: flex; align-self: start; justify-self: center; margin-top: calc(var(--space-12) + var(--space-1)); animation: vp-show linear both; animation-timeline: --film; animation-range: contain 15% contain 100%; --sw: 22px; --pitch: 28px; }
+    .vp-film .vp-scale { display: flex; align-self: start; justify-self: center; margin-top: calc(var(--space-12) + var(--space-1)); opacity: 0; animation: vp-show linear both; animation-timeline: --film; animation-range: contain 15% contain 100%; --sw: 22px; --pitch: 28px; }
     .vp-film .vp-scale-end { position: absolute; top: 50%; translate: 0 -50%; color: var(--text-2); }
     .vp-film .vp-scale > .vp-scale-end:first-child { right: 100%; margin-right: var(--space-2); }
     .vp-film .vp-scale > ol + .vp-scale-end { left: 100%; margin-left: var(--space-2); }
@@ -209,22 +229,25 @@
     .vp-film .vp-swatch { width: 22px; animation: vp-swatch linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-end); }
     .vp-film .vp-scale-marker { display: block; position: absolute; left: calc(var(--sw) / 2 - 6px); top: calc(100% + 4px); width: 0; height: 0; border: 6px solid transparent; border-top: 0; border-bottom-color: var(--gold-deep); animation: vp-marker-x linear both; animation-timeline: --film; animation-range: contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 2) contain calc(var(--scale-from) + var(--scale-span) - var(--scale-span) / var(--n) / 2); }
 
+    /* The narrowest phones: smaller swatches, so "Darker" and "Lighter" stay on screen. */
+    @media (max-width: 359px) { .vp-film .vp-scale { --sw: 16px; --pitch: 20px; } .vp-film .vp-scale-swatches { gap: 4px; } .vp-film .vp-swatch { width: 16px; } }
+
     /* The words: the scale's name, then one grade at a time. */
     .vp-film-scale { display: grid; grid-template: "x" 100% / 100%; gap: 0; padding: 0; background: none; }
     .vp-film-scale > * { grid-area: x; }
-    .vp-film-scale > .vp-eyebrow { align-self: start; justify-self: center; margin-top: var(--space-6); animation: vp-show linear both; animation-timeline: --film; animation-range: contain 18% contain 100%; }
-    .vp-film-title, .vp-oils { align-self: start; margin: calc(var(--free) * .66) var(--edge) 0; }
-    .vp-film-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); animation: vp-word linear both; animation-timeline: --film; animation-range: contain 15% contain 23%; }
+    .vp-film-scale > .vp-eyebrow { align-self: start; justify-self: center; margin-top: var(--space-6); opacity: 0; animation: vp-show linear both; animation-timeline: --film; animation-range: contain 18% contain 100%; }
+    .vp-film-title, .vp-oils { align-self: start; margin: var(--text-top) var(--edge) 0; }
+    .vp-film-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); opacity: 0; animation: vp-word linear both; animation-timeline: --film; animation-range: contain 16.5% contain 23.5%; }
     .vp-oils { display: grid; grid-template: "g" auto / 100%; }
-    .vp-oil { grid-area: g; padding: 0; border: 0; background: none; overflow: visible; animation: vp-oil linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-end); }
+    .vp-oil { grid-area: g; padding: 0; border: 0; background: none; overflow: visible; opacity: 0; animation: vp-oil linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-end); }
     .vp-oil::before, .vp-oil .vp-drop { display: none; }
     .vp-oil .vp-link { animation: vp-hit linear both; animation-timeline: --film; animation-range: contain var(--slot-start) contain var(--slot-end); }
-    .vp-oil-name { font: 900 clamp(2.5rem, 13cqi, 3.5rem)/.96 var(--font-display); letter-spacing: -0.035em; }
+    .vp-oil-name { font: 900 clamp(2.25rem, 11cqi, 3.25rem)/.96 var(--font-display); letter-spacing: -0.035em; }
     .vp-oil-meta { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); margin-top: var(--space-2); font: 500 .9375rem/1.375rem var(--font-mono); }
     .vp-oil-code { font: inherit; letter-spacing: var(--t-grade-tracking); }
     /* Only the grade on screen is clicked; one that has keyboard focus shows, alone. */
-    .vp-oil:focus-within { animation: none; z-index: 3; }
-    .vp-oils:has(:focus-visible) .vp-oil:not(:focus-within) { opacity: 0 !important; }
+    .vp-oil:has(:focus-visible) { animation: none; opacity: 1; z-index: 3; }
+    .vp-oils:has(:focus-visible) .vp-oil:not(:has(:focus-visible)) { opacity: 0 !important; }
     .vp-film-note { display: none; }
 
     @media (min-width: 1024px) {
@@ -236,6 +259,9 @@
         --edge: max(var(--space-8), calc((100cqi - var(--container)) / 2 + var(--space-8)));
       }
       .vp-film-copy { align-self: center; justify-self: start; width: min(46cqi, 600px); margin-left: var(--edge); padding: 0; }
+      /* The hero fits every laptop window, 1366×768 included: type and gaps follow the stage's height. */
+      .vp-film-copy .vp-h-hero { font-size: clamp(2.75rem, 10.5cqb, 5.25rem); line-height: .96; }
+      .vp-film-copy .vp-lead { font-size: clamp(1rem, 2.9cqb, 1.25rem); line-height: 1.55; margin: clamp(12px, 2.6cqb, 20px) 0 clamp(20px, 4.4cqb, 32px); }
       .vp-film .vp-scale { align-self: end; justify-self: start; margin: 0 0 var(--space-16) calc(var(--edge) + 5.5rem); --sw: 34px; --pitch: 40px; }
       .vp-film .vp-swatch { width: 34px; height: 14px; }
       .vp-film-scale > .vp-eyebrow { justify-self: start; margin: var(--space-10) 0 0 var(--edge); }
@@ -244,7 +270,7 @@
       .vp-oil-name { font-size: clamp(3.5rem, 8.2cqi, 7.5rem); line-height: .94; letter-spacing: -0.045em; }
       .vp-oil-meta { margin-top: var(--space-4); font: var(--t-spec-large); }
       .vp-oil .vp-link { margin-top: var(--space-4); }
-      .vp-film-note { display: block; align-self: end; justify-self: end; margin: 0 var(--edge) var(--space-8) 0; animation: vp-show linear both; animation-timeline: --film; animation-range: contain 20% contain 100%; }
+      .vp-film-note { display: block; align-self: end; justify-self: end; margin: 0 var(--edge) var(--space-8) 0; opacity: 0; animation: vp-show linear both; animation-timeline: --film; animation-range: contain 20% contain 100%; }
     }
 
     @keyframes vp-on { from { opacity: 0; } to { opacity: 1; } }
@@ -289,9 +315,10 @@
     .vp-road-stage { position: sticky; top: 0; display: grid; align-content: center; height: 100svh; padding-bottom: var(--vp-bar); }
     .vp-road-route { animation: vp-route linear both; animation-timeline: --road; animation-range: contain 6% contain 92%; }
     .vp-road-tanker { animation: vp-drive linear both; animation-timeline: --road; animation-range: contain 6% contain 92%; }
-    .vp-road-pin span:nth-child(n+2) { animation: vp-ring linear both; animation-timeline: --road; animation-range: contain 0% contain 100%; }
-    .vp-road-pin span:nth-child(3) { animation-range: contain 15% contain 100%; }
-    .vp-road-pin span:nth-child(4) { animation-range: contain 30% contain 100%; }
+    /* Three ripples, one after another, as the tanker pulls away; at rest only the dot shows. */
+    .vp-road-pin span:nth-child(n+2) { display: block; left: -12px; top: -12px; width: 24px; height: 24px; opacity: 0; animation: vp-ripple linear both; animation-timeline: --road; animation-range: contain 0% contain 14%; }
+    .vp-road-pin span:nth-child(3) { animation-range: contain 5% contain 19%; }
+    .vp-road-pin span:nth-child(4) { animation-range: contain 10% contain 24%; }
     /* Phones: one step at a time under the road, as a caption. */
     .vp-road-steps { grid-template: "s" auto / 100%; }
     .vp-road-steps li { grid-area: s; animation: vp-caption linear both; animation-timeline: --road; }
@@ -310,8 +337,8 @@
       .vp-road-steps li:nth-child(n+4) { animation-range: contain 76% contain 84%; }
     }
     @keyframes vp-route { from { scale: 0 1; } to { scale: 1 1; } }
-    @keyframes vp-drive { to { translate: calc(100cqi - 100% - 2 * var(--space-6)) 0; } }
-    @keyframes vp-ring { from { transform: scale(.4); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+    @keyframes vp-drive { to { translate: calc(100cqi - 100% - 44px - var(--space-6)) 0; } }
+    @keyframes vp-ripple { 0% { transform: scale(.6); opacity: 0; } 20% { opacity: .55; } 100% { transform: scale(2.2); opacity: 0; } }
     @keyframes vp-caption {
       0% { opacity: 0; translate: 0 16px; }
       15%, 85% { opacity: 1; translate: 0 0; }

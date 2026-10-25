@@ -86,6 +86,8 @@ test("the hero's buttons work over the film, and only the grade on screen takes 
 test("keyboard focus brings each grade of the film on screen", async ({ page, isMobile }) => {
   test.skip(isMobile, "phones have no keyboard to tab with");
   await page.goto("/");
+  // A key press first, as a keyboard user's would be: only keyboard focus (:focus-visible) moves the film.
+  await page.keyboard.press("Shift");
   for (const grade of (await page.locator(".vp-oil").all()).slice(0, 3)) {
     await grade.getByRole("link").focus();
     await expect(grade.locator("h3")).toBeInViewport();

@@ -191,6 +191,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .vp-local-cta { display: inline-flex; margin-left: var(--space-2); }
 }
 .vp-actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: var(--target-touch) var(--target-touch) 1fr; gap: 10px; padding: var(--space-3) var(--space-4) max(var(--space-4), env(safe-area-inset-bottom)); border-top: 1px solid var(--line); box-shadow: var(--shadow-float); }
+/* The bar's quote button gives way on the narrowest phones rather than spilling off the screen. */
+.vp-actionbar .vp-btn-touch { min-width: 0; padding: 0 var(--space-4); }
+@media (max-width: 359px) { .vp-actionbar .vp-btn-touch .vp-icon { display: none; } }
 .vp-wa-pill { display: none; }
 body { padding-bottom: calc(var(--target-touch) + var(--space-3) + max(var(--space-4), env(safe-area-inset-bottom))); }
 @media (min-width: 1024px) {
@@ -257,6 +260,8 @@ body { padding-bottom: calc(var(--target-touch) + var(--space-3) + max(var(--spa
 .vp-specs td { text-align: right; font: var(--t-spec); color: var(--text); }
 .vp-specs td.vp-method { text-align: left; font: var(--t-small); color: var(--text-3); }
 .vp-specs-pack td { font-family: var(--font-sans); font-weight: 600; }
+/* A link in a row header is a full-size target. */
+.vp-specs tbody th a, .vp-table-stack .vp-line-name a { display: inline-flex; align-items: center; min-height: var(--target); }
 /* A table that becomes one labelled block per row on phones; each cell carries its column's name in data-label. */
 .vp-table-stack th, .vp-table-stack td { vertical-align: middle; }
 @media (max-width: 767px) {
@@ -417,6 +422,7 @@ textarea.vp-input { min-height: 112px; padding: 14px var(--space-4); resize: ver
 .vp-offer { display: grid; gap: var(--space-4); padding: var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-card); }
 .vp-offer-head { display: flex; align-items: center; gap: var(--space-3); }
 .vp-offer dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3) var(--space-5); }
+.vp-offer-notes { grid-column: 1 / -1; max-width: var(--measure); }
 .vp-offer dt { font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--text-3); }
 .vp-offer dd { margin: 2px 0 0; font: var(--t-spec); color: var(--text); }
 @media (min-width: 1024px) { .vp-offer { grid-template-columns: 1.4fr 2fr auto; align-items: center; padding: var(--space-6); } .vp-offer dl { grid-template-columns: repeat(4, 1fr); } }
@@ -455,7 +461,7 @@ textarea.vp-input { min-height: 112px; padding: 14px var(--space-4); resize: ver
 .vp-ind { display: grid; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .vp-ind > li { display: grid; gap: var(--space-3); padding: var(--space-6) 0; border-bottom: 1px solid var(--line); }
 .vp-ind h2 { font: var(--t-title); color: var(--text); }
-.vp-ind h2 a { display: inline-flex; align-items: center; gap: var(--space-3); color: inherit; text-decoration: none; }
+.vp-ind h2 a { display: inline-flex; align-items: center; gap: var(--space-3); min-height: var(--target); color: inherit; text-decoration: none; }
 .vp-ind h2 a:hover { color: var(--gold-ink); }
 .vp-ind p { font: var(--t-small); color: var(--text-3); max-width: 560px; }
 @media (min-width: 1024px) { .vp-ind > li { grid-template-columns: 4fr 5fr 5fr; align-items: center; gap: var(--space-8); } }

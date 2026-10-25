@@ -27,10 +27,10 @@ if (section && list) {
         head.textContent = o.title;
         const dl = document.createElement("dl");
         dl.append(
-          row("Quantity", `${o.quantity} ${o.uom}`),
+          row("Quantity", `${Number(o.quantity).toLocaleString("en-IN")} ${o.uom}`),
           row("Location", o.location),
           row("Basis", o.basis),
-          row("Valid until", new Date(o.valid_until).toLocaleDateString("en-IN", { day: "numeric", month: "short" })),
+          row("Valid until", new Date(o.valid_until).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" })),
         );
         const a = document.createElement("a");
         a.className = "vp-btn vp-btn-primary vp-btn-small";
