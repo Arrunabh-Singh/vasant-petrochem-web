@@ -106,7 +106,7 @@ The owner asked for vastu to be taken into account (24 October 2026). Vastu has 
 | The north-east is the most auspicious corner; keep it open and light | Light always comes from a screen's upper right (the home page's morning light, the stage's sun); nothing heavy sits there. |
 | The main entrance is best in the north-east | "Get a quote" sits at the right end of the header on laptops. |
 | Heavier mass to the south and west | Headlines sit left; the heaviest blocks, the gold band and the footer, sit at the foot of the page. |
-| Rising, upward forms | The drop points up, the bubbles rise and the light grows as the visitor scrolls. |
+| Rising, upward forms | The drop points up, the engraved lines rise and the light grows as the visitor scrolls. |
 | Moving from darkness to light | The colour scale runs from the darkest grade to the lightest, so the home film ends in light. |
 
 ## Motion
@@ -119,8 +119,8 @@ The home page is a film; every other page is a page with a light touch of the sa
 1. **Hero.** Headline, lead and buttons in the morning light, which comes from the upper right; the drop beside them on laptops (above the headline on phones, with one button, since Get a quote is in the bar below) fills gold as the page starts to move.
 2. **The light box.** The copy steps back; the drop grows into the light (it stays on the right on laptops and moves to the upper middle on phones) and a white light rises behind it, centred on the drop. On phones the stage is three bands that never overlap, whatever the screen's height: the colour scale at the top, the drop in its light, and a block reserved for the grade's words just above the action bar. The hero's type and the drop size follow the screen's height, so a 1366×768 laptop and a 568px-tall phone both show the whole first screen.
 3. **The colour scale.** "Every oil has its colour." resolves and lifts away. Then one grade per slot, darkest first (`byColour` in `site/src/lib/drop.ts`): the liquid turns to the grade's colour, sloshing as it changes, the light around it takes that colour, and the grade's name, code, key value and link resolve beside it (on the left on laptops, below it on phones). A scale of swatches (low on the left on laptops, across the top on phones) marks the place. The last grade, water-white, all but disappears into the light.
-4. **Statement.** The company in its registered claims, lit word by word on ivory, with gold bubbles rising behind at three depths, as in a bubble-tube viscosity test.
-5. **The road.** A road tanker leaves the Mangaliya pin (a gold dot that sends out three ripples as the tanker pulls away, and is quiet otherwise) along a gold road, and each step of an order arrives as it passes: all four under the road on laptops, one at a time as a caption on phones.
+4. **Statement.** The company in its registered claims, lit word by word on ivory, over fine engraved gold line-work (guilloché, as on a certificate or a banknote) that rises and brightens as it is read.
+5. **The road.** A road tanker leaves the Mangaliya marker (a gold disc in a fine ring beside the road, which sends out three ripples as the tanker pulls away) along a gold road, and each step of an order arrives as it passes: all four under the road on laptops, one at a time as a caption on phones.
 6. **Explore**, letter by letter, then the doors into the site; **Close** on the gold band, the page's heaviest block, at its foot.
 
 - **Scroll is the clock.** Each scene's stage pins while scrolling plays it, then lets go. The film's timing lives in one place, custom properties on `.vp-film` (`--fill-end`, `--scale-from`, `--scale-span`) that `styles/film.css` and `islands/liquid.ts` both read. Elsewhere, a page title resolves as the page opens, sections rise as they enter, cards open with a gold wipe, and pages cut to each other with a short fade and rise (cross-document view transitions; the drop morphs from a card into its product hero).

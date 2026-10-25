@@ -77,11 +77,8 @@
 .vp-statement { position: relative; overflow: hidden; padding: var(--space-16) 0; }
 .vp-statement .vp-container { position: relative; }
 .vp-statement-text { margin: var(--space-4) 0 var(--space-8); max-width: 30ch; font: var(--t-statement-compact); letter-spacing: var(--t-statement-compact-tracking); color: var(--text); text-wrap: pretty; }
-/* Gold bubbles at three depths, as they rise in a viscosity tube. */
-.vp-bubbles span { position: absolute; inset: -40% 0; pointer-events: none; }
-.vp-bubbles span:nth-child(1) { background: radial-gradient(circle, #8f6a2a24 0 1.5px, transparent 2.2px) 0 0 / 70px 110px, radial-gradient(circle, #8f6a2a1a 0 1.2px, transparent 2px) 35px 60px / 70px 110px; }
-.vp-bubbles span:nth-child(2) { background: radial-gradient(circle, transparent 0 3px, #8f6a2a2e 3.6px 4.6px, transparent 5.2px) 20px 40px / 150px 210px, radial-gradient(circle, transparent 0 2.4px, #8f6a2a26 3px 3.8px, transparent 4.4px) 95px 150px / 150px 210px; }
-.vp-bubbles span:nth-child(3) { background: radial-gradient(circle, transparent 0 6px, #8f6a2a24 6.6px 8.2px, transparent 8.8px) 60px 90px / 260px 340px; }
+/* Engraved gold line-work behind the company's words, as on a certificate or a banknote. */
+.vp-guilloche { position: absolute; inset: -8% -10%; pointer-events: none; background: url("/textures/guilloche.svg") center 60% / max(1600px, 120%) auto no-repeat; opacity: .22; }
 @media (min-width: 1024px) {
   .vp-statement { padding: var(--space-24) 0; }
   .vp-statement-text { font: var(--t-statement); letter-spacing: var(--t-statement-tracking); }
@@ -91,35 +88,35 @@
 .vp-road { padding: var(--space-14) 0; }
 .vp-road-inner { display: grid; gap: var(--space-6); }
 .vp-road-inner .vp-head { margin-bottom: 0; }
-.vp-road-track { position: relative; height: 100px; container-type: inline-size; }
-/* The road, dashed, with a gold dot at each step; the route lights gold behind the tanker. */
-.vp-road-line { position: absolute; left: 0; right: 0; top: 49px; height: 2px; background: repeating-linear-gradient(90deg, var(--line-strong) 0 8px, transparent 8px 16px); }
-.vp-road-track::after { content: ""; position: absolute; left: 0; right: 0; top: 44px; height: 12px; background: radial-gradient(circle at 12.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 37.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 62.5% 50%, var(--gold) 0 5px, transparent 5.6px), radial-gradient(circle at 87.5% 50%, var(--gold) 0 5px, transparent 5.6px); }
-.vp-road-route { position: absolute; left: 0; right: 0; top: 48px; height: 4px; border-radius: 2px; background: var(--gold); transform-origin: left; }
-/* The Mangaliya pin: a gold dot with one quiet ring; in the film, three ripples leave it as the tanker departs. */
-.vp-road-pin { position: absolute; left: 10px; top: 50px; width: 0; height: 0; }
-.vp-road-pin span { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; border: 1.5px solid var(--gold); border-radius: 50%; opacity: .45; }
-.vp-road-pin span:nth-child(1) { left: -6px; top: -6px; width: 12px; height: 12px; border: 0; background: var(--gold-deep); opacity: 1; }
+.vp-road-track { position: relative; height: 96px; container-type: inline-size; --y: 44px; --from: 34px; }
+/* The road leaves the Mangaliya marker, dashed, with a hollow gold stop at each step; the route lights gold behind the tanker. */
+.vp-road-line { position: absolute; left: var(--from); right: 0; top: calc(var(--y) - 1px); height: 2px; background: repeating-linear-gradient(90deg, var(--line-strong) 0 8px, transparent 8px 16px); }
+.vp-road-track::after { content: ""; position: absolute; left: var(--from); right: 0; top: calc(var(--y) - 7px); height: 14px; background: radial-gradient(circle at 12.5% 50%, var(--ground) 0 3.5px, var(--gold-deep) 4px 6px, transparent 6.5px), radial-gradient(circle at 37.5% 50%, var(--ground) 0 3.5px, var(--gold-deep) 4px 6px, transparent 6.5px), radial-gradient(circle at 62.5% 50%, var(--ground) 0 3.5px, var(--gold-deep) 4px 6px, transparent 6.5px), radial-gradient(circle at 87.5% 50%, var(--ground) 0 3.5px, var(--gold-deep) 4px 6px, transparent 6.5px); }
+.vp-road-route { position: absolute; left: var(--from); right: 0; top: calc(var(--y) - 2px); height: 4px; border-radius: 2px; background: var(--gold); transform-origin: left; }
+/* The Mangaliya marker: a gold disc set in a fine ring, beside (never on) the road; in the film three ripples leave it as the tanker departs. */
+.vp-road-pin { position: absolute; left: 11px; top: var(--y); width: 0; height: 0; }
+.vp-road-pin span { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; border: 1.5px solid var(--gold); border-radius: 50%; opacity: 0; }
+.vp-road-pin span:nth-child(1) { left: -9px; top: -9px; width: 18px; height: 18px; border: 0; background: radial-gradient(circle at 35% 30%, var(--gold-sheen), var(--gold-deep) 70%); box-shadow: 0 0 0 3px var(--ground), 0 0 0 4px color-mix(in srgb, var(--gold-deep) 60%, transparent); opacity: 1; }
 .vp-road-pin span:nth-child(n+3) { display: none; }
-.vp-road-place { position: absolute; left: 0; top: 78px; font: var(--t-caption); color: var(--text-3); white-space: nowrap; }
-.vp-road-tanker { position: absolute; left: 44px; top: 11px; z-index: 1; width: 100px; height: 40px; overflow: visible; }
-.vp-road-steps { display: grid; gap: var(--space-6); margin: 0; padding: 0; list-style: none; }
-.vp-road-steps li { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-3); align-items: center; padding-top: var(--space-4); border-top: 2px solid var(--gold); }
-.vp-road-steps p { grid-column: 2; font: var(--t-small); color: var(--text-3); max-width: 44ch; }
-.vp-road-steps h3 { font: var(--t-title); color: var(--text); }
-.vp-step-n { display: grid; place-items: center; width: 32px; height: 32px; border: 2px solid var(--gold); border-radius: 50%; background: var(--ground); font: 600 .875rem/1 var(--font-display); color: var(--text); }
+.vp-road-place { position: absolute; left: 0; top: calc(var(--y) + 22px); font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
+.vp-road-tanker { position: absolute; left: 44px; top: calc(var(--y) - 39px); z-index: 1; width: 100px; height: 40px; overflow: visible; }
+/* The four steps: an engraved numeral, a heavy title, plain words. */
+.vp-road-steps { display: grid; gap: var(--space-6); margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.vp-road-steps li { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-4); align-items: baseline; align-content: start; }
+.vp-step-n { grid-row: span 2; font: 900 2.5rem/1 var(--font-display); letter-spacing: -0.04em; color: var(--gold-ink); font-variant-numeric: tabular-nums; }
+.vp-road-steps h3 { font: 800 1.375rem/1.2 var(--font-display); letter-spacing: -0.015em; color: var(--text); text-wrap: balance; }
+.vp-road-steps p { grid-column: 2; font: var(--t-small); color: var(--text-2); max-width: 40ch; text-wrap: pretty; }
 @media (min-width: 1024px) {
   .vp-road { padding: var(--space-24) 0; }
   .vp-road-inner { gap: var(--space-10); }
-  .vp-road-track { height: 150px; }
-  .vp-road-line { top: 91px; }
-  .vp-road-track::after { top: 86px; }
-  .vp-road-route { top: 90px; }
-  .vp-road-pin { top: 92px; }
-  .vp-road-place { top: 124px; }
-  .vp-road-tanker { width: 180px; height: 72px; top: 25px; }
+  .vp-road-track { height: 150px; --y: 92px; }
+  .vp-road-tanker { width: 180px; height: 72px; top: calc(var(--y) - 70px); }
   .vp-road .vp-h-section { font: var(--t-display-l); letter-spacing: var(--t-display-l-tracking); }
-  .vp-road-steps { grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+  .vp-road-steps { grid-template-columns: repeat(4, 1fr); gap: var(--space-8); padding-left: var(--from, 34px); }
+  .vp-road-steps li { grid-template-columns: 1fr; justify-items: center; gap: var(--space-2); text-align: center; }
+  .vp-step-n { grid-row: auto; font-size: 3rem; }
+  .vp-road-steps h3 { font-size: 1.5rem; }
+  .vp-road-steps p { grid-column: 1; max-width: 28ch; }
 }
 
 /* --------------------------------------------------------------- 5 explore */
@@ -305,13 +302,10 @@
     @keyframes vp-shadow { to { transform: scaleX(.86); opacity: .08; } }
     @keyframes vp-glint { from { transform: translateX(-38%); } to { transform: translateX(38%); } }
 
-    /* 3 · The statement lights as it is read (motion.css); the bubbles rise at three speeds. */
+    /* 3 · The statement lights as it is read (motion.css); the engraved line-work rises and brightens behind it. */
     .vp-statement { view-timeline: --statement block; }
-    .vp-bubbles span { animation: vp-bubbles linear both; --tl: --statement; animation-timeline: --statement; --ar: cover 0% cover 100%; animation-range: cover 0% cover 100%; }
-    .vp-bubbles span:nth-child(1) { --rise: 6%; }
-    .vp-bubbles span:nth-child(2) { --rise: 14%; }
-    .vp-bubbles span:nth-child(3) { --rise: 24%; }
-    @keyframes vp-bubbles { from { translate: 0 var(--rise); } to { translate: 0 calc(-1 * var(--rise)); } }
+    .vp-guilloche { animation: vp-engrave linear both; --tl: --statement; animation-timeline: --statement; --ar: cover 0% cover 100%; animation-range: cover 0% cover 100%; }
+    @keyframes vp-engrave { from { translate: 0 6%; opacity: .1; } 50% { opacity: .26; } to { translate: 0 -6%; opacity: .1; } }
 
     /* 4 · The road: pinned on both sizes; the tanker drives, the route lights behind it, and each step arrives as it passes. */
     .vp-road { height: 240svh; padding: 0; view-timeline: --road block; }
