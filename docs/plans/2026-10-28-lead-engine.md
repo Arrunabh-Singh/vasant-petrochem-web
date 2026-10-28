@@ -1,10 +1,23 @@
 # The site as a lead engine: a film people finish, agents can read, and doors that bring buyers back
 
-## Resume here (28 October, 16:30 UTC, with the session at 90%)
+## Resume here (28 October, 19:05 UTC; the owner: "proceed to plan execution")
 
-### 1. Save first: the first thing after approval
+### 0. State now, and the execution order
 
-**Work not yet saved.** All of it is uncommitted, in `/home/user/vasant-petrochem-web` on branch `claude/sharp-cannon-807c29`: 14 files. Draft PR #46 holds only df47a9d, the rig.
+**Saved.** Everything below in section 1 is committed and pushed as 8e9442d on `claude/sharp-cannon-807c29` (draft PR #46), and the tree is clean. The CI pin is in.
+
+**CI on 8e9442d:** site check, database tests, CodeQL, build, gitleaks and the preview deploy pass. Red:
+- e2e: the expected new film tests (wheel, the touch flicks, the chapter dot), already explained on the PR;
+- iPhone 18 Pro (iOS 27.0), iPhone Duo (iOS 27.1) and Safari 27 on macOS (run 40728190076): read their artifacts first.
+
+**Execute in this order:**
+1. **Part 12, docs** (section 5): add Part 12 to the repo plan, and the owner's two Cloudflare decisions to `docs/HANDOFF.md`. Give the owner the dashboard steps. The Cloudflare plugin is now enabled in this session, but its server needs a sign-in this session can't start: the owner authorizes it, or adds the custom connectors, in claude.ai settings.
+2. **Finish PR #46** (section 2 and the B list in section 4): read the rig artifacts; grades one screen apart (`* 140svh`); convert the flick, trackpad and chapter-dot tests and drop the wheel one; raise the laptop scroll cue above the fold; `filmTop` before the rig's key steps, and drop its no-op wheel step; the docs and the `motion` skill; `design-review`. Iterate until e2e and the rig are green, then merge.
+3. **Then the design plan, in section 4's order:** the canvas draft of Parts 4–9 and 11 for the owner, then PR E, PR B, PR C, PR D1, PR D2, task #35.
+
+### 1. What 8e9442d holds (was "Save first")
+
+**Saved in 8e9442d** (was uncommitted; 14 files).
 - **Part 2, iPhones play the film natively:**
   - `site/src/lib/film.ts` (`iosWebKit`, `filmPlays`) and `site/src/islands/motion.ts`;
   - `site/src/styles/motion.css`: the Safari blocks exclude iOS;
@@ -98,6 +111,54 @@
 7. PR D2, the agent quote API and measurement (#43); the owner applies the migration.
 8. Task #35, the design-system artifact: `index.d.ts` as `text/plain`, the index last.
 9. Raise the home page's JS budget guard in `site/scripts/checks.mjs` to 150 kB.
+
+### 5. Part 12: Cloudflare's own data, read by Claude (owner, 28 October: "we are on Cloudflare now; use its metrics")
+
+**What the live site shows today** (read-only checks, 28 October):
+- **The Worker:** `vasant-site` serves `www`, and Workers logs are on (`site/wrangler.jsonc`, `observability.enabled`).
+- **AI training crawlers are blocked at Cloudflare's edge.** GPTBot, ClaudeBot and CCBot get a 403 on every page, `llms.txt` included. This is Cloudflare's AI bot blocking; our own `robots.txt` allows them.
+- **Everyone else gets in (200):**
+  - search: Googlebot and bingbot;
+  - AI search and AI agents acting for a person: OAI-SearchBot, ChatGPT-User, Claude-User, Claude-SearchBot, PerplexityBot, Perplexity-User;
+  - also Applebot-Extended and meta-externalagent.
+- **Cloudflare Web Analytics isn't running.** The CSP already allows its beacon (`site/src/server/headers.ts`, `site/public/_headers`), but the page carries none.
+- **The connected Cloudflare connector** ("Developer Platform") reaches only Workers, KV, R2 and D1, so no analytics. The connector directory has no Cloudflare analytics connector.
+
+**To read the data myself (₹0):**
+1. **The owner adds Cloudflare's own MCP servers** as custom connectors in claude.ai (Settings → Connectors → Add custom connector), signing in with Cloudflare. All three URLs are from Cloudflare's docs ("Agent setup", read 28 October). Until then, the connected "Developer Platform" connector can list the Worker (`vasant-site`) and its code, but has no analytics.
+   - **GraphQL Analytics** (`https://graphql.mcp.cloudflare.com/mcp`): traffic by page, country, device, browser, bot and status, plus Web Analytics once it is on.
+   - **Workers Observability** (`https://observability.mcp.cloudflare.com/mcp`): the Worker's logs and errors, including the forms and `/api/click`.
+   - **Optionally, the full Cloudflare API** (`https://mcp.cloudflare.com/mcp`): settings such as AI Crawl Control. Changes only with the owner's OK.
+2. **Web Analytics on.** It is free and cookieless. The owner's choice of route:
+   - the dashboard: Analytics & Logs → Web Analytics → automatic setup for the zone;
+   - or a small PR: Cloudflare's beacon script with the site's public token in `site/src/layouts/Base.astro`, which the CSP already allows.
+
+   It gives page views, referrers, countries, devices and browsers (the share of iPhone visitors sizes the iOS work), and Core Web Vitals by page.
+3. **The owner decides on the AI training crawlers** (Cloudflare → AI Crawl Control).
+   - **Recommended: allow GPTBot, ClaudeBot and CCBot.** The pages are public marketing. AI models that learn the catalogue can answer buyers' questions with it, which serves the "browsable by AI agents" goal.
+   - The alternative is to keep blocking them.
+
+**The first report, once connected** (an Artifact for the owner):
+- **Traffic since the cutover (24 October):** visits, top pages, countries and cities, referrers, devices and browsers.
+- **The funnel:** home, then marketplace or product, then quote, then `/sent`. Plus taps from `/api/click` (Supabase `log_click`) by page.
+- **Bots and AI:** which crawlers fetch which pages, `robots.txt` and `llms.txt` hits, and 403s.
+- **Health:**
+  - Worker errors and CPU time;
+  - 4xx and 5xx responses by path;
+  - Core Web Vitals (LCP, INP, CLS) by page and device.
+- **Use:** the numbers feed Part 11's "cut what doesn't pay", and the report repeats weekly.
+
+**The owner's decisions (28 October):**
+- **Let the AI training crawlers in.** The owner does it in the Cloudflare dashboard (AI Crawl Control, or Security → Bots → "Block AI bots" off), or I do it through the full API connector once it is connected, with their OK.
+  - **Check afterwards:** the same requests with the crawlers' user agents (GPTBot, ClaudeBot, CCBot) on `/`, `/llms.txt` and `/catalog.json` must all return 200.
+  - **Record the decision** in `docs/HANDOFF.md`, under the Cloudflare settings.
+- **Web Analytics:** the owner switches it on in the dashboard (Analytics & Logs → Web Analytics → automatic setup for `vasantpetrochem.com`), so no code change.
+  - **Check afterwards:** the home page's HTML carries `static.cloudflareinsights.com/beacon.min.js`, and the browser console shows no CSP errors on a phone or a laptop.
+
+**Order:**
+1. Once the owner has flipped both settings: run the two checks above.
+2. Once the GraphQL and Observability connectors are added: the first report, an Artifact, then weekly.
+3. Then the funnel numbers feed PR E and PR C, which put the polish where the leads are.
 
 **Standing rules:**
 - **Money:** ₹0.

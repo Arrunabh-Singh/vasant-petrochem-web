@@ -126,6 +126,10 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 - `VP-HUM-014`: written policies (quality, health and safety, environment, ethics, sanctions screening).
 - `VP-CORP-001` and `-002`: people and careers.
 - `VP-SEO-007`: HS and CAS codes, checked by a customs broker.
+- **Cloudflare settings** (decided 28 October; the steps are in `docs/OWNER_CHECKLIST.md`, "Cloudflare"):
+  - **AI training crawlers are let in.** GPTBot, ClaudeBot and CCBot got a 403 from Cloudflare's AI bot blocking, although `robots.txt` allows them. The owner turns the block off. Then those user agents must get a 200 on `/`, `/llms.txt` and `/catalog.json`.
+  - **Web Analytics goes on** from the dashboard, with no code change. The CSP already allows its beacon. Then the home page must carry `static.cloudflareinsights.com/beacon.min.js` with no CSP errors.
+  - **Cloudflare's own MCP servers become claude.ai connectors** (GraphQL Analytics and Workers Observability), so an agent can read traffic, bots, errors and Core Web Vitals. The first report and the weekly ones follow Part 12 of the plan.
 - **Console tasks:** `docs/OWNER_CHECKLIST.md`.
 
 **Agent work, ready to pick up:**
