@@ -132,12 +132,11 @@ try {
       await run(scrollFilm, i / 40);
       await record("home", `s${String(i).padStart(2, "0")}`);
     }
-    for (const [kind, key] of [["space", " "], ["pgdn", "\uE00F"]]) {
+    const key = (k) => wd("POST", `/session/${s}/actions`, { actions: [{ type: "key", id: "keys", actions: [{ type: "keyDown", value: k }, { type: "keyUp", value: k }] }] });
+    await key("\uE008"); // Shift first: the session's first key only gives Safari's window the keyboard
+    for (const [kind, k] of [["space", " "], ["pgdn", "\uE00F"]]) {
       await run(filmTop); // the page's own snapping back on, from the top
-      for (let i = 0; i < 4; i++) {
-        await wd("POST", `/session/${s}/actions`, { actions: [{ type: "key", id: "keys", actions: [{ type: "keyDown", value: key }, { type: "keyUp", value: key }] }] });
-        await record("home", kind);
-      }
+      for (let i = 0; i < 4; i++) await key(k).then(() => record("home", kind));
     }
   }
 } finally {
