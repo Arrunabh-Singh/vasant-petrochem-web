@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { filmProblems, scrollFilm } from "../film-checks.ts";
 
 /**
  * The home film, frame by frame, scrolled down and back up: one grade at a
@@ -10,44 +11,9 @@ import { expect, test, type Page } from "@playwright/test";
  */
 
 async function problemsAt(page: Page, share: number, phone: boolean): Promise<string[]> {
-  await page.evaluate((share) => {
-    const film = document.querySelector<HTMLElement>(".vp-film")!;
-    const top = film.getBoundingClientRect().top + scrollY;
-    scrollTo({ top: top + share * (film.offsetHeight - innerHeight), behavior: "instant" });
-  }, share);
+  await page.evaluate(scrollFilm, share);
   await page.waitForTimeout(80);
-  return page.evaluate(
-    ([share, phone]) => {
-      const box = (e: Element) => e.getBoundingClientRect();
-      const seen = (e: Element) => {
-        let o = 1;
-        for (let n: Element | null = e; n && n !== document.body; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
-        return o;
-      };
-      const out: string[] = [];
-      const grades = [...document.querySelectorAll(".vp-oil")].filter((e) => seen(e) > 0.05);
-      if (grades.length > 1) out.push(`${grades.length} grades at once`);
-      const drop = box(document.querySelector(".vp-film-float")!);
-      const dropShown = seen(document.querySelector(".vp-film-drop")!) > 0.3;
-      const bar = document.querySelector(".vp-actionbar");
-      const barTop = bar && getComputedStyle(bar).display !== "none" ? box(bar).top : innerHeight;
-      const words = document.querySelectorAll(
-        ".vp-film-copy .vp-eyebrow, .vp-film-copy h1, .vp-film-copy .vp-lead, .vp-film-copy .vp-actions, .vp-film-title, .vp-oil-name, .vp-oil-meta, .vp-oil .vp-link",
-      );
-      for (const e of [...words].filter((w) => seen(w) > 0.3)) {
-        const b = box(e);
-        const name = e.className.toString().split(" ")[0] || e.tagName;
-        const ix = Math.min(b.right, drop.right) - Math.max(b.left, drop.left);
-        const iy = Math.min(b.bottom, drop.bottom) - Math.max(b.top, drop.top);
-        if (dropShown && ix > 8 && iy > 8) out.push(`${name} on the drop`);
-        if (b.bottom > barTop + 1 && b.top < innerHeight) out.push(`${name} under the action bar`);
-        if (b.top < -1 && b.bottom > 0) out.push(`${name} cut off at the top`);
-      }
-      if (phone && share > 0.2 && share < 0.9 && Math.abs(drop.left + drop.width / 2 - innerWidth / 2) > 2) out.push("drop off centre");
-      return out.map((p) => `${p} at ${share}`);
-    },
-    [share, phone] as const,
-  );
+  return page.evaluate(filmProblems, phone);
 }
 
 async function playFilm(page: Page, phone: boolean, path = "/") {
