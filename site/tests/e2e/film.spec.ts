@@ -124,10 +124,12 @@ test.describe("one frame per input", () => {
     };
     if (scrollY < 2) return "top";
     if (Math.abs(document.querySelector(".vp-statement")!.getBoundingClientRect().top) < 2) return "statement";
+    if (!document.documentElement.classList.contains("vp-snap")) return "past the film";
     const shown = [...document.querySelectorAll(".vp-oil")].map(seen);
     const i = shown.findIndex((o) => o > 0.95);
     if (i >= 0 && shown.filter((o) => o > 0.05).length === 1) return `grade ${i}`;
     if (seen(document.querySelector(".vp-film-title")!) > 0.95) return "title";
+    if (seen(document.querySelector(".vp-film-copy")!) > 0.95) return "drop";
     const film = document.querySelector<HTMLElement>(".vp-film")!;
     return `between, at ${Math.round((-film.getBoundingClientRect().top / (film.offsetHeight - innerHeight)) * 1000) / 1000}`;
   };
@@ -141,46 +143,58 @@ test.describe("one frame per input", () => {
       await page.waitForTimeout(150);
     }
   }
-  async function walk(page: Page, step: () => Promise<unknown>) {
+  /** Every frame in order, then out of the film: keys land on the statement, a flick or a swipe carries on freely. */
+  async function walk(page: Page, step: () => Promise<unknown>, out = "past the film") {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await expect(page.locator("html")).toHaveClass(/vp-snap/);
     const n = await page.locator(".vp-oil").count();
     const seen = [await page.evaluate(where)];
-    for (let i = 0; i < n + 2; i++) {
+    for (let i = 0; i < n + 3; i++) {
       await step();
       await settle(page);
       seen.push(await page.evaluate(where));
     }
-    expect(seen).toEqual(["top", "title", ...Array.from({ length: n }, (_, i) => `grade ${i}`), "statement"]);
-    // Past the film the page scrolls freely, and the anchor marks the chapter.
+    expect(seen).toEqual(["top", "drop", "title", ...Array.from({ length: n }, (_, i) => `grade ${i}`), out]);
+    // Past the film the page scrolls freely.
     await expect(page.locator("html")).not.toHaveClass(/vp-snap/);
-    await expect(page.locator('.vp-chapters a[aria-current="true"]')).toHaveAttribute("data-chapter", "our-word");
+    if (out === "statement") await expect(page.locator('.vp-chapters a[aria-current="true"]')).toHaveAttribute("data-chapter", "our-word");
   }
 
-  test("a wheel notch moves one frame", async ({ page, hasTouch, browserName }) => {
-    test.skip(hasTouch || browserName !== "chromium", "a mouse wheel: laptops");
+  // No wheel test: Playwright's wheel sends each notch as its own precise
+  // gesture, which snaps back, so the page never moves the way a wheel moves it.
+  test("a trackpad swipe moves one frame", async ({ page, hasTouch, browserName }) => {
+    test.skip(hasTouch || browserName !== "chromium", "a trackpad: laptops (Input.synthesizeScrollGesture)");
     test.setTimeout(90_000);
-    await page.mouse.move(720, 450);
-    await walk(page, () => page.mouse.wheel(0, 100));
+    const cdp = await page.context().newCDPSession(page);
+    await walk(page, () =>
+      cdp.send("Input.synthesizeScrollGesture", { x: 720, y: 450, yDistance: -260, speed: 1500, gestureSourceType: "mouse", preventFling: false }),
+    );
   });
 
   for (const key of ["Space", "PageDown"]) {
     test(`${key} moves one frame`, async ({ page, hasTouch, browserName }) => {
       test.skip(hasTouch || browserName !== "chromium", "a keyboard: laptops");
       test.setTimeout(90_000);
-      await walk(page, () => page.keyboard.press(key));
+      await walk(page, () => page.keyboard.press(key), "statement");
     });
   }
 
-  for (const [kind, speed, distance] of [["flick", 1600, 260], ["fast flick", 5000, 700]] as const) {
+  // A finger: down, eight moves in ms milliseconds, up, so the page flings.
+  for (const [kind, distance, ms] of [["flick", 260, 120], ["fast flick", 240, 40]] as const) {
     test(`a ${kind} moves one frame`, async ({ page, hasTouch, browserName }) => {
-      test.skip(!hasTouch || browserName !== "chromium", "a finger: Chromium phones (Input.synthesizeScrollGesture)");
+      test.skip(!hasTouch || browserName !== "chromium", "a finger: Chromium phones (Input.dispatchTouchEvent)");
       test.setTimeout(90_000);
       const cdp = await page.context().newCDPSession(page);
-      await walk(page, () =>
-        cdp.send("Input.synthesizeScrollGesture", { x: 195, y: 560, yDistance: -distance, speed, gestureSourceType: "touch", preventFling: false }),
-      );
+      const touch = (type: "touchStart" | "touchMove" | "touchEnd", y?: number) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: y === undefined ? [] : [{ x: 195, y }] });
+      await walk(page, async () => {
+        await touch("touchStart", 600);
+        for (let i = 1; i <= 8; i++) {
+          await page.waitForTimeout(ms / 8);
+          await touch("touchMove", 600 - (distance * i) / 8);
+        }
+        await touch("touchEnd");
+      });
     });
   }
 
@@ -209,7 +223,8 @@ test.describe("one frame per input", () => {
     await page.waitForLoadState("networkidle");
     await page.locator('.vp-chapters a[data-chapter="road"]').click();
     await settle(page);
-    expect(await page.evaluate(() => Math.round(document.querySelector(".vp-road")!.getBoundingClientRect().top))).toBe(0);
+    // Past the film the page doesn't snap, so the road lands under the page's own scroll padding.
+    expect(await page.evaluate(() => Math.round(document.querySelector(".vp-road")!.getBoundingClientRect().top - parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)))).toBe(0);
     await expect(page.locator('.vp-chapters a[aria-current="true"]')).toHaveAttribute("data-chapter", "road");
     await page.locator('.vp-chapters a[data-chapter="grades"]').click();
     await settle(page);

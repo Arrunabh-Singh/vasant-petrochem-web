@@ -4,12 +4,14 @@
 //     Real finger swipes (flicks, fast flicks, slow drags, then back up), so
 //     Safari's toolbar hides and shows as it does on a phone.
 //   node --experimental-strip-types tests/ios/film.mjs mac <out>
-//     Desktop Safari through safaridriver: the film frame by frame, then wheel notches.
+//     Desktop Safari through safaridriver: the film frame by frame, then Space and
+//     Page Down with the page's snapping on. (safaridriver's wheel actions don't scroll.)
 // After each step it saves a screenshot and runs tests/film-checks.ts in the
 // page. Writes <out>/report.json, prints one line per step, and exits 1 if any
 // frame has a problem. Env: WD (WebDriver URL), UDID, DEVICE, OS, BASE.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { filmProblems, filmState, frameGaps, scrollFilm, startFrameLog } from "../film-checks.ts";
+import { request } from "node:http";
+import { filmProblems, filmState, filmTop, frameGaps, scrollFilm, startFrameLog } from "../film-checks.ts";
 
 const [mode = "iphone", out = "ios-film"] = process.argv.slice(2);
 const iphone = mode !== "mac";
@@ -18,11 +20,26 @@ const BASE = process.env.BASE ?? "http://localhost:4321";
 mkdirSync(out, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function wd(method, path, body) {
-  const r = await fetch(WD + path, { method, headers: { "content-type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok || j?.value?.error) throw new Error(`${method} ${path}: ${r.status} ${j?.value?.error ?? ""} ${String(j?.value?.message ?? "").slice(0, 400)}`);
-  return j.value;
+// node:http, not fetch: fetch gives up after five minutes without an answer, and
+// Appium answers a new session only once it has built WebDriverAgent, which can take longer.
+function wd(method, path, body) {
+  return new Promise((resolve, reject) => {
+    const req = request(WD + path, { method, agent: false, headers: { "content-type": "application/json" } }, (res) => {
+      let text = "";
+      res.setEncoding("utf8");
+      res.on("data", (c) => (text += c));
+      res.on("end", () => {
+        let j = {};
+        try {
+          j = JSON.parse(text);
+        } catch {}
+        if (res.statusCode >= 400 || j?.value?.error) reject(new Error(`${method} ${path}: ${res.statusCode} ${j?.value?.error ?? ""} ${String(j?.value?.message ?? "").slice(0, 400)}`));
+        else resolve(j.value);
+      });
+    });
+    req.on("error", reject);
+    req.end(body === undefined ? undefined : JSON.stringify(body));
+  });
 }
 
 const caps = iphone
@@ -76,10 +93,6 @@ async function swipe(y0, y1, ms) {
   await wd("DELETE", `/session/${s}/actions`).catch(() => {});
 }
 
-async function wheel(deltaY) {
-  await wd("POST", `/session/${s}/actions`, { actions: [{ type: "wheel", id: "wheel", actions: [{ type: "scroll", x: 720, y: 450, deltaX: 0, deltaY, duration: 120 }] }] });
-}
-
 const steps = [];
 let failed = 0;
 async function record(page, kind, film = true) {
@@ -119,22 +132,12 @@ try {
       await run(scrollFilm, i / 40);
       await record("home", `s${String(i).padStart(2, "0")}`);
     }
-    await run(scrollFilm, 0);
     for (const [kind, key] of [["space", " "], ["pgdn", "\uE00F"]]) {
+      await run(filmTop); // the page's own snapping back on, from the top
       for (let i = 0; i < 4; i++) {
         await wd("POST", `/session/${s}/actions`, { actions: [{ type: "key", id: "keys", actions: [{ type: "keyDown", value: key }, { type: "keyUp", value: key }] }] });
         await record("home", kind);
       }
-    }
-    await run(scrollFilm, 0);
-    for (let i = 0; i < 10; i++) {
-      try {
-        await wheel(120);
-      } catch (e) {
-        console.log(`wheel: ${String(e).slice(0, 200)}`);
-        break;
-      }
-      await record("home", "wheel");
     }
   }
 } finally {

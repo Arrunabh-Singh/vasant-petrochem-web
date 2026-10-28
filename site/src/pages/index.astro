@@ -111,9 +111,10 @@ const explore = [...(b.explore?.heading ?? "Explore")];
         <p class="vp-film-note">{t("scale.note")}</p>
       </div>
     </div>
-    {/* Snap points, one flick each (styles/film.css): the scale's title, then each grade's held frame.
+    {/* Snap points, one flick each (styles/film.css): the drop filled, the scale's title, then each grade's held frame.
         The page's top (.vp-snap-top) is the hero's, and the statement below is the way out. */}
     <div class="vp-film-snaps" aria-hidden="true">
+      <span class="vp-snap-drop"></span>
       <span class="vp-snap-title" id="grades"></span>
       <span class="vp-film-snaps-grades">{grades.map((p) => <span id={`grade-${p.id}`}></span>)}</span>
     </div>

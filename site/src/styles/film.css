@@ -193,7 +193,7 @@
     .vp-film-glow > span { position: absolute; left: var(--fx); top: var(--fy); z-index: 1; opacity: 0; width: calc(var(--glow) * 2.2); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, #fff 0%, #ffffffe6 26%, color-mix(in srgb, var(--tint-light) 38%, transparent) 58%, color-mix(in srgb, var(--tint-light) 12%, transparent) 80%, transparent); animation: vp-glow linear both; --tl: --film; animation-timeline: --film; --ar: contain var(--slot-start) contain var(--slot-out); animation-range: contain var(--slot-start) contain var(--slot-out); }
     .vp-film-glow > .vp-film-glow-own { z-index: 0; animation-name: vp-glow-own; --ar: contain 12% contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 4); animation-range: contain 12% contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 4); }
 
-    .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: calc(var(--space-5) * 2 + var(--space-6) + var(--dw) * 1.7626 * var(--hs)) var(--edge) 0; animation: vp-copy-out linear both; --tl: --film; animation-timeline: --film; --ar: contain 9% contain 13%; animation-range: contain 9% contain 13%; }
+    .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: calc(var(--space-5) * 2 + var(--space-6) + var(--dw) * 1.7626 * var(--hs)) var(--edge) 0; animation: vp-copy-out linear both, vp-gone linear both; --tl: --film, --film; animation-timeline: --film, --film; --ar: contain 9% contain 13%, contain 9% contain 13%; animation-range: contain 9% contain 13%, contain 9% contain 13%; }
     .vp-film:has(.vp-film-copy :focus-visible) :is(.vp-film-glow, .vp-film-scale, .vp-scale) { visibility: hidden; }
     /* Short phones: no room above the headline, so the drop waits below the screen and rises in.
        Measured on the stage (100svh), never the screen: a phone's toolbar changes the screen's height mid-scroll. */
@@ -211,10 +211,12 @@
       .vp-film-copy .vp-lead { font-size: .9375rem; line-height: 1.45; margin: var(--space-3) 0 var(--space-5); }
       .vp-film .vp-oil-name { font-size: clamp(2rem, 9.5cqi, 2.75rem); }
       .vp-film .vp-oil-meta { font-size: .875rem; line-height: 1.25rem; }
+      /* No room for the count: the scale's marker already shows where you are. */
+      .vp-film .vp-oil-count { display: none; }
     }
-    /* The hero's buttons stop taking taps as the copy leaves: a separate animation, so the copy's own can run on the compositor. */
-    .vp-film-copy .vp-actions { animation: vp-gone linear both; --tl: --film; animation-timeline: --film; --ar: contain 9% contain 13%; animation-range: contain 9% contain 13%; }
-    .vp-film-copy:has(:focus-visible), .vp-film-copy:has(:focus-visible) .vp-actions { animation: none; }
+    /* The copy stops taking taps as it leaves (vp-gone), so it never covers the grades' links:
+       a separate animation, so vp-copy-out can run on the compositor. */
+    .vp-film-copy:has(:focus-visible) { animation: none; }
 
     .vp-film-drop { position: relative; place-self: start; display: block; width: var(--dw); padding: 0; animation: vp-film-glide linear both, vp-off linear both; --tl: --film, --film; animation-timeline: --film, --film; --ar: contain 10.5% contain 16.5%, contain 94% contain 100%; animation-range: contain 10.5% contain 16.5%, contain 94% contain 100%; }
     .vp-film-float { width: 100%; animation: vp-float var(--duration-float) var(--ease-in-out) infinite alternate; }
@@ -241,11 +243,14 @@
     @media (max-width: 359px) { .vp-film .vp-scale { --sw: 16px; --pitch: 20px; } .vp-film .vp-scale-swatches { gap: 4px; } .vp-film .vp-swatch { width: 16px; } .vp-film-scale > .vp-eyebrow { display: none; } }
 
     /* ---- Pacing: one frame per flick, and where you are.
-       While the film covers the screen, islands/film-snap.ts sets html.vp-snap and
-       the page snaps, mandatory, to the film's frames: the page's top (the hero),
-       the scale's title, each grade's held frame, and the statement below, the way
-       out. Each has scroll-snap-stop: always, so no flick, swipe, wheel notch or key
-       passes a frame. The browser snaps; scrolling itself is never scripted. */
+       Down to the last grade, islands/film-snap.ts sets html.vp-snap and the page
+       snaps, mandatory, to the film's frames: the page's top (the hero), the drop
+       filled, the scale's title, each grade's held frame, and the statement below,
+       the way out for keys. Each has scroll-snap-stop: always, so no flick, swipe,
+       wheel notch or key passes a frame. The browser snaps; scrolling itself is
+       never scripted. A flick lands on the frame nearest where it would have
+       stopped, so frames sit 40–55% of a screen apart: a gentle flick still reaches
+       the next one, and a finger's own travel rarely passes one. */
     html.vp-snap { scroll-snap-type: y mandatory; scroll-padding-top: 0; }
     .vp-snap-top, .vp-film-snaps { display: block; position: absolute; left: 0; top: 0; width: 1px; height: 1px; }
     .vp-film-snaps { inset: 0; width: auto; height: auto; pointer-events: none; }
@@ -253,10 +258,12 @@
     /* A frame's share of the pinned stretch (--at), placed in the film. The screen's
        height is taken halfway between a phone's toolbar shown and hidden, so the
        frame lands inside its hold either way. */
-    .vp-snap-title, .vp-film-snaps-grades > span { position: absolute; left: 0; width: 1px; height: 1px; top: calc(var(--at) * (100% - 50svh - 50lvh)); }
-    .vp-snap-title { --at: .2; }
+    .vp-snap-drop, .vp-snap-title, .vp-film-snaps-grades > span { position: absolute; left: 0; width: 1px; height: 1px; top: calc(var(--at) * (100% - 50svh - 50lvh)); }
+    /* The hero with its drop filled, before its words leave (vp-copy-out starts at 9%); the title in its hold. */
+    .vp-snap-drop { --at: .09; }
+    .vp-snap-title { --at: .195; }
     .vp-film-snaps-grades > span { --at: calc(var(--sfn) + (var(--i) + .5) * var(--ssn) / var(--n)); }
-    .vp-snap-top, .vp-snap-title, .vp-film-snaps-grades > span, .vp-statement { scroll-snap-align: start; scroll-snap-stop: always; }
+    .vp-snap-top, .vp-snap-drop, .vp-snap-title, .vp-film-snaps-grades > span, .vp-statement { scroll-snap-align: start; scroll-snap-stop: always; }
 
     /* The colour scale is the film's page control: each swatch is a link to its grade's frame. */
     .vp-film .vp-swatch-link { position: absolute; inset: -12px -3px; border-radius: var(--radius-xs); animation: vp-live linear both; --tl: --film; animation-timeline: --film; --ar: contain 15% contain 100%; animation-range: contain 15% contain 100%; }
@@ -322,8 +329,9 @@
       .vp-chapters a[aria-current]::after { background: var(--gold); scale: 1.35; }
       .vp-chapters a span { position: absolute; right: 100%; top: 50%; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-float); font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; white-space: nowrap; pointer-events: none; opacity: 0; translate: var(--space-2) -50%; transition: opacity 150ms var(--ease-out), translate 150ms var(--ease-out); }
       .vp-chapters a:is(:hover, :focus-visible) span { opacity: 1; translate: 0 -50%; }
-      /* "Scroll", under the hero, gone at the first scroll. */
-      .vp-scroll-cue { display: grid; justify-items: center; gap: var(--space-2); align-self: end; justify-self: center; margin-bottom: var(--space-8); font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--text-3); animation: vp-off linear both; --tl: --film; animation-timeline: --film; --ar: contain 0% contain 4%; animation-range: contain 0% contain 4%; }
+      /* "Scroll", under the hero, gone at the first scroll. At the page's top the header
+         still pushes the stage down, so the cue sits a header higher, above the fold. */
+      .vp-scroll-cue { display: grid; justify-items: center; gap: var(--space-2); align-self: end; justify-self: center; margin-bottom: calc(var(--space-8) + var(--nav-height)); font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--text-3); animation: vp-off linear both; --tl: --film; animation-timeline: --film; --ar: contain 0% contain 4%; animation-range: contain 0% contain 4%; }
       .vp-cue-tick { width: 1px; height: var(--space-8); overflow: hidden; background: var(--line-strong); }
       .vp-cue-tick::after { content: ""; display: block; height: 40%; background: var(--gold-deep); animation: vp-cue 1.8s var(--ease-in-out) infinite; }
       .vp-film-note { display: block; align-self: end; justify-self: end; margin: 0 var(--edge) var(--space-8) 0; opacity: 0; animation: vp-show linear both; --tl: --film; animation-timeline: --film; --ar: contain 20% contain 100%; animation-range: contain 20% contain 100%; }
