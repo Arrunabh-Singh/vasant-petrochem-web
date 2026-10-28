@@ -122,11 +122,21 @@ function start(el: HTMLElement) {
   // The colour scale the film plays (each grade's light, mid and deep), only where the film itself runs.
   const scale = scene && filmPlays() ? parseScale(el.dataset.scale) : [];
   // Scroll through the scene's pinned stretch, 0 to 1: CSS's `contain` range.
-  const progress = () => {
-    if (!scene) return 0;
+  // Measured on resize, not every frame, so a frame never forces a layout.
+  let sceneTop = 0;
+  let sceneSpan = 1;
+  const measure = () => {
+    if (!scene) return;
     const r = scene.getBoundingClientRect();
-    return -r.top / Math.max(1, r.height - innerHeight);
+    sceneTop = r.top + scrollY;
+    sceneSpan = Math.max(1, r.height - innerHeight);
   };
+  measure();
+  if (scene) {
+    addEventListener("resize", measure);
+    new ResizeObserver(measure).observe(scene);
+  }
+  const progress = () => (scene ? (scrollY - sceneTop) / sceneSpan : 0);
   const goal = (now: number, p: number) =>
     scene ? LOW + (FULL - LOW) * smooth(clamp(p / fillEnd, 0, 1)) : EMPTY + (FULL - EMPTY) * smooth(clamp((now - 200) / 900, 0, 1));
   // Grade k holds through its slot of the scale, blending in from the one before over the slot's first quarter.

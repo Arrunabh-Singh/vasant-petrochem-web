@@ -93,7 +93,7 @@ async function record(page, kind, film = true) {
   const frames = await run(frameGaps);
   failed += problems.length;
   steps.push({ n, page, kind, state, frames, problems });
-  console.log(`${n} ${page} ${kind.padEnd(6)} y=${state.y} vh=${state.vh} share=${state.share} grade=${state.grade} engine=${state.engine} native=${state.native} touch=${state.touch} slow-frames=${frames.slow}/${frames.frames} worst=${frames.worst}ms ${problems.length ? "PROBLEMS: " + problems.join("; ") : "ok"}`);
+  console.log(`${n} ${page} ${kind.padEnd(6)} y=${state.y} vh=${state.vh} share=${state.share} grade=${state.grade} engine=${state.engine} native=${state.native} touch=${state.touch} reduced=${state.reduced} film=${state.tall}x slow-frames=${frames.slow}/${frames.frames} worst=${frames.worst}ms ${problems.length ? "PROBLEMS: " + problems.join("; ") : "ok"}`);
 }
 
 try {
@@ -118,6 +118,13 @@ try {
     for (let i = 0; i <= 40; i++) {
       await run(scrollFilm, i / 40);
       await record("home", `s${String(i).padStart(2, "0")}`);
+    }
+    await run(scrollFilm, 0);
+    for (const [kind, key] of [["space", " "], ["pgdn", "\uE00F"]]) {
+      for (let i = 0; i < 4; i++) {
+        await wd("POST", `/session/${s}/actions`, { actions: [{ type: "key", id: "keys", actions: [{ type: "keyDown", value: key }, { type: "keyUp", value: key }] }] });
+        await record("home", kind);
+      }
     }
     await run(scrollFilm, 0);
     for (let i = 0; i < 10; i++) {

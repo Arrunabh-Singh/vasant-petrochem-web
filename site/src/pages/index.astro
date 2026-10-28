@@ -37,8 +37,22 @@ const supplyIcons = ["package", "phone"] as const;
 const explore = [...(b.explore?.heading ?? "Explore")];
 ---
 <Base title={home.title} description={home.description} fullTitle structured={[localBusiness()]}>
+  <span class="vp-snap-top" aria-hidden="true"></span>
+
   {/* 1–2 · The hero; then the drop is held to the light and passes along the colour scale. */}
-  <section class="vp-film" aria-labelledby="hero-title" data-fill-scene data-timeline="--film">
+  <section class="vp-film" id="start" aria-labelledby="hero-title" data-fill-scene data-timeline="--film">
+    {/* Where you are on the page: dots on laptops, and a hairline across the top that fills as the film plays
+        (inside the film, so it can follow the film's timeline; islands/film-snap.ts marks the current chapter). */}
+    <nav class="vp-chapters" aria-label={t("chapters.label")}>
+      <ol>
+        <li><a href="#start" data-chapter="start"><span>{t("chapter.start")}</span></a></li>
+        <li><a href="#grades" data-chapter="grades"><span>{t("chapter.grades")}</span></a></li>
+        <li><a href="#our-word" data-chapter="our-word"><span>{t("chapter.word")}</span></a></li>
+        <li><a href="#road" data-chapter="road"><span>{t("chapter.road")}</span></a></li>
+        <li><a href="#explore" data-chapter="explore"><span>{t("chapter.explore")}</span></a></li>
+      </ol>
+      <span class="vp-chapters-fill" aria-hidden="true"></span>
+    </nav>
     <div class="vp-film-stage">
       <div class="vp-film-glow" aria-hidden="true">
         {grades.map((p) => <span data-tint={p.data.tint}></span>)}
@@ -66,18 +80,21 @@ const explore = [...(b.explore?.heading ?? "Explore")];
         <span class="vp-open-shadow" aria-hidden="true"></span>
       </div>
 
-      <ColourScale grades={grades} />
+      <a class="vp-film-skip" href="#our-word">{t("film.skip")}</a>
+      <ColourScale grades={grades} links />
+      <p class="vp-scroll-cue" aria-hidden="true">{t("film.scroll")}<span class="vp-cue-tick"></span></p>
 
       <div class="vp-film-scale">
         <p class="vp-eyebrow">{b.scale?.eyebrow}</p>
         <h2 class="vp-film-title" id="scale-title">{b.scale?.heading}</h2>
         <ol class="vp-oils" role="list" aria-labelledby="scale-title">
           {
-            grades.map((p) => {
+            grades.map((p, i) => {
               const spec = keySpecs(p)[0];
               return (
                 <li class="vp-oil" data-tint={p.data.tint}>
                   <Drop tint={p.data.tint} size="l" />
+                  <p class="vp-oil-count" aria-hidden="true">{String(i + 1).padStart(2, "0")} / {String(grades.length).padStart(2, "0")}</p>
                   <h3 class="vp-oil-name">{p.data.name}</h3>
                   <p class="vp-oil-meta">
                     <span class="vp-oil-code">{p.data.code}</span>
@@ -94,10 +111,16 @@ const explore = [...(b.explore?.heading ?? "Explore")];
         <p class="vp-film-note">{t("scale.note")}</p>
       </div>
     </div>
+    {/* Snap points, one flick each (styles/film.css): the scale's title, then each grade's held frame.
+        The page's top (.vp-snap-top) is the hero's, and the statement below is the way out. */}
+    <div class="vp-film-snaps" aria-hidden="true">
+      <span class="vp-snap-title" id="grades"></span>
+      <span class="vp-film-snaps-grades">{grades.map((p) => <span id={`grade-${p.id}`}></span>)}</span>
+    </div>
   </section>
 
   {/* 3 · The company in its registered words, lit as it is read, over engraved gold line-work that rises as it is read. */}
-  <section class="vp-statement vp-band-raised" aria-label={b.statement?.eyebrow} data-timeline="--statement">
+  <section class="vp-statement vp-band-raised" id="our-word" aria-label={b.statement?.eyebrow} data-timeline="--statement">
     <div class="vp-guilloche" aria-hidden="true"></div>
     <div class="vp-container">
       <p class="vp-eyebrow">{b.statement?.eyebrow}</p>
@@ -109,7 +132,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
   </section>
 
   {/* 4 · The road: a tanker leaves Mangaliya and each step of an order lights as it passes. */}
-  <section class="vp-road" aria-labelledby="how-title" data-timeline="--road">
+  <section class="vp-road" id="road" aria-labelledby="how-title" data-timeline="--road">
     <div class="vp-road-stage">
       <div class="vp-container vp-road-inner">
         <div class="vp-head">
@@ -145,13 +168,13 @@ const explore = [...(b.explore?.heading ?? "Explore")];
   </section>
 
   {/* 5 · Explore: the doors into the rest of the site. */}
-  <section class="vp-explore" aria-labelledby="explore-title">
+  <section class="vp-explore" id="explore" aria-labelledby="explore-title">
     <div class="vp-container">
       <h2 class="vp-explore-word" id="explore-title" data-timeline="--explore">
         <span class="vp-sr">{explore.join("")}</span><span class="vp-letters" aria-hidden="true">{explore.map((ch) => <span class="l">{ch}</span>)}</span>
       </h2>
 
-      <section class="vp-tile vp-tile-wide vp-wipe" aria-labelledby="offers-title" data-offers-teaser hidden>
+      <section class="vp-tile vp-tile-wide" aria-labelledby="offers-title" data-offers-teaser hidden>
         <div class="vp-head-row">
           <div class="vp-head">
             <p class="vp-eyebrow"><span class="vp-tag vp-tag-live">{b.offers?.eyebrow}</span></p>
@@ -164,7 +187,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
       </section>
 
       <div class="vp-tiles">
-        <div class="vp-tile vp-wipe">
+        <div class="vp-tile">
           <p class="vp-eyebrow">{b.find?.eyebrow}</p>
           <h3>{b.find?.heading}</h3>
           <p class="vp-small">{b.find?.body}</p>
@@ -178,7 +201,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
           </ul>
         </div>
 
-        <div class="vp-tile vp-wipe">
+        <div class="vp-tile">
           <p class="vp-eyebrow">{b.industries?.eyebrow}</p>
           <h3>{b.industries?.heading}</h3>
           <ul class="vp-tile-links">
@@ -186,7 +209,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
           </ul>
         </div>
 
-        <div class="vp-tile vp-wipe">
+        <div class="vp-tile">
           <p class="vp-eyebrow">{b.supply?.heading}</p>
           <h3>{b.supply?.body}</h3>
           <ul class="vp-facts">
@@ -197,7 +220,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
 
         {
           trading && (
-            <div class="vp-tile vp-wipe">
+            <div class="vp-tile">
               <p class="vp-eyebrow">{b.trading?.eyebrow}</p>
               <h3>{b.trading?.heading}</h3>
               <p class="vp-small">{trading}</p>
@@ -212,7 +235,7 @@ const explore = [...(b.explore?.heading ?? "Explore")];
   {/* 6 · Close, on gold: the page's heaviest block, at its foot. */}
   <section class="vp-close vp-band-gold" aria-labelledby="cta-title">
     <div class="vp-container">
-      <h2 class="vp-close-title vp-reveal" id="cta-title">{b.cta?.heading}</h2>
+      <h2 class="vp-close-title" id="cta-title">{b.cta?.heading}</h2>
       <p class="vp-lead">{b.cta?.body}</p>
       <div class="vp-actions">
         <a class="vp-btn vp-btn-dark vp-btn-touch" href="/source">{t("cta.source")}<Icon name="arrow" size={18} /></a>
@@ -224,4 +247,5 @@ const explore = [...(b.explore?.heading ?? "Explore")];
 <script>
   import "../islands/offers-teaser.ts";
   import "../islands/film-focus.ts";
+  import "../islands/film-snap.ts";
 </script>

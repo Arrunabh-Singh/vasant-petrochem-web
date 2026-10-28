@@ -20,7 +20,8 @@ concurrency:
 jobs:
   check:
     name: site check
-    runs-on: ubuntu-latest
+    # Playwright 1.56 doesn't support ubuntu-latest (26.04) yet.
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: site
@@ -52,7 +53,8 @@ jobs:
 
   quality:
     name: e2e, Lighthouse and ZAP
-    runs-on: ubuntu-latest
+    # Playwright 1.56 doesn't support ubuntu-latest (26.04) yet.
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: site

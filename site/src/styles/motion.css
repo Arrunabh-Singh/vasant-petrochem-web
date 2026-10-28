@@ -2,7 +2,9 @@
    Everything above the @supports block is the finished, still page. Motion is
    an enhancement for screens, in browsers with scroll-driven animations, for
    readers who have not asked for reduced motion; print always gets the still
-   page. Scroll is the clock; only transform, opacity, filter and colour move. */
+   page. Scroll is the clock; only transform, opacity, filter and colour move.
+   Restraint: a page opens with its one title moment, and the home page has its
+   one film (styles/film.css). Sections and cards no longer rise or wipe in. */
 
 /* The drop with live liquid (components/LiquidDrop.astro): the canvas takes
    over the SVG's liquid once islands/liquid.ts marks the drop live. */
@@ -24,16 +26,6 @@
 
   @supports (container-type: size) {
   @media (scripting: enabled) {
-    /* Sections rise as they enter. */
-    .vp-section .vp-head, .vp-card, .vp-panel, .vp-reveal {
-      animation: vp-rise linear both;
-      --tl: view(); animation-timeline: view();
-      --ar: entry 0% entry 45%; animation-range: entry 0% entry 45%;
-    }
-    /* Below the fold they wait at 0, hidden rather than faint, so no reader or
-       checker meets them as low-contrast text before they arrive. */
-    @keyframes vp-rise { from { opacity: 0; transform: translateY(28px); } }
-
     /* A statement lights word by word as each line crosses the middle of the
        screen. Unlit words stay at line-strong: 3.4:1 on ivory, the floor for
        large text. A statement on another ground sets --lit-from and --lit-to. */
@@ -43,28 +35,6 @@
       --ar: cover 30% cover 48%; animation-range: cover 30% cover 48%;
     }
     @keyframes vp-lit { from { color: var(--lit-from, var(--line-strong)); } to { color: var(--lit-to, var(--text)); } }
-
-    /* Cards open with a gold wipe as they enter. */
-    .vp-wipe { position: relative; overflow: hidden; }
-    .vp-wipe::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: var(--gold);
-      transform: translateX(-101%);
-      pointer-events: none;
-      animation: vp-wipe-bar linear both;
-      --tl: view(); animation-timeline: view();
-      --ar: entry 0% entry 85%; animation-range: entry 0% entry 85%;
-    }
-    @keyframes vp-wipe-bar { 0% { transform: translateX(-101%); } 45%, 55% { transform: none; } 100% { transform: translateX(101%); } }
-    .vp-wipe > * { animation: vp-wipe-in linear both; --tl: view(); animation-timeline: view(); --ar: entry 45% entry 85%; animation-range: entry 45% entry 85%; }
-    @keyframes vp-wipe-in { from { opacity: 0; } }
-
-    /* Whatever has keyboard focus is shown whole, wherever its animation is.
-       Only keyboard focus: a tap that focuses a link must never freeze anything. */
-    .vp-wipe:has(:focus-visible)::after { animation: none; transform: translateX(101%); }
-    .vp-wipe:has(:focus-visible) > *, .vp-card:has(:focus-visible), .vp-panel:has(:focus-visible) { animation: none; }
   }
   }
 }
@@ -77,22 +47,21 @@
 @property --ar { syntax: "*"; inherits: false; }
 main h1, .vp-film-float, .vp-open-shadow, .vp-drop-animate .vp-drop-liquid { --tl: initial; --ar: initial; }
 
-/* Without scroll-driven animations (Firefox, Safari before 26), and in Safari
-   (WebKit, which alone knows the -apple-system-body font), islands/scrub.ts
-   plays the same animations from scroll. Until it runs, each one waits at its
-   first frame, so the page paints exactly as the film opens. */
+/* Without scroll-driven animations (Firefox), and in desktop Safari (WebKit,
+   which alone knows the -apple-system-body font), islands/scrub.ts plays the
+   same animations from scroll. Until it runs, each one waits at its first
+   frame, so the page paints exactly as the film opens.
+   iPhones and iPads (iOS WebKit, which alone knows -webkit-touch-callout) play
+   natively instead: since Safari 26.4 their scroll timelines run on the
+   compositor, in step with the finger, where the engine trailed it. */
 @media screen and (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-  @supports (container-type: size) and ((not (animation-timeline: view())) or (font: -apple-system-body)) {
+  @supports (container-type: size) and ((not (animation-timeline: view())) or (font: -apple-system-body)) and (not (-webkit-touch-callout: none)) {
     main :not(h1, .vp-film-float, .vp-open-shadow, .vp-drop-animate .vp-drop-liquid),
-    .vp-open-glint::before,
-    .vp-wipe::after { animation-duration: 1s; animation-play-state: paused; }
+    .vp-open-glint::before { animation-duration: 1s; animation-play-state: paused; }
   }
-  /* Safari never gets a native scroll timeline: iOS re-applied it whenever the
-     toolbar collapsed and the screen's height changed, taking the hero's words
-     and the drop back from the engine and freezing them at their first frame. */
-  @supports (container-type: size) and (font: -apple-system-body) {
+  /* Desktop Safari never gets a native scroll timeline, so only the engine moves the film. */
+  @supports (container-type: size) and (font: -apple-system-body) and (not (-webkit-touch-callout: none)) {
     main :not(h1, .vp-film-float, .vp-open-shadow, .vp-drop-animate .vp-drop-liquid),
-    .vp-open-glint::before,
-    .vp-wipe::after { animation-timeline: auto !important; }
+    .vp-open-glint::before { animation-timeline: auto !important; }
   }
 }

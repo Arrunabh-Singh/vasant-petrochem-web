@@ -66,6 +66,9 @@ jobs:
           echo "UDID=$UDID" >> "$GITHUB_ENV"
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
+          # A phone's default: motion on (the film plays only without reduced motion).
+          xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool false
+          xcrun simctl spawn "$UDID" defaults read com.apple.Accessibility ReduceMotionEnabled || true
       - name: Start Appium
         run: |
           npm install -g appium@3.9.0
@@ -116,6 +119,9 @@ jobs:
           cat preview.log; exit 1
       - name: Start safaridriver
         run: |
+          # A Mac's default: motion on (the runner's image reduces it, which shows the still page).
+          defaults write com.apple.universalaccess reduceMotion -bool false || true
+          defaults read com.apple.universalaccess reduceMotion || true
           sudo safaridriver --enable
           safaridriver -p 4444 > safaridriver.log 2>&1 &
           for i in $(seq 1 30); do curl -sf -o /dev/null http://127.0.0.1:4444/status && exit 0; sleep 1; done

@@ -103,6 +103,19 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 
 ## 7. Open items
 
+**Work in progress (28 October): the site as a lead engine.**
+- The plan and where to resume: `docs/plans/2026-10-28-lead-engine.md`. Start at its "Resume here" section.
+- Draft PR #46 (branch `claude/sharp-cannon-807c29`) contains:
+  - the Apple rig (`.github/workflows/ios.yml`);
+  - iPhones playing the film natively;
+  - one grade per flick, with native CSS scroll snap;
+  - the chapter anchor and the skip link;
+  - the site-wide reveals removed.
+- Still to do on #46, all listed in the plan:
+  - read the rig's results;
+  - space the grades one screen apart;
+  - fix the flick, trackpad and chapter-dot tests.
+
 **Waiting on the owner.** Each has a `TODO(...)` marker in `content/`; search for it.
 - `VP-HUM-001`: legal entity name, GSTIN, Udyam, CIN and registered office.
 - `VP-HUM-002`: email on the company domain (`sales@` and the others), then retire the Gmail address.

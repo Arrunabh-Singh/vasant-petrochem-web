@@ -5,11 +5,18 @@
  * is self-contained (no imports, no closures) and takes one plain argument.
  */
 
-/** Scroll to a share (0 to 1) of the film's pinned stretch. */
+/** Scroll to a share (0 to 1) of the film's pinned stretch, with the page's snapping off so any frame can be checked. */
 export function scrollFilm(share: number): void {
+  document.documentElement.style.scrollSnapType = "none";
   const film = document.querySelector<HTMLElement>(".vp-film")!;
   const top = film.getBoundingClientRect().top + scrollY;
   scrollTo({ top: top + share * (film.offsetHeight - innerHeight), behavior: "instant" });
+}
+
+/** Back to the top of the page, with the page's own snapping. */
+export function filmTop(_: null): void {
+  document.documentElement.style.scrollSnapType = "";
+  scrollTo({ top: 0, behavior: "instant" });
 }
 
 /**
@@ -34,7 +41,7 @@ export function filmProblems(phone: boolean): string[] {
   const bar = document.querySelector(".vp-actionbar");
   const barTop = bar && getComputedStyle(bar).display !== "none" ? box(bar).top : innerHeight;
   const words = document.querySelectorAll(
-    ".vp-film-copy .vp-eyebrow, .vp-film-copy h1, .vp-film-copy .vp-lead, .vp-film-copy .vp-actions, .vp-film-title, .vp-oil-name, .vp-oil-meta, .vp-oil .vp-link",
+    ".vp-film-copy .vp-eyebrow, .vp-film-copy h1, .vp-film-copy .vp-lead, .vp-film-copy .vp-actions, .vp-film-title, .vp-oil-count, .vp-oil-name, .vp-oil-meta, .vp-oil .vp-link, .vp-film-skip, .vp-scroll-cue",
   );
   for (const e of [...words].filter((w) => seen(w) > 0.3)) {
     const b = box(e);
@@ -49,8 +56,8 @@ export function filmProblems(phone: boolean): string[] {
   return out.map((p) => `${p} at ${share}`);
 }
 
-/** Where the film rests: the grade on screen (-1 for none), who plays it, and the screen's height (a phone's toolbar changes it). */
-export function filmState(_: null): { y: number; vh: number; share: number; grade: number; engine: boolean; native: number; touch: boolean } {
+/** Where the film rests: the grade on screen (-1 for none), who plays it, whether the page snaps, and the screen's height (a phone's toolbar changes it). */
+export function filmState(_: null): { y: number; vh: number; share: number; grade: number; engine: boolean; native: number; touch: boolean; reduced: boolean; tall: number; snap: boolean } {
   const seen = (e: Element) => {
     let o = 1;
     for (let n: Element | null = e; n && n !== document.body; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
@@ -68,6 +75,10 @@ export function filmState(_: null): { y: number; vh: number; share: number; grad
     engine: document.documentElement.classList.contains("vp-scrub"),
     native: document.getAnimations().filter((a) => a.timeline !== null && a.timeline !== document.timeline).length,
     touch: CSS.supports("-webkit-touch-callout", "none"),
+    // With reduced motion (or the still page) nothing pins: the film is barely taller than the screen.
+    reduced: matchMedia("(prefers-reduced-motion: reduce)").matches,
+    tall: film ? Math.round((film.offsetHeight / innerHeight) * 10) / 10 : 0,
+    snap: getComputedStyle(document.documentElement).scrollSnapType.includes("mandatory"),
   };
 }
 
