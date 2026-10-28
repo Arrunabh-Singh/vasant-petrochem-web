@@ -12,6 +12,12 @@
 - on 320×568 the grade count pushed the link under the action bar (the count hides on stages under 620 px tall);
 - frames too far apart for one flick (below).
 
+**The rig on 61db940** (run 40755369927): the Mac passed. The iPhone 18 Pro (iOS 27.0) found two things, both fixed in the next commit:
+- at the page's top the header still pushes the stage down 61 px, so the hero's "Browse the marketplace" sat half under the action bar. A sweep of 152 phone sizes in Chromium found the same on 97 of them, every phone between about 620 and 840 px tall with Safari's toolbar shown. The hero's drop and type now follow the stage's height in two bands (up to 840 px, and up to 760 px), and a new e2e test checks the page's top at six phone sizes;
+- one flick from the title passed the first grade: that gap was 238 px against 307 between grades. The title's frame moves to 17.8%, and its hold with it, so the gaps either side match the grades'.
+
+The iPhone Duo (iOS 27.1) had no page problems; at step 027 Safari's Web Inspector took 151 s to answer and Appium gave up at 120 s. The rig now waits up to 300 s (`webviewAtomWaitTimeout`), and no longer records video, which never produced a usable file and loaded the runner.
+
 **Execute in this order:**
 1. **Part 12, docs** (section 5): done in 62fd623. Give the owner the dashboard steps. The Cloudflare plugin's server needs a sign-in this session can't start: the owner authorizes it, or adds the custom connectors, in claude.ai settings.
 2. **Finish PR #46** (section 2 and the B list in section 4): read the rig artifacts on 61db940; the docs and the `motion` skill; `design-review`. Iterate until e2e and the rig are green, then merge.
@@ -84,15 +90,15 @@
 - **What failed:** 140svh per grade (one screen apart, tried first) made flicks spring back, because the nearest point was the one just left. The rule: **every gap 40–55% of a screen** (under about 490 px on an 844 px phone), so a gentle flick still lands on the next frame.
 - **What shipped (61db940):**
   - the film is back to 60svh per grade;
-  - a "drop filled" frame at 9% splits the long run from the hero to the title, and the title's frame moves to 19.5%, inside its hold;
+  - a "drop filled" frame at 9% splits the long run from the hero to the title, and the title's frame moves to 19.5%, inside its hold (17.8% since the rig's second run, with the title's hold moved to match);
   - snapping turns off a pixel past the last grade's frame (an IntersectionObserver on it), so a flick from there carries on out of the film instead of springing back. Space and Page Down still end on the statement.
 
   | Screen | top → drop | drop → title | title → first grade | between grades |
   | --- | --- | --- | --- | --- |
-  | Phone 390×844 | 425 px | 425 px | 284 px | 365 px |
-  | Laptop 1440×900 | 461 px | 454 px | 302 px | 389 px |
+  | Phone 390×844 | 426 px | 356 px | 353 px | 364 px |
+  | Laptop 1440×900 | 462 px | 380 px | 376 px | 389 px |
 
-  - Trade-off: a finger dragged further than a gap (284–425 px on a phone) can pass one frame.
+  - Trade-off: a finger dragged further than a gap (353–426 px on a phone) can pass one frame.
 - **A chapter link inside the film** lands on its frame only if snapping is on before the jump (Chromium doesn't re-snap when it turns on afterwards), so the click handler sets it first.
 - **Chapter-dot test** expected the road at 0 px and got 68. With snapping off, `scroll-padding-top` (localnav + space-4) applies again. Compare against `getComputedStyle(html).scrollPaddingTop`.
 

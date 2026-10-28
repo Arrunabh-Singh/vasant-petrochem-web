@@ -195,13 +195,19 @@
 
     .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: calc(var(--space-5) * 2 + var(--space-6) + var(--dw) * 1.7626 * var(--hs)) var(--edge) 0; animation: vp-copy-out linear both, vp-gone linear both; --tl: --film, --film; animation-timeline: --film, --film; --ar: contain 9% contain 13%, contain 9% contain 13%; animation-range: contain 9% contain 13%, contain 9% contain 13%; }
     .vp-film:has(.vp-film-copy :focus-visible) :is(.vp-film-glow, .vp-film-scale, .vp-scale) { visibility: hidden; }
-    /* Short phones: no room above the headline, so the drop waits below the screen and rises in.
+    /* Phones with Safari's toolbar shown: at the page's top the header still pushes the stage down,
+       so the drop opens smaller and the hero's type follows the stage's height, keeping the buttons above the bar.
        Measured on the stage (100svh), never the screen: a phone's toolbar changes the screen's height mid-scroll. */
-    @container (max-height: 760px) and (max-width: 1023px) {
+    @container (max-height: 840px) and (max-width: 1023px) {
       .vp-film-copy { --hs: .42; }
       .vp-film-drop { --hs: .42; --hy: calc(var(--space-5) + var(--dw) * 1.7626 * var(--hs) / 2); }
-      .vp-film-copy .vp-h-hero { font-size: clamp(2.25rem, 6.2cqb, 2.75rem); line-height: 1; }
+      .vp-film-copy .vp-h-hero { font-size: clamp(2rem, 5.4cqb, 2.75rem); line-height: 1; }
       .vp-film-copy .vp-lead { margin: var(--space-4) 0 var(--space-6); }
+    }
+    @container (max-height: 760px) and (max-width: 1023px) {
+      .vp-film-copy { --hs: .3; }
+      .vp-film-drop { --hs: .3; --hy: calc(var(--space-5) + var(--dw) * 1.7626 * var(--hs) / 2); }
+      .vp-film-copy .vp-lead { font-size: .9375rem; line-height: 1.45; }
     }
     /* The shortest phones: the drop waits just below the screen and rises in, and the hero's type tightens so its buttons stay above the bar. */
     @container (max-height: 620px) and (max-width: 1023px) {
@@ -261,7 +267,7 @@
     .vp-snap-drop, .vp-snap-title, .vp-film-snaps-grades > span { position: absolute; left: 0; width: 1px; height: 1px; top: calc(var(--at) * (100% - 50svh - 50lvh)); }
     /* The hero with its drop filled, before its words leave (vp-copy-out starts at 9%); the title in its hold. */
     .vp-snap-drop { --at: .09; }
-    .vp-snap-title { --at: .195; }
+    .vp-snap-title { --at: .178; }
     .vp-film-snaps-grades > span { --at: calc(var(--sfn) + (var(--i) + .5) * var(--ssn) / var(--n)); }
     .vp-snap-top, .vp-snap-drop, .vp-snap-title, .vp-film-snaps-grades > span, .vp-statement { scroll-snap-align: start; scroll-snap-stop: always; }
 
@@ -288,7 +294,7 @@
     .vp-film-scale > * { grid-area: x; }
     .vp-film-scale > .vp-eyebrow { align-self: start; justify-self: start; margin: var(--space-6) 0 0 var(--edge); opacity: 0; animation: vp-show linear both; --tl: --film; animation-timeline: --film; --ar: contain 18% contain 100%; animation-range: contain 18% contain 100%; }
     .vp-film-title, .vp-oils { align-self: start; margin: var(--text-top) var(--edge) 0; }
-    .vp-film-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); opacity: 0; animation: vp-word linear both; --tl: --film; animation-timeline: --film; --ar: contain 16.5% contain 23.5%; animation-range: contain 16.5% contain 23.5%; }
+    .vp-film-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); opacity: 0; animation: vp-word linear both; --tl: --film; animation-timeline: --film; --ar: contain 14.5% contain 21.5%; animation-range: contain 14.5% contain 21.5%; }
     .vp-oils { display: grid; grid-template: "g" auto / 100%; }
     .vp-oil { grid-area: g; padding: 0; border: 0; background: none; overflow: visible; opacity: 0; animation: vp-oil linear both; --tl: --film; animation-timeline: --film; --ar: contain var(--slot-start) contain var(--slot-end); animation-range: contain var(--slot-start) contain var(--slot-end); }
     .vp-oil::before, .vp-oil .vp-drop { display: none; }

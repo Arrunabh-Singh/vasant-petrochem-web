@@ -54,6 +54,8 @@ const caps = iphone
       "appium:wdaLaunchTimeout": 900_000,
       "appium:wdaConnectionTimeout": 900_000,
       "appium:webviewConnectTimeout": 120_000,
+      // A busy runner's Web Inspector once took 151 s to answer; the default gives up at 120 s.
+      "appium:webviewAtomWaitTimeout": 300_000,
       "appium:safariInitialUrl": `${BASE}/`,
     }
   : { browserName: "safari" };

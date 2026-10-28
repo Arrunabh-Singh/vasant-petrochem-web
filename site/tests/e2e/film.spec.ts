@@ -53,6 +53,20 @@ test.describe("on the shortest phones", () => {
   }
 });
 
+// At the page's top the header still pushes the stage down a header's height: the hero's
+// buttons must clear the action bar there too, at the heights phones have with Safari's toolbar shown.
+test("the hero's buttons clear the action bar at the page's top", async ({ page, hasTouch }) => {
+  test.skip(!hasTouch, "phone projects only");
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  for (const [width, height] of [[375, 667], [393, 659], [393, 692], [402, 714], [430, 772], [440, 796]] as const) {
+    await page.setViewportSize({ width, height });
+    await page.evaluate(filmTop, null);
+    await page.waitForTimeout(80);
+    expect(await page.evaluate(filmProblems, true), `${width}×${height}`).toEqual([]);
+  }
+});
+
 test("the road's pin is a quiet dot until the tanker leaves", async ({ page }) => {
   await page.goto("/");
   await page.waitForLoadState("networkidle");

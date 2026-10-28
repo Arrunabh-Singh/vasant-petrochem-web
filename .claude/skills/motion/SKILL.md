@@ -47,7 +47,7 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 **The frames,** all `scroll-snap-align: start` with `scroll-snap-stop: always`:
 - `.vp-snap-top`: the hero;
 - `.vp-snap-drop`, at 9%: the drop filled, before the hero's words leave;
-- `.vp-snap-title`, at 19.5%: inside the title's hold;
+- `.vp-snap-title`, at 17.8%: inside the title's hold (16.6–19.4%), so the gaps either side of it match the grades';
 - one per grade, at the middle of its slot: `--sfn + (i + .5) × --ssn / --n`;
 - `.vp-statement`: the way out for Space and Page Down.
 
@@ -57,8 +57,8 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 
 | Screen | top → drop | drop → title | title → first grade | between grades |
 | --- | --- | --- | --- | --- |
-| Phone 390×844 | 425 px | 425 px | 284 px | 365 px |
-| Laptop 1440×900 | 461 px | 454 px | 302 px | 389 px |
+| Phone 390×844 | 426 px | 356 px | 353 px | 364 px |
+| Laptop 1440×900 | 462 px | 380 px | 376 px | 389 px |
 
 Each grade adds 60svh to the film (`--n` counts them), so adding a product keeps the gaps. When you change the timing:
 - recompute these gaps at both sizes;
