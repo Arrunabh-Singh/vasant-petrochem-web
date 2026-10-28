@@ -6,18 +6,19 @@
 <title>Vasant Petrochem</title>
 <style>
   html, body { margin: 0; height: 100%; }
-  body { background: var(--cream); color: var(--ink); font-family: var(--font-sans); overflow: hidden; }
+  body { background: var(--ground); color: var(--text); font-family: var(--font-sans); overflow: hidden; }
   .cover { position: relative; height: 288px; overflow: hidden; }
   .art { position: absolute; top: 0; left: 480px; width: 480px; height: 288px; overflow: hidden; }
   .art svg { display: block; width: 480px; height: 288px; }
-  .deep { fill: var(--deep); }
-  .brand { fill: var(--brand); }
-  .gold { fill: var(--gold); }
-  .cut { fill: var(--cream); }
+  .slab { fill: var(--gold); }
+  .green { fill: var(--live); }
+  .ivory { fill: var(--ground-raised); }
+  .gold { fill: var(--drop-gold); }
+  .cut { fill: var(--ground); }
   .blk { rx: var(--radius-lg); }
   .words { position: absolute; left: var(--space-6); bottom: var(--space-6); max-width: 440px; }
-  .name { margin: 0; font-family: var(--font-display); font-size: 72px; line-height: .95; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
-  .tag { margin: var(--space-3) 0 0 3px; font-size: 14px; line-height: 20px; color: var(--secondary); }
+  .name { margin: 0; font-family: var(--font-display); font-size: 72px; line-height: .95; font-weight: 900; letter-spacing: -.035em; color: var(--text); }
+  .tag { margin: var(--space-3) 0 0 3px; font-size: 14px; line-height: 20px; color: var(--text-3); }
 </style>
 </head>
 <body>
@@ -25,14 +26,14 @@
 <div class="art" aria-hidden="true">
 <svg viewBox="0 0 480 288" width="480" height="288">
 <!--
-  blocks      deep 288×292 bled off the top (the dark band; largest) · brand 200×192 bled off the right (the logo's green) · gold 96×80 bled off the top (the drop's gold); ≈38% of 960×288
-  arrangement one tall deep slab with two satellites, bottoms on one line space-6 above the edge, space-4 gutters
-  pattern     the product drop, from "its one signature is the product drop": twelve logo drops cut from the deep slab in the cream ground, each filled gold to the logo's own level (never varied), at a space-16 by space-20 pitch
+  blocks      gold 288×292 bled off the top (the action gold; largest) · green 200×192 bled off the right (the logo's green) · ivory 96×80 bled off the top (the light box); ≈38% of 960×288
+  arrangement one tall gold slab with two satellites, bottoms on one line space-6 above the edge, space-4 gutters
+  pattern     the product drop, from "its one signature is the product drop": twelve logo drops cut from the gold slab in the page's ground, each filled with the drop's gold to the logo's own level (never varied), at a space-16 by space-20 pitch
   scales      gutters space-4 (16); pitch space-16 (64) across, 80 down; bottoms at space-6 (24) from the edge; block corners radius-lg (28); drops at 0.28 of the 100-wide trace
 -->
-<rect class="deep blk" x="0" y="-28" width="288" height="292" rx="28"/>
-<rect class="gold blk" x="304" y="-28" width="96" height="80" rx="28"/>
-<rect class="brand blk" x="304" y="72" width="200" height="192" rx="28"/>
+<rect class="slab blk" x="0" y="-28" width="288" height="292" rx="28"/>
+<rect class="ivory blk" x="304" y="-28" width="96" height="80" rx="28"/>
+<rect class="green blk" x="304" y="72" width="200" height="192" rx="28"/>
 <g id="d0" transform="translate(30 26) scale(.28)"><path class="cut" d="M50 0C47.62 4.39 0 117.26 0 126.26A50 50 0 0 0 100 126.26C100 117.26 52.38 4.39 50 0Z"/><path class="gold" d="M3.83 107.07A50 50 0 1 0 96.17 107.07Z"/></g>
 <use href="#d0" x="64" y="0"/><use href="#d0" x="128" y="0"/><use href="#d0" x="192" y="0"/>
 <use href="#d0" x="0" y="80"/><use href="#d0" x="64" y="80"/><use href="#d0" x="128" y="80"/><use href="#d0" x="192" y="80"/>

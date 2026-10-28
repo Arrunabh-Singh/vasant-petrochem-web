@@ -13,7 +13,7 @@
       h('div', { className: 'vp-chips', role: 'group', 'aria-label': 'Filter by industry' }, industries.map(function (n) {
         return h(V.Chip, { key: n, selected: sel === n, onClick: function () { set(n); } }, n);
       })),
-      h('p', { className: 'vp-demo-note' }, 'Press a chip: the selected one takes the brand fill.'));
+      h('p', { className: 'vp-demo-note' }, 'Press a chip: the selected one takes the gold fill.'));
   }
   ReactDOM.createRoot(document.getElementById('root')).render(h(App));
 </script>

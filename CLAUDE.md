@@ -4,7 +4,9 @@
 > software. Read this ENTIRE file before changing architecture, security, or schema.
 > Companion local-ecosystem doc: `~/Vasantpetrochem/CLAUDE.md` (the Mac Hub).
 
-> **The public site has its own manual.** It is being rebuilt in `site/` (Astro on Cloudflare Workers), with every public fact and string in `content/` and the brand in `design-system/`. Before changing any of those, read `AGENTS.md`. Until the Cloudflare cutover, `app/(site)/` still serves www.
+> **Start with `docs/HANDOFF.md`**: what is live, what is on hold, the owner's standing instructions, and how a change ships.
+>
+> **The public site has its own manual.** Since the Cloudflare cutover (24 October 2026) `www` is served by `site/` (Astro on a Cloudflare Worker), with every public fact and string in `content/` and the brand in `design-system/` ("Sunlit gold", with vastu rules). Before changing any of those, read `AGENTS.md`. `app/(site)/` no longer serves `www`; it stays only until the hub moves (ADR-0005).
 
 ---
 

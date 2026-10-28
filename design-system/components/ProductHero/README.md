@@ -2,11 +2,11 @@
 
 The first screen of a product page, and the landing view for that product's ads. It shows:
 
-- the industries eyebrow in `bronze`;
+- the industries eyebrow in `gold-ink`;
 - the name in `display-l` with its grade chip;
 - the description as the lead;
 - *Get a quote* and *Chat on WhatsApp*;
-- the product's drop on a `parchment` stage, with the packaging line;
+- the product's drop in its ivory light box (`ground-raised`, lit from the upper right), with the packaging line;
 - `AtAGlance` underneath.
 
 Details:

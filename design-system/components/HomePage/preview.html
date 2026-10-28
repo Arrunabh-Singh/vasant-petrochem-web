@@ -57,7 +57,7 @@
           h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Product catalog'), h('h2', { className: 'vp-h-section' }, 'Our product lines'),
             h('p', { className: 'vp-small' }, 'Manufactured and traded from Mangaliya. Ask for current specs and pricing on any line.')),
           h('div', { className: 'vp-rail vp-grid-4' }, V.catalog.map(function (o) { return h(V.ProductCard, { key: o.slug, product: o }); })))),
-      h('section', { className: 'vp-section vp-band-parchment', id: 'industries' },
+      h('section', { className: 'vp-section vp-band-raised', id: 'industries' },
         h('div', { className: 'vp-container' },
           h('div', { className: 'vp-head' }, h('p', { className: 'vp-eyebrow' }, 'Markets we serve'), h('h2', { className: 'vp-h-section' }, 'Industries we supply')),
           h('ul', { className: 'vp-ind' }, INDUSTRIES.map(function (it) {
@@ -83,11 +83,11 @@
       h('section', { className: 'vp-section', style: { paddingTop: 0 } },
         h('div', { className: 'vp-container' },
           h('div', { className: 'vp-cta-band' },
-            h('div', null, h('h2', { className: 'vp-h-section', style: { color: 'var(--on-deep)', marginBottom: 'var(--space-3)' } }, 'Get pricing within 24 hours.'),
-              h('p', { style: { margin: 0, color: 'var(--on-deep-secondary)' } }, 'Tell us the grade and quantity. The person who quotes you is the person who tracks your dispatch.')),
+            h('div', null, h('h2', { className: 'vp-h-section', style: { marginBottom: 'var(--space-3)' } }, 'Get pricing within 24 hours.'),
+              h('p', { className: 'vp-lead', style: { margin: 0 } }, 'Tell us the grade and quantity. The person who quotes you is the person who tracks your dispatch.')),
             h('div', { className: 'vp-actions' },
-              h(V.Button, { variant: 'on-deep', size: 'touch' }, 'Get a quote'),
-              h(V.Button, { variant: 'outline-on-deep', size: 'touch', icon: 'whatsapp' }, 'Chat on WhatsApp'))))),
+              h(V.Button, { variant: 'dark', size: 'touch' }, 'Get a quote'),
+              h(V.Button, { variant: 'outline-dark', size: 'touch', icon: 'whatsapp' }, 'Chat on WhatsApp'))))),
       h(V.Footer),
       p.phone ? h(V.MobileActionBar) : null);
   }

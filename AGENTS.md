@@ -1,6 +1,6 @@
 # AGENTS.md: how to change Vasant Petrochem's site, safely
 
-For any AI agent, or person, working in this repository. Read it before you change content, the brand, the site or the database. Business context and the hub's architecture are in `CLAUDE.md`. This file covers the public site and everything it is built from.
+For any AI agent, or person, working in this repository. Read it before you change content, the brand, the site or the database. Start with `docs/HANDOFF.md` for where everything stands and how the owner works. Business context and the hub's architecture are in `CLAUDE.md`. This file covers the public site and everything it is built from.
 
 ## What is where
 
@@ -19,9 +19,10 @@ Each JSON file in `content/` names its schema, and `site/src/content/schema.ts` 
 
 1. **Truth before polish.** Never invent a fact: no specification, certificate, capacity, client, date or number that a person has not supplied with evidence. Unknown values stay `null` with a `TODO(VP-HUM-xxx)` comment, and a `null` simply doesn't render.
 2. **Claims are registered.** Any sentence that promises something (speed, quality, coverage, testing) comes from `content/claims.json` by its `id`. A new claim is added there as `owner-asserted` with today's date; only the owner moves it to `verified`, and only with evidence.
-3. **AI proposes, people approve.** Every change goes through a pull request the owner approves. Offers on the live board are proposed through the MCP tool `propose_offer` and published by a different person in the hub. Nothing an agent does goes live on its own.
+3. **AI proposes, people approve.** Every change goes through a pull request. The owner's standing instruction is that an agent may merge its own pull request once every check is green (the merge deploys); a big visual change gets a small draft shown to the owner first. Offers on the live board are proposed through the MCP tool `propose_offer` and published by a different person in the hub.
 4. **No secrets, ever.** Not in content, code, commits or pull request text. The site's Worker holds only the publishable key and its own secrets (set in Cloudflare). There is never a service-role key in `site/`.
 5. **The database changes only with the owner's OK.** Write the migration and its test in `supabase/`. A person applies it.
+6. **Keep the look.** Sunlit gold and its vastu rules (`design-system/README.md`, "Colour" and "Vastu"): light grounds, gold for every action, light from the upper right, the heaviest blocks at the foot, the colour scale ending in light.
 
 ## Common changes
 
@@ -77,7 +78,9 @@ SQL tests run on a scratch Postgres: `createdb scratch && psql -v ON_ERROR_STOP=
 1. Work on a branch. Keep one change per pull request.
 2. Run `npm --prefix site run check`. For anything visible, also run `shots`, look at both widths, and attach the screenshots.
 3. Open a pull request with the template: say what changed and why, and give the evidence for any data or claim.
-4. CI repeats the checks, and `.github/workflows/deploy-site.yml` comments a preview link (drafts shown, forms dry runs). The owner reviews and merges. A merge deploys in about a minute (browsers may keep an old logo or share image for up to a day); reverting the pull request rolls it back. Going live and rolling back the whole site: `docs/runbooks/cloudflare-cutover.md` and `site/scripts/cutover.mjs`.
+4. CI repeats the checks, and `.github/workflows/deploy-site.yml` comments a preview link (drafts shown, forms dry runs). Merge when every check is green. A merge deploys in about a minute (browsers may keep an old logo or share image for up to a day); reverting the pull request rolls it back. Going live and rolling back the whole site: `docs/runbooks/cloudflare-cutover.md` and `site/scripts/cutover.mjs`.
+
+5. If the change moves the picture in `docs/HANDOFF.md` (a release, an item on hold, a new gotcha), update it in the same pull request.
 
 ## Don'ts
 
