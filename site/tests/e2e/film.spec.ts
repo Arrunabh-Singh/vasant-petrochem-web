@@ -10,6 +10,16 @@ import { filmProblems, filmState, filmTop, scrollFilm } from "../film-checks.ts"
  * the engine that plays the film where scroll-driven animations are missing.
  */
 
+/**
+ * Open a page once its film is ready: the fonts in, and wherever islands/motion.ts
+ * loads the scroll engine, the engine running. (Not "networkidle": Firefox once
+ * never reached it with every request answered.)
+ */
+async function open(page: Page, path = "/") {
+  await page.goto(path);
+  await page.waitForFunction(() => document.fonts.status === "loaded" && (!document.documentElement.hasAttribute("data-engine") || document.documentElement.classList.contains("vp-scrub")));
+}
+
 async function problemsAt(page: Page, share: number, phone: boolean): Promise<string[]> {
   await page.evaluate(scrollFilm, share);
   await page.waitForTimeout(80);
@@ -17,8 +27,7 @@ async function problemsAt(page: Page, share: number, phone: boolean): Promise<st
 }
 
 async function playFilm(page: Page, phone: boolean, path = "/") {
-  await page.goto(path);
-  await page.waitForLoadState("networkidle");
+  await open(page, path);
   const shares = Array.from({ length: 41 }, (_, i) => i / 40);
   const problems = new Set<string>();
   for (const s of [...shares, ...shares.slice().reverse()]) for (const p of await problemsAt(page, s, phone)) problems.add(p);
@@ -57,8 +66,7 @@ test.describe("on the shortest phones", () => {
 // buttons must clear the action bar there too, at the heights phones have with Safari's toolbar shown.
 test("the hero's buttons clear the action bar at the page's top", async ({ page, hasTouch }) => {
   test.skip(!hasTouch, "phone projects only");
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await open(page);
   for (const [width, height] of [[375, 667], [393, 659], [393, 692], [402, 714], [430, 772], [440, 796]] as const) {
     await page.setViewportSize({ width, height });
     await page.evaluate(filmTop, null);
@@ -68,8 +76,7 @@ test("the hero's buttons clear the action bar at the page's top", async ({ page,
 });
 
 test("the road's pin is a quiet dot until the tanker leaves", async ({ page }) => {
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await open(page);
   await page.evaluate(() => {
     document.documentElement.style.scrollSnapType = "none";
     const road = document.querySelector(".vp-road")!;
@@ -81,8 +88,7 @@ test("the road's pin is a quiet dot until the tanker leaves", async ({ page }) =
 });
 
 test("a tapped link leaves nothing frozen on the way back", async ({ page, hasTouch }) => {
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await open(page);
   const cta = page.locator(".vp-film-copy .vp-btn-primary");
   if (hasTouch) await cta.tap();
   else await cta.click();
@@ -102,8 +108,7 @@ test("the film keeps playing when the phone's toolbar collapses", async ({ page,
   test.skip(!hasTouch, "phone projects only");
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 393, height: 659 });
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await open(page);
   const to = (share: number) => page.evaluate(scrollFilm, share);
   await to(0.02);
   await page.setViewportSize({ width: 393, height: 780 });
@@ -159,8 +164,7 @@ test.describe("one frame per input", () => {
   }
   /** Every frame in order, then out of the film: keys land on the statement, a flick or a swipe carries on freely. */
   async function walk(page: Page, step: () => Promise<unknown>, out = "past the film") {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await open(page);
     await expect(page.locator("html")).toHaveClass(/vp-snap/);
     const n = await page.locator(".vp-oil").count();
     const seen = [await page.evaluate(where)];
@@ -214,8 +218,7 @@ test.describe("one frame per input", () => {
 
   test("a swatch goes to its grade, and Skip the film to the statement", async ({ page, hasTouch }) => {
     test.setTimeout(60_000);
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await open(page);
     await page.evaluate(scrollFilm, 0.3);
     await page.evaluate(() => (document.documentElement.style.scrollSnapType = ""));
     await settle(page);
@@ -233,8 +236,7 @@ test.describe("one frame per input", () => {
 
   test("a chapter dot goes to its chapter", async ({ page, hasTouch, browserName }) => {
     test.skip(hasTouch || browserName !== "chromium", "the dots: laptops");
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await open(page);
     await page.locator('.vp-chapters a[data-chapter="road"]').click();
     await settle(page);
     // Past the film the page doesn't snap, so the road lands under the page's own scroll padding.

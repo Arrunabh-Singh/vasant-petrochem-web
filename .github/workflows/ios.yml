@@ -73,7 +73,9 @@ jobs:
         run: |
           npm install -g appium@3.9.0
           appium driver install xcuitest@12.22.2
-          appium --port 4723 --log-timestamp > appium.log 2>&1 &
+          # Appium drops a connection that stays quiet for 10 minutes, and the first session
+          # (a Simulator restart, then building WebDriverAgent) can take longer.
+          appium --port 4723 --keep-alive-timeout 1800 --log-timestamp > appium.log 2>&1 &
           for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:4723/status && exit 0; sleep 1; done
           cat appium.log; exit 1
       - name: Swipe through the film

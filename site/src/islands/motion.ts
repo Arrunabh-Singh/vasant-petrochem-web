@@ -13,6 +13,9 @@ import { filmPlays, iosWebKit } from "../lib/film.ts";
 
 const forced = new URLSearchParams(location.search).get("film") === "scrub";
 const desktopSafari = /Apple/.test(navigator.vendor) && !iosWebKit();
-if (filmPlays() && (forced || desktopSafari || !CSS.supports("animation-timeline: view()"))) void import("./scrub.ts");
+if (filmPlays() && (forced || desktopSafari || !CSS.supports("animation-timeline: view()"))) {
+  document.documentElement.dataset.engine = ""; // the tests wait for the engine to start (html.vp-scrub) wherever this is set
+  void import("./scrub.ts");
+}
 
 export {};

@@ -73,6 +73,7 @@ Each grade adds 60svh to the film (`--n` counts them), so adding a product keeps
    - The trackpad uses `Input.synthesizeScrollGesture` with `gestureSourceType: "mouse"`.
    - Never `page.mouse.wheel`: each event is its own gesture, and each snaps back.
    - Never a touch `synthesizeScrollGesture`: it doesn't scroll in headless Chromium.
+   - Open pages with the spec's `open()`, never `waitForLoadState("networkidle")`: Firefox once never reached it. `open()` waits for the fonts, and for the scroll engine wherever `islands/motion.ts` loads it (`html[data-engine]`).
 3. **Look at it.** Run `npm --prefix site run shots -- --film` and `-- --film --reduce`, then the `design-review` skill.
 4. **Run the Apple rig.** `.github/workflows/ios.yml` runs on every pull request that touches `site/`, or by hand (workflow_dispatch). It has three jobs:
 
@@ -86,7 +87,7 @@ Each grade adds 60svh to the film (`--n` counts them), so adding a product keeps
    - **Read `report.json`.** It has one entry per step: scroll position, share, grade, `engine` (scrub.ts running), `native` (native animations), slow frames, and the problems found. The in-page checks are the signal.
    - **Don't judge from the Mac's screenshots:** they come out blank on the runner.
    - safaridriver's wheel actions don't scroll, so the Mac steps use `scrollFilm`, and keys after `filmTop`.
-   - Appium answers a new session only after it builds WebDriverAgent, which can take more than five minutes. `film.mjs` uses `node:http` because `fetch` gives up at five.
+   - Appium answers a new session only after it builds WebDriverAgent, which can take more than five minutes, and on the iPhone Duo more than ten. `film.mjs` uses `node:http` because `fetch` gives up at five, and the workflow starts Appium with `--keep-alive-timeout 1800` because Appium drops a connection that stays quiet for ten (its default, 600 s).
 5. **The owner's iPhone is the last check.** The Simulator proves WebKit's behaviour, not a phone's GPU.
 
 ## When an iPhone glitches

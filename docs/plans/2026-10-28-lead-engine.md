@@ -1,135 +1,39 @@
 # The site as a lead engine: a film people finish, agents can read, and doors that bring buyers back
 
-## Resume here (28 October, 19:05 UTC; the owner: "proceed to plan execution")
+## Resume here (29 October)
 
-### 0. State now, and the execution order
+**Where things stand:**
+- **PR #46**, the iPhone film fix:
+  - On dc79378, 10 of 12 checks passed, iPhone 18 Pro (iOS 27.0) and Safari 27 on macOS among them.
+  - The two red ones, e2e (Firefox) and iPhone Duo (iOS 27.1), are fixed in the commit after it (below).
+  - Merge when everything is green; then the owner checks on their own iPhone.
+- **The canvas draft** of Parts 4–9 and 11: https://claude.ai/artifact/63XqLSZXhGJnpUAWWJDU8r. No owner comments yet.
+- **PR E**, the quote flow and its "Request received" peak:
+  - built and checked in Chromium at 390 and 1440, but kept local (not pushed) until #46 merges;
+  - if that work is lost, rebuild it from Part 11 and the canvas draft.
+- **Not started:** PR B, PR C, PR D1, PR D2, task #35, and the 150 kB budget guard.
+- **The owner's steps are still open** (re-checked 29 October; section 5):
+  - GPTBot, ClaudeBot and CCBot still get a 403;
+  - the home page carries no Web Analytics beacon;
+  - Cloudflare's connectors are not added yet.
 
-**Saved.** 8e9442d (section 1), then 62fd623 (Part 12's docs) and 61db940 (the film fixes: section 2), all pushed on `claude/sharp-cannon-807c29` (draft PR #46).
+**The two fixes after dc79378:**
+- **e2e (Firefox):**
+  - **Cause:** the film tests waited for `networkidle`. Firefox never reached it, although every request was answered.
+  - **Fix:** `islands/motion.ts` now marks `html[data-engine]` wherever it loads the scroll engine. The tests' `open()` waits for the fonts and, where the page is marked, for `html.vp-scrub`.
+- **iPhone Duo (iOS 27.1):**
+  - **Cause:** Appium drops a connection that stays quiet for 10 minutes (`--keep-alive-timeout`, default 600 s). The Duo's first session restarted the Simulator's UI (174 s), then built WebDriverAgent. So the session request got "socket hang up" at exactly 600 s.
+  - **Fix:** the rig now starts Appium with `--keep-alive-timeout 1800`.
+  - **If the Duo still runs out of time:** build WebDriverAgent in its own step, then use `appium:usePrebuiltWDA`.
 
-**61db940 fixed what CI and the rig found on 8e9442d:**
-- the rig's client gave up after five minutes while Appium built WebDriverAgent (`HeadersTimeoutError`): `node:http` instead of `fetch`;
-- the faded hero copy still caught taps over the grades (`vp-gone` on the copy itself);
-- on 320×568 the grade count pushed the link under the action bar (the count hides on stages under 620 px tall);
-- frames too far apart for one flick (below).
-
-**The rig on 61db940** (run 40755369927): the Mac passed. The iPhone 18 Pro (iOS 27.0) found two things, both fixed in the next commit:
-- at the page's top the header still pushes the stage down 61 px, so the hero's "Browse the marketplace" sat half under the action bar. A sweep of 152 phone sizes in Chromium found the same on 97 of them, every phone between about 620 and 840 px tall with Safari's toolbar shown. The hero's drop and type now follow the stage's height in two bands (up to 840 px, and up to 760 px), and a new e2e test checks the page's top at six phone sizes;
-- one flick from the title passed the first grade: that gap was 238 px against 307 between grades. The title's frame moves to 17.8%, and its hold with it, so the gaps either side match the grades'.
-
-The iPhone Duo (iOS 27.1) had no page problems; at step 027 Safari's Web Inspector took 151 s to answer and Appium gave up at 120 s. The rig now waits up to 300 s (`webviewAtomWaitTimeout`), and no longer records video, which never produced a usable file and loaded the runner.
-
-**Execute in this order:**
-1. **Part 12, docs** (section 5): done in 62fd623. Give the owner the dashboard steps. The Cloudflare plugin's server needs a sign-in this session can't start: the owner authorizes it, or adds the custom connectors, in claude.ai settings.
-2. **Finish PR #46** (section 2 and the B list in section 4): read the rig artifacts on 61db940; the docs and the `motion` skill; `design-review`. Iterate until e2e and the rig are green, then merge.
-3. **Then the design plan, in section 4's order:** the canvas draft of Parts 4–9 and 11 for the owner, then PR E, PR B, PR C, PR D1, PR D2, task #35.
-
-### 1. What 8e9442d holds (was "Save first")
-
-**Saved in 8e9442d** (was uncommitted; 14 files).
-- **Part 2, iPhones play the film natively:**
-  - `site/src/lib/film.ts` (`iosWebKit`, `filmPlays`) and `site/src/islands/motion.ts`;
-  - `site/src/styles/motion.css`: the Safari blocks exclude iOS;
-  - `site/src/styles/film.css`: container queries instead of height media queries, threadable keyframes, `vp-gone`, explicit `translate: 0 0` endpoints;
-  - `site/src/islands/liquid.ts`: cached geometry.
-- **Part 3, one frame per flick:**
-  - The `film.css` pacing block:
-    - `html.vp-snap` with mandatory snapping;
-    - snap points: `.vp-snap-top`, `.vp-snap-title`, `.vp-film-snaps-grades > span` and `.vp-statement`;
-    - swatch links, `.vp-oil-count`, the skip link;
-    - the chapter anchor: a hairline, plus dots on laptops;
-    - a scroll cue on laptops;
-    - 60svh slots.
-  - New `site/src/islands/film-snap.ts`.
-  - `site/src/pages/index.astro`.
-  - `site/src/components/ColourScale.astro` (`links`).
-  - `content/ui/en.json`: new strings (`film.grade` is unused; remove it).
-- **Restraint:** `motion.css` loses the site-wide `vp-rise` and `vp-wipe` reveals, and `index.astro` loses the `vp-wipe` and `vp-reveal` classes.
-- **Rig fixes:**
-  - `.github/workflows/ios.yml`: reduced motion off on both runners.
-  - `site/tests/ios/film.mjs`: logs `reduced` and `film=Nx`, and adds the Space and Page Down steps.
-  - `site/tests/film-checks.ts`:
-    - `scrollFilm` turns snapping off;
-    - new `filmTop`;
-    - `snap` in `filmState`;
-    - more words checked.
-- **Tests:**
-  - `site/tests/unit/motion-css.test.ts`: all 41 pass;
-  - `site/tests/e2e/film.spec.ts`: a new "one frame per input" block.
-- `npm --prefix site run check` passes: typecheck, 41 unit tests, the build, and checks on 39 pages.
-
-**Steps:**
-1. Copy this plan into the repository as `docs/plans/2026-10-28-lead-engine.md`, since the plan file lives outside the repository and is lost with the container. Add a short "Work in progress" pointer to it in `docs/HANDOFF.md`.
-2. **Fix CI, which is red on #46.** The cause is outside this PR's code: the `quality` job in `.github/workflows/site.yml` runs `npx playwright install --with-deps`, which fails ("Playwright does not support chromium on ubuntu26.04-x64"). `ubuntu-latest` is now 26.04, which Playwright 1.56.1 doesn't support. Pin `runs-on: ubuntu-24.04` for `check` and `quality` (site.yml lines 23 and 55).
-3. Fix the two failing new e2e tests (causes in section 2), or leave them out of the commit and say so. Never skip a test.
-4. Commit twice:
-   - Part 2 with the rig fixes and the CI pin;
-   - Part 3 with the restraint.
-
-   Each commit ends with:
-   - `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
-   - `Claude-Session: https://claude.ai/code/session_01WWZGmuzqbbzMaXmL7weDvU`
-
-   Push with `git push -u origin claude/sharp-cannon-807c29`. This session is subscribed to #46.
-
-### 2. What the Chromium probes showed (local preview), and what to do
-
-| Input | Result | Action |
-| --- | --- | --- |
-| Space, Page Down | One frame per press | Tests pass |
-| Tap a swatch; tap "Skip the film" | Swatch goes to its grade; skip goes to the statement | Tests pass |
-| `page.mouse.wheel` | CDP sends each event as its own precise gesture, so each snaps back and the page never leaves the top. This is not a real wheel. | Drop that test |
-| `synthesizeScrollGesture` with `gestureSourceType: "mouse"` | Trackpad-like scroll | Use it for the trackpad test, with a distance under one screen |
-| `synthesizeScrollGesture` with touch | Doesn't scroll in headless Chromium | Don't use it |
-| `Input.dispatchTouchEvent` (touchStart, 8 touchMoves, touchEnd) | Scrolls, and flings | Use it for the flick tests |
-| Normal flick, 260 px in 120 ms | One frame | None |
-| Fast flick, 500 px in 80 ms | Two frames | Frames 40–55% of a screen apart (below) |
-| Trackpad gesture, 600 px | Two frames | Same fix |
-
-- **How Chromium snaps after a gesture** (measured): it takes the snap point nearest where the scroll would naturally have stopped, capped at the first point with `scroll-snap-stop: always`. The finger's own travel can still pass points; the stop only caps the momentum.
-  - A normal flick travels 245–540 px, a fast one about 1100–1300 px.
-- **What failed:** 140svh per grade (one screen apart, tried first) made flicks spring back, because the nearest point was the one just left. The rule: **every gap 40–55% of a screen** (under about 490 px on an 844 px phone), so a gentle flick still lands on the next frame.
-- **What shipped (61db940):**
-  - the film is back to 60svh per grade;
-  - a "drop filled" frame at 9% splits the long run from the hero to the title, and the title's frame moves to 19.5%, inside its hold (17.8% since the rig's second run, with the title's hold moved to match);
-  - snapping turns off a pixel past the last grade's frame (an IntersectionObserver on it), so a flick from there carries on out of the film instead of springing back. Space and Page Down still end on the statement.
-
-  | Screen | top → drop | drop → title | title → first grade | between grades |
-  | --- | --- | --- | --- | --- |
-  | Phone 390×844 | 426 px | 356 px | 353 px | 364 px |
-  | Laptop 1440×900 | 462 px | 380 px | 376 px | 389 px |
-
-  - Trade-off: a finger dragged further than a gap (353–426 px on a phone) can pass one frame.
-- **A chapter link inside the film** lands on its frame only if snapping is on before the jump (Chromium doesn't re-snap when it turns on afterwards), so the click handler sets it first.
-- **Chapter-dot test** expected the road at 0 px and got 68. With snapping off, `scroll-padding-top` (localnav + space-4) applies again. Compare against `getComputedStyle(html).scrollPaddingTop`.
-
-### 3. The Apple rig's first run (run 40720514207, commit df47a9d)
-
-| Job | Result | Artifact |
-| --- | --- | --- |
-| iPhone 18 Pro (iOS 27.0) | Failed with problems: today's glitch | `ios-film-27.0`, id 12831686695 |
-| iPhone Duo (iOS 27.1) | Failed early; read its `appium.log` first | `ios-film-27.1`, id 12831227602, 8 KB |
-| Safari 27 on macOS | Failed because the runner reduces motion (fixed locally) | `mac-film`, id 12831255201 |
-
-- **Reading the artifacts:**
-  - They expire on 11 November.
-  - Download them with `mcp__github__actions_get`, method `download_workflow_run_artifact`.
-  - Read `report.json` (one line per step) and the screenshots.
-  - For contact sheets of the videos, use `scripts/extract_key_frames.py` from the `video-interaction-mapper` plugin.
-- **After the push:** iterate until both iPhones and the Mac are clean, then merge #46 (squash, `fix(site): … (#46)`). Then the owner checks on their own iPhone.
-
-### 4. Then, in order (details in the parts below)
-1. **Finish #46 (PR A):**
-   - Part 3's docs: the README "Motion" section, and the `brand` and `design-review` skills (the scroll-snap rule change);
-   - `HANDOFF.md`, and a new `.claude/skills/motion/SKILL.md`;
-   - a `design-review` pass with `shots --film` at 390 and 1440.
-2. Canvas draft of Parts 4–9 and 11 for the owner (task #39).
-3. PR E, the quote flow and the `/sent` peak (#44).
-4. PR B, the loader, 3D drop, finale ring, gradients and sound (#40).
-5. PR C, the marketplace (#41).
-6. PR D1, agents and the WhatsApp doors (#42).
-7. PR D2, the agent quote API and measurement (#43); the owner applies the migration.
-8. Task #35, the design-system artifact: `index.d.ts` as `text/plain`, the index last.
-9. Raise the home page's JS budget guard in `site/scripts/checks.mjs` to 150 kB.
+**Then, in order:**
+1. **Merge #46.** Squash it as `fix(site): iPhones play the film natively, one frame per flick, the Apple rig (#46)`, then restart the branch from main.
+2. **PR E:** the quote flow and the `/sent` peak (Part 11). Open it as a draft PR, get the owner's OK on the preview, then merge.
+3. **PR B** (Parts 4–7 and 9). It also raises the home page's JS budget guard in `site/scripts/checks.mjs` to 150 kB.
+4. **PR C** (Part 8), with the "Finish your quote" bar and the quote tank.
+5. **PR D1, then PR D2** (Part 10). The owner applies D2's migration.
+6. **Task #35:** the design-system artifact in Sunlit gold.
+7. **Part 12:** its checks and first report, once the owner has made the Cloudflare changes.
 
 ### 5. Part 12: Cloudflare's own data, read by Claude (owner, 28 October: "we are on Cloudflare now; use its metrics")
 

@@ -113,7 +113,8 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
   - the chapter anchor, the grade count, the scroll cue and the skip link;
   - the site-wide reveals removed;
   - the `motion` skill.
-- Still to do on #46: the rig and e2e green on its latest commit, then merge, then the owner checks on their iPhone.
+- Still to do on #46: every check green on its latest commit (iPhone 18 Pro and Safari 27 on macOS already pass), then merge, then the owner checks on their iPhone.
+- Next, in the plan's order: PR E (the quote flow and its "Request received" peak), then PR B, PR C, PR D1 and PR D2.
 
 **Waiting on the owner.** Each has a `TODO(...)` marker in `content/`; search for it.
 - `VP-HUM-001`: legal entity name, GSTIN, Udyam, CIN and registered office.
