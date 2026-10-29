@@ -2,6 +2,7 @@
 //   npm run shots                     every main page, full length, as the still page
 //   npm run shots -- /quote /about    just these pages
 //   npm run shots -- --film           the home film as contact sheets: every 4% of its pinned stretch, and the frames it snaps to
+//   npm run shots -- --intro          the home page's opening as a contact sheet: until Ready, then Enter's flight to the hero
 //   npm run shots -- --browser webkit an engine other than Chromium (webkit, firefox); WebKit uses iPhone 15 for the phone
 // Full-length captures use reduced motion: scroll-driven reveals show each
 // element only as it scrolls into view, so a full-page capture with motion on
@@ -16,7 +17,8 @@ const base = process.env.SHOTS_URL ?? "http://localhost:4321";
 const out = new URL("../shots/", import.meta.url).pathname;
 const args = process.argv.slice(2);
 const film = args.includes("--film");
-const reduce = args.includes("--reduce") || !film;
+const intro = args.includes("--intro");
+const reduce = args.includes("--reduce") || !(film || intro);
 const pages = args.filter((a) => a.startsWith("/"));
 const engine = args.includes("--browser") ? args[args.indexOf("--browser") + 1] : "chromium";
 const DEFAULT = ["/", "/marketplace", "/products/base-oil-sn500", "/quote", "/source", "/contact", "/about", "/supply", "/industries", "/documents", "/search", "/no-such-page"];
@@ -53,13 +55,28 @@ for (const [width, height, tag, thumb, cols] of SIZES) {
   const webkitNoise = /\[Report Only\] Refused to apply a stylesheet|'inline-speculation-rules'|'frame-ancestors' is ignored when delivered in a report-only policy/;
   page.on("console", (m) => (m.type() === "error" || /Content Security Policy/.test(m.text())) && !(engine === "webkit" && webkitNoise.test(m.text())) && errors.push(m.text().slice(0, 200)));
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
-  for (const path of film ? ["/"] : pages.length ? pages : DEFAULT) {
-    // "load", not "networkidle": a page with a Turnstile widget keeps the network busy.
-    await page.goto(base + path, { waitUntil: "load" });
-    await page.evaluate(() => document.fonts.ready);
-    await page.waitForTimeout(800);
+  for (const path of film ? ["/"] : intro ? ["/?loader=on"] : pages.length ? pages : DEFAULT) {
+    // "load", not "networkidle": a page with a Turnstile widget keeps the network busy. The opening is caught from its first frame.
+    await page.goto(base + path, { waitUntil: intro ? "commit" : "load" });
+    if (!intro) await page.evaluate(() => document.fonts.ready).then(() => page.waitForTimeout(800));
     const name = `${out}${(path.replace(/[/?=&#]+/g, "_") || "_") + (film ? "film" : "")}-${tag}${reduce ? "-still" : ""}${engine === "chromium" ? "" : `-${engine}`}.png`;
-    if (film) {
+    const shot = async () => sharp(await page.screenshot({ caret: "initial" })).resize(thumb).png().toBuffer();
+    const h = Math.round((thumb * vh) / (phone.viewport.width));
+    const sheet = (frames, file) =>
+      sharp({ create: { width: cols * (thumb + 6), height: Math.ceil(frames.length / cols) * (h + 6), channels: 3, background: "#777" } })
+        .composite(frames.map((input, i) => ({ input, left: (i % cols) * (thumb + 6), top: Math.floor(i / cols) * (h + 6) })))
+        .png()
+        .toFile(file);
+    if (intro) {
+      // Automated browsers see the opening only with ?loader=on: frames until Ready, then Enter, until it has gone.
+      const frames = [];
+      for (let i = 0; i < 16 && !(await page.locator(".vp-intro.is-ready").count()); i++) frames.push(await shot());
+      frames.push(await shot());
+      await page.locator('[data-intro-go="enter"]').click();
+      for (let i = 0; i < 16 && (await page.locator("dialog[data-intro]").count()); i++) frames.push(await shot());
+      frames.push(await shot());
+      await sheet(frames, name);
+    } else if (film) {
       // Positions along the film's pinned stretch (CSS's contain range), then the rest of the page; instant, as smooth scrolling would catch frames mid-way.
       const { top, length, total } = await page.evaluate(() => {
         const f = document.querySelector(".vp-film");
@@ -68,13 +85,6 @@ for (const [width, height, tag, thumb, cols] of SIZES) {
       const stops = [];
       for (let p = 0; p <= 100; p += 4) stops.push(Math.round(top + (length * p) / 100));
       for (let y = top + length; y < total; y += Math.round(length / 12)) stops.push(Math.min(total, y));
-      const shot = async () => sharp(await page.screenshot({ caret: "initial" })).resize(thumb).png().toBuffer();
-      const h = Math.round((thumb * vh) / (phone.viewport.width));
-      const sheet = (frames, file) =>
-        sharp({ create: { width: cols * (thumb + 6), height: Math.ceil(frames.length / cols) * (h + 6), channels: 3, background: "#777" } })
-          .composite(frames.map((input, i) => ({ input, left: (i % cols) * (thumb + 6), top: Math.floor(i / cols) * (h + 6) })))
-          .png()
-          .toFile(file);
       // The sweep with the page's snapping off, so every position shows, not the frame it would snap to.
       await page.evaluate(() => (document.documentElement.style.scrollSnapType = "none"));
       const frames = [];

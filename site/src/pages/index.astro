@@ -11,6 +11,7 @@ import Base from "../layouts/Base.astro";
 import ColourScale from "../components/ColourScale.astro";
 import Drop from "../components/Drop.astro";
 import Icon from "../components/Icon.astro";
+import Intro from "../components/Intro.astro";
 import LiquidDrop from "../components/LiquidDrop.astro";
 import { getFamilies, getIndustries, getProducts, keySpecs, specText } from "../lib/catalog.ts";
 import { company, whatsappHref } from "../lib/company.ts";
@@ -37,6 +38,7 @@ const supplyIcons = ["package", "phone"] as const;
 const explore = [...(b.explore?.heading ?? "Explore")];
 ---
 <Base title={home.title} description={home.description} fullTitle structured={[localBusiness()]}>
+  <Intro slot="top" />
   <span class="vp-snap-top" aria-hidden="true"></span>
 
   {/* 1–2 · The hero; then the drop is held to the light and passes along the colour scale. */}

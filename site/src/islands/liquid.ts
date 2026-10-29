@@ -7,7 +7,8 @@
  * It starts only after first paint, when motion is welcome, WebGL works and
  * Save-Data is off. It pauses off screen and in hidden tabs, draws at 30 fps
  * on touch screens, and hands back to the SVG liquid if frames are slow in
- * its first second or the GPU drops the context.
+ * its first second or the GPU drops the context. A drop it won't run in is
+ * marked is-off (the opening, islands/intro.ts, stops waiting for it).
  */
 
 import { filmPlays } from "../lib/film.ts";
@@ -77,7 +78,7 @@ function start(el: HTMLElement) {
   // No context where WebGL would run in software (no GPU, or a blocklisted one): the CSS liquid stays.
   const gl = canvas?.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: "low-power", failIfMajorPerformanceCaveat: true });
   const prog = gl ? compile(gl) : null;
-  if (!canvas || !gl || !prog) return;
+  if (!canvas || !gl || !prog) return void el.classList.add("is-off");
 
   gl.useProgram(prog);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
@@ -203,6 +204,7 @@ function start(el: HTMLElement) {
     run(false);
     stopped = true;
     el.classList.remove("is-live");
+    el.classList.add("is-off");
     gl?.getExtension("WEBGL_lose_context")?.loseContext();
   }
 
@@ -223,6 +225,6 @@ if (drops.length > 0 && !saveData && matchMedia("(prefers-reduced-motion: no-pre
   const go = () => drops.forEach(start);
   if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 1500 });
   else setTimeout(go, 300);
-}
+} else for (const el of drops) el.classList.add("is-off");
 
 export {};

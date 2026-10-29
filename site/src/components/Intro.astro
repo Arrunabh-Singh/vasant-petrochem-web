@@ -1,0 +1,57 @@
+---
+/**
+ * The opening (design-system/README.md, "Motion"): on a person's first visit
+ * to the home page in a tab, the drop fills and a counter rolls to 100 as the
+ * fonts, the page's light and the real-time liquid get ready; then "Enter"
+ * hands over to the film. islands/intro-gate.js decides before the first
+ * paint (html.vp-opening, which shows this dialog at once); islands/intro.ts
+ * makes it modal and plays the handoff. Never a trap: "Skip intro", Enter and
+ * Escape go in from the first frame, the page is complete underneath, and if
+ * the script never runs the opening fades by itself (styles/intro.css).
+ * It sits outside <main> (Base.astro's "top" slot), so the film's engine never
+ * takes over its motion.
+ */
+import introGate from "../islands/intro-gate.js?url&no-inline";
+import { company } from "../lib/company.ts";
+import { dropSvg } from "../lib/drop.ts";
+import { t } from "../lib/ui.ts";
+import Icon from "./Icon.astro";
+import "../styles/intro.css";
+
+const place = `${company.works.street.split(", ").at(-1)}, ${company.works.city} · Est. ${company.foundedYear}`;
+// Each counter wheel holds a blank (a leading zero not shown) and the ten digits.
+const digits = ["", ..."0123456789"];
+---
+{/* Parser-blocking on purpose: it runs before the rest of the page is read, so the page never paints first. */}
+<script is:inline src={introGate}></script>
+<dialog class="vp-intro" aria-label={company.tradeName} data-intro data-ready={t("intro.ready")} tabindex="-1">
+  <div class="vp-intro-bar">
+    <img class="vp-intro-logo" src="/brand/vasant-lockup-compact.png" alt="" width="634" height="182" />
+    <button type="button" class="vp-intro-skip" data-intro-go="skip">{t("intro.skip")}</button>
+  </div>
+  <div class="vp-intro-main">
+    <div class="vp-intro-stage">
+      <div class="vp-intro-drop" set:html={dropSvg("gold", { id: "vpi" })} />
+      <div class="vp-intro-meter">
+        <p class="vp-intro-state" role="status" data-intro-state>{t("intro.loading")}</p>
+        {/* No whitespace between the wheels and the %: they sit on one line of text, where a space at this size is wide. */}
+        <p class="vp-intro-count" aria-hidden="true">
+          {[0, 1, 2].map(() => <span class="vp-wheel" data-wheel><span class="vp-wheel-strip">{digits.map((d) => <span>{d}</span>)}</span></span>)}<span class="vp-intro-pct">%</span>
+        </p>
+        <span class="vp-intro-line" aria-hidden="true"></span>
+        <p class="vp-intro-parts">
+          <span data-part="fonts">{t("intro.fonts")}</span> · <span data-part="light">{t("intro.light")}</span> · <span data-part="liquid">{t("intro.liquid")}</span>
+        </p>
+      </div>
+    </div>
+    <div class="vp-intro-go">
+      <button type="button" class="vp-btn vp-btn-primary vp-btn-touch" data-intro-go="enter">{t("intro.enter")}<Icon name="arrow" size={18} /></button>
+      <button type="button" class="vp-btn vp-btn-secondary vp-btn-touch" data-intro-go="sound"><Icon name="sound-on" />{t("intro.enterSound")}</button>
+    </div>
+    <p class="vp-intro-note">{t("intro.sound")} <span class="vp-intro-keys">{t("intro.keys")}</span></p>
+  </div>
+  <p class="vp-intro-foot">{place}</p>
+</dialog>
+<script>
+  import "../islands/intro.ts";
+</script>

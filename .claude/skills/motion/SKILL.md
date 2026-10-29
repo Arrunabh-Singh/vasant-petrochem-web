@@ -22,6 +22,8 @@ The brand book's "Motion" chapter (`design-system/README.md`) says what the film
 | `site/tests/unit/motion-css.test.ts` | The rules below that a test can hold |
 | `site/tests/e2e/film.spec.ts` | The film at 390 and 1440, including "one frame per input" |
 | `site/tests/ios/film.mjs`, `.github/workflows/ios.yml` | The Apple rig |
+| `site/src/components/Intro.astro`, `islands/intro-gate.js`, `islands/intro.ts`, `styles/intro.css` | The home page's opening: the gate decides before the first paint (`html.vp-opening`); the island makes it modal, fills the drop, rolls the counter and flies the drop to the hero on Enter |
+| `site/tests/e2e/intro.spec.ts` | The opening, asked for with `?loader=on` (automated browsers skip it) |
 
 ## Rules
 
@@ -35,6 +37,15 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 6. **`--sfn` and `--ssn` equal `--scale-from` and `--scale-span`.** The snap frames use the plain numbers. (Test.)
 7. **Scrolling is never scripted.** Snapping is native CSS scroll snap, on only while the film plays to its last grade. No smooth-scroll library, no `scrollTo` on wheel or touch.
 8. **Faded is not gone.** An element that fades out must also stop taking taps (`vp-gone`), or it covers the links beneath it.
+
+## The opening
+
+- **Outside `<main>`** (Base's `top` slot), so the engine and the rule that hands Firefox and Mac Safari to it never touch its motion.
+- **The gate decides before the first paint.** `intro-gate.js` is a classic, parser-blocking script at the top of the body; the dialog shows through CSS (`html.vp-opening`) before `intro.ts` makes it modal. Without that script, it fades by itself after 8 seconds.
+- **The flight lands on the hero's drop.** At Enter, `intro.ts` measures `.vp-film-float` and flies the opening's drop onto it; the hero's drop stays hidden until then, so the two never show apart. Move or resize the hero's drop and the flight follows.
+- **The counter's wheels** are three cells of IBM Plex Mono at line-height .8, on one line with the % and no whitespace between them, so the % sits on the digits' baseline.
+- **`play()` on a finished animation runs it again.** The hero title's animations are held while the opening is open; play only the ones still paused.
+- The rig starts with it: `film.mjs` loads `/?loader=on`, waits for Ready and taps Enter.
 
 ## Pacing: the gap rule
 

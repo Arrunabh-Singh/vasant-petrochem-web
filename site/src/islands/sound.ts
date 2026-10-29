@@ -3,7 +3,8 @@
  * plays until the visitor turns it on with a [data-sound] button, the choice
  * is remembered on this device, and the sound stops while the tab is hidden.
  * play("add") is a soft thud as a grade joins the quote; play("sent") a deep
- * bass note with a bright chime as the request lands.
+ * bass note with a bright chime as the request lands; play("enter") a low
+ * note settling under a high shimmer, as the opening hands over to the film.
  */
 const KEY = "vp-sound";
 let on = false;
@@ -16,7 +17,7 @@ let ctx: AudioContext | null = null;
 
 /** One oscillator: its wave, a pitch glide (Hz), when it starts (s), its peak level and how long it rings (s). */
 type Voice = [type: OscillatorType, from: number, to: number, delay: number, peak: number, ring: number];
-const SOUNDS: Record<"add" | "sent", Voice[]> = {
+const SOUNDS: Record<"add" | "sent" | "enter", Voice[]> = {
   add: [
     ["sine", 160, 58, 0, 0.55, 0.24],
     ["triangle", 880, 440, 0, 0.05, 0.05],
@@ -26,6 +27,12 @@ const SOUNDS: Record<"add" | "sent", Voice[]> = {
     ["sine", 110, 110, 0, 0.22, 1.4],
     ["triangle", 1318.5, 1318.5, 0.09, 0.05, 0.6],
     ["triangle", 1760, 1760, 0.18, 0.04, 0.7],
+  ],
+  enter: [
+    ["sine", 65.4, 49, 0, 0.6, 2.4],
+    ["sine", 98, 98, 0.05, 0.18, 1.8],
+    ["triangle", 1046.5, 1046.5, 0.28, 0.035, 1.2],
+    ["triangle", 1568, 1568, 0.42, 0.025, 1],
   ],
 };
 
@@ -63,15 +70,20 @@ const sync = () => {
   for (const b of document.querySelectorAll("[data-sound]")) b.setAttribute("aria-pressed", String(on));
 };
 
-document.addEventListener("click", (e) => {
-  if (!(e.target instanceof Element) || !e.target.closest("[data-sound]")) return;
-  on = !on;
+/** Turns sound on or off, remembered on this device. Call it inside a tap or key press, so the browser lets it play. */
+export function setSound(value: boolean): void {
+  on = value;
   try {
     localStorage.setItem(KEY, on ? "on" : "off");
   } catch {
     /* not remembered */
   }
   sync();
+}
+
+document.addEventListener("click", (e) => {
+  if (!(e.target instanceof Element) || !e.target.closest("[data-sound]")) return;
+  setSound(!on);
   play("add"); // so the visitor hears what they turned on
 });
 for (const type of ["pointerdown", "keydown"]) addEventListener(type, () => void audio(), { capture: true, passive: true });
