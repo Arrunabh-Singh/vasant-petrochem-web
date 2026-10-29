@@ -88,6 +88,7 @@ Each grade adds 60svh to the film (`--n` counts them), so adding a product keeps
    - **Don't judge from the Mac's screenshots:** they come out blank on the runner.
    - safaridriver's wheel actions don't scroll, so the Mac steps use `scrollFilm`, and keys after `filmTop`.
    - Appium answers a new session only after it builds WebDriverAgent, which can take more than five minutes, and on the iPhone Duo more than ten. `film.mjs` uses `node:http` because `fetch` gives up at five, and the workflow starts Appium with `--keep-alive-timeout 1800` because Appium drops a connection that stays quiet for ten (its default, 600 s).
+   - A busy Simulator's Web Inspector can take minutes to commit a navigation, so `go()` waits until Safari is on the page (its address, and `readyState` complete), for up to five minutes, before any check. A fixed three-second wait once ran the checks on Safari's Start Page.
 5. **The owner's iPhone is the last check.** The Simulator proves WebKit's behaviour, not a phone's GPU.
 
 ## When an iPhone glitches
