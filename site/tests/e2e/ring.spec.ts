@@ -27,7 +27,15 @@ async function open(page: Page, centre = true) {
   await page.goto("/#explore");
   // The browser scrolls to the finale smoothly once the page has loaded, stopping short by the header's room (scroll-padding-top).
   await page.waitForFunction(() => document.fonts.status === "loaded" && document.querySelector(".vp-ring")?.classList.contains("is-live") && document.getElementById("explore")!.getBoundingClientRect().top <= parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) + 2);
-  if (centre) await page.evaluate(() => document.querySelector(".vp-ring")!.scrollIntoView({ block: "center", behavior: "instant" }));
+  if (centre) {
+    await page.evaluate(() => document.querySelector(".vp-ring")!.scrollIntoView({ block: "center", behavior: "instant" }));
+    // The whole sentence is read now, so the ring turns to the last door it names. Wait for that door, not only for
+    // whole places: a turn can be due but not yet drawn (CI's WebKit has held back frames for half a second).
+    await page.waitForFunction(() => {
+      const words = document.querySelectorAll<HTMLElement>(".vp-finale-text [data-door]");
+      return document.querySelectorAll(".vp-door")[Number(words[words.length - 1]?.dataset.door)]?.classList.contains("is-front");
+    });
+  }
   await settle(page);
 }
 
