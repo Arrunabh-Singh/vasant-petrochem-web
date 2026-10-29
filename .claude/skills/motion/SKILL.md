@@ -17,7 +17,9 @@ The brand book's "Motion" chapter (`design-system/README.md`) says what the film
 | `site/src/islands/motion.ts` | Loads `scrub.ts` for Firefox and Mac Safari; `?film=scrub` forces it |
 | `site/src/islands/scrub.ts` | The engine: plays the same CSS animations from each rule's `--tl` and `--ar` |
 | `site/src/islands/film-snap.ts` | Turns snapping on and off, marks the current chapter, and sets snapping before a chapter jump |
-| `site/src/islands/film-focus.ts`, `liquid.ts` | The keyboard path through the grades; the WebGL liquid (geometry cached on resize, never read per frame) |
+| `site/src/islands/film-focus.ts`, `liquid.ts` | The keyboard path through the grades; the WebGL glass drop: the drop's outline turned about its axis and lit from the north-east, a quarter-turn and the pour sound as each grade starts (geometry cached on resize, never read per frame) |
+| `site/src/islands/ring.ts`, `.vp-ring` in `film.css` | The finale's ring: the island sets each door's place, `--d`; CSS draws the arc from it |
+| `site/tests/e2e/ring.spec.ts` | The ring: the sentence, the buttons, the keys, a drag, taps, the reduced-motion grid |
 | `site/tests/film-checks.ts` | In-page checks shared by e2e and the rig: `scrollFilm`, `filmTop`, `filmProblems`, `filmState`, `frameGaps` |
 | `site/tests/unit/motion-css.test.ts` | The rules below that a test can hold |
 | `site/tests/e2e/film.spec.ts` | The film at 390 and 1440, including "one frame per input" |
@@ -47,6 +49,15 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 - **`play()` on a finished animation runs it again.** The hero title's animations are held while the opening is open; play only the ones still paused.
 - The rig starts with it: `film.mjs` loads `/?loader=on`, waits for Ready and taps Enter.
 
+## The finale's ring
+
+- **CSS draws the arc; the island only places the doors.** `ring.ts` writes each door's `--d` (its place, 0 in front, wrapped into ±half the ring), `--z` and its classes. `film.css` splits `--d` into three clamped steps (`--c1` to `--c3`) and their absolute values (`--a1` to `--a4`), and builds each door's `translateX`, `perspective`, `rotateY`, `scale`, opacity and blur from them, so each step out from the front can have its own spacing, angle and fade.
+- **Every turn is one tween** (ease-out, 300 to 700 ms), so a turn of several doors follows the arc, and the wrap happens out of sight at the back.
+- **Never from the screen's edges.** A drag that starts within 24 px of either edge is left to the browser's back gesture; one that moves more down than across is the page scrolling.
+- **`overflow: clip`, never `hidden`,** on the ring: `hidden` makes a scroll container, and the view timelines inside it stop following the page.
+- **The sentence turns it until the reader takes it.** A button, a key, a drag or a tap makes it theirs; scrolling then never moves it.
+- **Still is a grid.** With reduced motion or without the island, the doors are a plain grid of links.
+
 ## Pacing: the gap rule
 
 **How the browser snaps.** After a flick or swipe, the browser picks the snap point nearest where the scroll would naturally have stopped, capped at the first point with `scroll-snap-stop: always`. The finger's own travel can pass a point; the stop caps only the momentum. Measured in Chromium: a normal flick travels 245–540 px, a fast one about 1100–1300 px.
@@ -64,7 +75,7 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 
 **How a frame is placed.** `--at` is a frame's share of the pinned stretch. Its top is `--at × (100% − 50svh − 50lvh)`: the screen's height taken halfway between a phone's toolbar shown and hidden, so the frame lands inside its hold either way.
 
-**When snapping is on.** `film-snap.ts` watches the last grade's frame. A pixel past it, snapping turns off, so a flick from the last grade carries on out of the film instead of springing back.
+**When snapping is on.** `film-snap.ts` watches the last grade's frame. A pixel past it, snapping turns off, so a flick from the last grade carries on out of the film instead of springing back. A link into the page past the film (`/#explore`) glides there through the film (`scroll-behavior: smooth`), so snapping waits until its target arrives; otherwise the film's frames could catch the jump.
 
 | Screen | top → drop | drop → title | title → first grade | between grades |
 | --- | --- | --- | --- | --- |

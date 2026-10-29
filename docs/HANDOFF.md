@@ -41,7 +41,7 @@ Last updated 28 October 2026, during the lead-engine work (#46). Written for the
 | --- | --- | --- |
 | R1 | The public site: catalogue, marketplace with filters and compare, quote basket and enquiry, TDS gate, live offers board, company and policy pages, search, share images, brand kit | Live (#29, #30). Cutover finished 24 October (#35, #37). |
 | R1.1 | The home page as a scroll film, and the Sunlit gold redesign | Live (#38). |
-| R1.2 | The site as a lead engine: iPhones play the film natively, one frame per flick, with the Apple rig; canonical links; the quote flow and its "Request received" peak; then the home page's opening, finale and sound, the marketplace, and agents | Partly live:<br>- #46 and #47 live;<br>- the quote flow in review;<br>- PR B, C, D1 and D2 next. |
+| R1.2 | The site as a lead engine: iPhones play the film natively, one frame per flick, with the Apple rig; canonical links; the quote flow and its "Request received" peak; then the home page's opening, finale and sound, the marketplace, and agents | Partly live:<br>- #46, #47 and #48 live;<br>- PR B (the home page's opening, "Want more?" ring, glass drop and sound) in review;<br>- PR C, D1 and D2 next. |
 | R2 | Buyer portal | Partly built, not launched:<br>- database and file service done (#33);<br>- `portal` Edge Function deployed;<br>- `/account` pages built (#34) but kept as a draft page until the sales desk exists. |
 | R2c, R2d | Sales desk (hub); portal launch runbook (Supabase email via Resend, email templates, redirect URLs, function secrets) | R2c on hold; R2d not written. |
 | R3 | Quote API and MCP tools, a product assistant, "in stock / on request" badges from Tally | Not started. |
@@ -109,14 +109,15 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 - The plan and where to resume: `docs/plans/2026-10-28-lead-engine.md`. Start at its "Resume here" section.
 - **Live:**
   - #46: the Apple rig (`.github/workflows/ios.yml`: iPhone 18 Pro, iPhone Duo and Safari 27 on macOS); iPhones play the film natively; one frame per flick; the chapter anchor and cues; the `motion` skill;
-  - #47: canonical links and the header's current page use the page's own path; the rig waits for Safari to load each page.
-- **In review:** the quote flow. It shows its steps, keeps a draft on the device and offers quantity chips, then ends on "Request received", with optional sound.
+  - #47: canonical links and the header's current page use the page's own path; the rig waits for Safari to load each page;
+  - #48: the quote flow shows its steps, keeps a draft on the device and offers quantity chips, then ends on "Request received", with optional sound.
+- **In review:** PR B, the home page's opening (the drop fills to 100%, then Enter), the "Want more?" finale and its ring of doors, the glass drop, and the pour and the bed in sound.
 - **Next, in one run (owner, 29 October):**
-  - PR B: the home page's opening, finale ring, 3D drop and sound;
   - PR C: the marketplace;
   - PR D1 and D2: agents and lead measurement, with D2's migration;
   - then the FUCHS Cassida GL 220 lot, featured with its offer sheet, and the collateral system, skills and naming convention.
 - **The owner** tries the film on their iPhone.
+- **The iPhone Duo job** in the Apple rig hit its 60-minute limit on #48. The owner, 29 October: "leave the duo for now". It no longer holds up a merge; the iPhone 18 Pro and Safari on macOS jobs still do.
 
 **Waiting on the owner.** Each has a `TODO(...)` marker in `content/`; search for it.
 - `VP-HUM-001`: legal entity name, GSTIN, Udyam, CIN and registered office.
@@ -146,4 +147,5 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 - **Company facts.** They live only in `content/company.json`, and a test fails if they appear anywhere else.
 - **Hub and devices.** The hub's paths keep working on `www` only through the Worker's bypass routes (ADR-0005). Moving the hub means updating clients first.
 - **Previews.** Use a phone-sized screenshot as well as a laptop one; the owner checks on a phone first.
+- **Links into the home page.** `html { scroll-behavior: smooth }` makes the browser glide to an anchor such as `/#explore` after the page loads, through the film. `film-snap.ts` turns snapping on only once the target has arrived, or the film's frames could catch the jump; tests wait for the glide to end (`site/tests/e2e/ring.spec.ts`, `open()`).
 - **A page's own path.** Built pages see `Astro.url.pathname` ending in `.html` (`build.format: "file"`), so canonical links once pointed at `/about.html`. Use `pagePath(Astro.url)` from `site/src/lib/nav.ts`; `npm run check` fails a canonical link to a `.html` address.

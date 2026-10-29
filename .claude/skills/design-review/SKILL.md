@@ -37,6 +37,7 @@ The run fails on horizontal overflow, console errors or CSP violations. Look at 
    - Loading, empty and error states exist and say what to do next.
    - The film's motion follows the scroll. Only transform, opacity, blur and colour move.
    - Where you are is always visible in the film: the grade's place (`03 / 08`), the scale's marker, the hairline and, on laptops, the chapter dots. Each snap frame is a composed screen, with nothing half-faded.
+   - The finale's ring turns by drag or swipe, its arrows, the arrow keys and a tap on a side door, says which door is in front (`05 / 08`), and only the door in front opens. With reduced motion it is a grid.
    - The opening: "Skip intro" shows from its first frame, Enter has focus at Ready, and Enter's drop lands on the hero's with nothing shown twice.
    - Every button shows a press at once, with its own pressed colour, never the browser's tap highlight.
    - For anything on iPhones or Mac Safari, run the Apple rig and read its report (the `motion` skill).

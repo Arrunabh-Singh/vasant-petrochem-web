@@ -72,6 +72,15 @@
                 "claim": {
                   "type": "string",
                   "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "href": {
+                  "type": "string",
+                  "pattern": "^(\\/[a-z0-9/-]*|whatsapp)$"
+                },
+                "cta": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 40
                 }
               },
               "required": [

@@ -7,20 +7,21 @@
 **Where things stand:**
 - **Live:**
   - #46: the Apple rig; iPhones play the film natively, one frame per flick; the chapter anchor and cues; the `motion` skill;
-  - #47: canonical links without `.html`; the rig waits for Safari to load each page.
+  - #47: canonical links without `.html`; the rig waits for Safari to load each page;
+  - #48: the quote flow and its "Request received" peak (Part 11).
 - **The canvas draft** (https://claude.ai/artifact/63XqLSZXhGJnpUAWWJDU8r): no comments from the owner.
-- **In review:** PR E, the quote flow and its "Request received" peak (Part 11).
-- **Not started:** PR B's finale ring, gradients, 3D drop and sound bed (its opening is built), PR C, PR D1, PR D2 and task #35.
+- **In review:** PR B: the opening, the "Want more?" finale and its ring (Part 5), the light fields and depth (Part 6), the glass drop (Part 4), the pour and the bed (Part 9). The home page's JS stayed within its 20 kB budget, so the guard was not raised.
+- **Not started:** PR C, PR D1, PR D2 and task #35.
+- **The iPhone Duo job** (owner, 29 October: "leave the duo for now") no longer holds up a merge.
 - **The owner's steps are still open** (section 5): GPTBot, ClaudeBot and CCBot get a 403, the home page has no Web Analytics beacon, and Cloudflare's connectors aren't added.
 
 **Then, in order:**
-1. **PR E:** merge when green.
-2. **PR B** (Parts 4–7 and 9). It raises the home page's JS budget guard in `site/scripts/checks.mjs` to 150 kB.
-3. **PR C** (Part 8), with the "Finish your quote" bar and the quote tank. Its featured hero arrives with the Cassida lot.
-4. **PR D1, then PR D2** (Part 10). The owner OK'd D2's migration on 29 October: the agent applies it with the Supabase MCP, then re-runs the security advisor.
-5. **The FUCHS Cassida GL 220 lot**, then the collateral system, skills and naming convention. Their plan joins `docs/plans/` with the lot's first PR.
-6. **Task #35:** the design-system artifact in Sunlit gold, last, so it includes the collateral pieces.
-7. **Part 12:** its checks and first report, once the owner has made the Cloudflare changes.
+1. **PR B:** merge when green.
+2. **PR C** (Part 8), with the "Finish your quote" bar and the quote tank. Its featured hero arrives with the Cassida lot.
+3. **PR D1, then PR D2** (Part 10). The owner OK'd D2's migration on 29 October: the agent applies it with the Supabase MCP, then re-runs the security advisor.
+4. **The FUCHS Cassida GL 220 lot**, then the collateral system, skills and naming convention. Their plan joins `docs/plans/` with the lot's first PR.
+5. **Task #35:** the design-system artifact in Sunlit gold, last, so it includes the collateral pieces.
+6. **Part 12:** its checks and first report, once the owner has made the Cloudflare changes.
 
 ### 5. Part 12: Cloudflare's own data, read by Claude (owner, 28 October: "we are on Cloudflare now; use its metrics")
 
