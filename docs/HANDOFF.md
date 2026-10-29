@@ -41,6 +41,7 @@ Last updated 28 October 2026, during the lead-engine work (#46). Written for the
 | --- | --- | --- |
 | R1 | The public site: catalogue, marketplace with filters and compare, quote basket and enquiry, TDS gate, live offers board, company and policy pages, search, share images, brand kit | Live (#29, #30). Cutover finished 24 October (#35, #37). |
 | R1.1 | The home page as a scroll film, and the Sunlit gold redesign | Live (#38). |
+| R1.2 | The site as a lead engine: iPhones play the film natively, one frame per flick, with the Apple rig; canonical links; the quote flow and its "Request received" peak; then the home page's opening, finale and sound, the marketplace, and agents | Partly live:<br>- #46 and #47 live;<br>- the quote flow in review;<br>- PR B, C, D1 and D2 next. |
 | R2 | Buyer portal | Partly built, not launched:<br>- database and file service done (#33);<br>- `portal` Edge Function deployed;<br>- `/account` pages built (#34) but kept as a draft page until the sales desk exists. |
 | R2c, R2d | Sales desk (hub); portal launch runbook (Supabase email via Resend, email templates, redirect URLs, function secrets) | R2c on hold; R2d not written. |
 | R3 | Quote API and MCP tools, a product assistant, "in stock / on request" badges from Tally | Not started. |
@@ -104,17 +105,18 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 
 ## 7. Open items
 
-**Work in progress (28 October): the site as a lead engine.**
+**Work in progress (29 October): the site as a lead engine, then the Cassida lot.**
 - The plan and where to resume: `docs/plans/2026-10-28-lead-engine.md`. Start at its "Resume here" section.
-- Draft PR #46 (branch `claude/sharp-cannon-807c29`) contains:
-  - the Apple rig (`.github/workflows/ios.yml`): iPhone 18 Pro, iPhone Duo and Safari 27 on macOS;
-  - iPhones playing the film natively;
-  - one frame per flick, with native CSS scroll snap, and frames 40–55% of a screen apart;
-  - the chapter anchor, the grade count, the scroll cue and the skip link;
-  - the site-wide reveals removed;
-  - the `motion` skill.
-- Still to do on #46: every check green on its latest commit (iPhone 18 Pro and Safari 27 on macOS already pass), then merge, then the owner checks on their iPhone.
-- Next, in the plan's order: PR E (the quote flow and its "Request received" peak), then PR B, PR C, PR D1 and PR D2.
+- **Live:**
+  - #46: the Apple rig (`.github/workflows/ios.yml`: iPhone 18 Pro, iPhone Duo and Safari 27 on macOS); iPhones play the film natively; one frame per flick; the chapter anchor and cues; the `motion` skill;
+  - #47: canonical links and the header's current page use the page's own path; the rig waits for Safari to load each page.
+- **In review:** the quote flow. It shows its steps, keeps a draft on the device and offers quantity chips, then ends on "Request received", with optional sound.
+- **Next, in one run (owner, 29 October):**
+  - PR B: the home page's opening, finale ring, 3D drop and sound;
+  - PR C: the marketplace;
+  - PR D1 and D2: agents and lead measurement, with D2's migration;
+  - then the FUCHS Cassida GL 220 lot, featured with its offer sheet, and the collateral system, skills and naming convention.
+- **The owner** tries the film on their iPhone.
 
 **Waiting on the owner.** Each has a `TODO(...)` marker in `content/`; search for it.
 - `VP-HUM-001`: legal entity name, GSTIN, Udyam, CIN and registered office.

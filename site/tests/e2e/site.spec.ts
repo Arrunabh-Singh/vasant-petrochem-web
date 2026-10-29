@@ -10,6 +10,7 @@ const PAGES = [
   "/products/base-oil-sn500",
   "/products/base-oil-sn500/datasheet",
   "/quote",
+  "/sent",
   "/source",
   "/contact",
   "/about",
@@ -147,12 +148,54 @@ test("a product joins the quote list, and the enquiry answers as a dry run", asy
   await expect(page.locator("[data-basket-count]")).toHaveText("1");
   await page.goto("/quote");
   await expect(page.locator("[data-lines] > li")).toHaveCount(1);
+  // The grade is in, so the request opens on its second step, and a tap fills a tanker's worth.
+  await expect(page.getByText("Step 2 of 3")).toBeVisible();
+  // The phone's bar offers WhatsApp here, not a link back to this page.
+  await expect(page.locator(".vp-actionbar")).toContainText("Chat on WhatsApp");
+  await expect(page.locator(".vp-actionbar")).not.toContainText("Get a quote");
+  await page.getByRole("button", { name: /^One tanker/ }).click();
+  await expect(page.locator('[data-field="qty"]')).toHaveValue("20");
+  // The draft is saved as the visitor types, and says so only then.
+  await expect(page.getByText("Saved on this device")).toBeHidden();
+  await page.getByLabel("Delivery city or PIN").fill("Pithampur");
+  await expect(page.getByText("Saved on this device")).toBeVisible();
   await page.getByLabel("Your name").fill("Test Buyer");
   await page.getByLabel("Work email").fill("buyer@example.com");
+  await expect(page.getByText("Ready to send")).toBeVisible();
   await page.waitForTimeout(3100); // the time-to-submit window (src/server/bot.ts)
   await page.getByRole("button", { name: "Send enquiry" }).click();
-  await expect(page.getByRole("status")).toContainText("VP-ENQ-TEST-0000");
+  // "Request received": the reference, both WhatsApp next steps, and what was sent.
+  const peak = page.getByRole("region", { name: "Request received" });
+  await expect(peak.locator("[data-reference]")).toHaveText("VP-ENQ-TEST-0000");
+  await expect(peak.getByRole("link", { name: "Chat now on WhatsApp" })).toHaveAttribute("href", /VP-ENQ-TEST-0000/);
+  await expect(peak.getByRole("link", { name: "Get today’s lots on WhatsApp" })).toBeVisible();
+  await expect(peak.locator("[data-sent-lines] li")).toHaveText([/Base Oil SN500\s*One tanker \(20 kL\)/, /Pithampur/]);
+  await expect(page.locator(".vp-actionbar")).toBeHidden();
   expect(problems).toEqual([]);
+});
+
+test("no sound until the visitor turns it on, and then it is remembered", async ({ page, hasTouch }) => {
+  await page.addInitScript(() => {
+    const w = window as Window & { audioContexts?: number };
+    w.audioContexts = 0;
+    window.AudioContext = class extends AudioContext {
+      constructor(options?: AudioContextOptions) {
+        super(options);
+        w.audioContexts! += 1;
+      }
+    };
+  });
+  const contexts = () => page.evaluate(() => (window as Window & { audioContexts?: number }).audioContexts);
+  await page.goto("/products/base-oil-sn500");
+  await page.locator("[data-add]").first().click();
+  expect(await contexts()).toBe(0);
+  if (hasTouch) await page.getByRole("button", { name: "Open menu" }).click();
+  const sound = page.locator("[data-sound]:visible");
+  await sound.click();
+  await expect(sound).toHaveAttribute("aria-pressed", "true");
+  expect(await contexts()).toBe(1);
+  await page.goto("/quote");
+  await expect(page.locator("[data-sound]").first()).toHaveAttribute("aria-pressed", "true");
 });
 
 test("the skip link takes keyboard users to the content", async ({ page, isMobile }) => {

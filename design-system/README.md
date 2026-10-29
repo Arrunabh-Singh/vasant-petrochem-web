@@ -135,6 +135,15 @@ The home page is a film; every other page is a page with a light touch of the sa
 - **Still is complete.** With reduced motion, without JavaScript, on screens under 480px tall (a phone held sideways), on iPhones before iOS 26, or in a browser without container queries, nothing pins and nothing hides: the hero, then every grade as a lit card on ivory, the statement, the road with all four steps, and the close.
 - Cards lift 2px under a pointer. Touch gets no hover state.
 
+## Sound
+
+Off until the visitor turns it on. (Owner direction, 28 October: premium and bassy. The sounds are our own; never a game's or a store's music.)
+
+- **Composed in code** with Web Audio (`site/src/islands/sound.ts`): no files, no licence, nothing to download.
+- **Two moments:** a soft thud as a grade joins the quote list, and a deep bass note with a bright chime as a request lands on "Request received".
+- **The switch:** the speaker icon in the header on laptops, and "Sound" in the menu on phones, whose header has no room. It shows its state (`aria-pressed`), and the choice is remembered on the device.
+- **Never on its own.** Nothing plays before the visitor chooses it, and sound stops while the tab is hidden. Every reward also shows on screen, so a silent visit misses nothing.
+
 ## Logo
 
 Assets in the **Logos** group, cut from the owner's 1024px artwork: the white ground removed, the letter counters (A, P, R, O) cleared, the drop's highlights kept.

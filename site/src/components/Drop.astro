@@ -2,9 +2,9 @@
 /**
  * The product drop (design system signature). `size` picks a width class;
  * `title` makes it an image with that name, otherwise it is decoration.
- * `vt` names the element for the card-to-hero view transition.
+ * `vt` names the element for the card-to-hero view transition; `full` fills it to the brim.
  */
-import { dropSvg, type Tint } from "../lib/drop.ts";
+import { BRIM, dropSvg, type Tint } from "../lib/drop.ts";
 
 interface Props {
   tint: Tint;
@@ -12,11 +12,12 @@ interface Props {
   title?: string;
   animate?: boolean;
   vt?: string;
+  full?: boolean;
 }
-const { tint, size = "m", title, animate = false, vt } = Astro.props;
+const { tint, size = "m", title, animate = false, vt, full = false } = Astro.props;
 // Gradient and clip ids must be unique within a page; a build-wide counter is.
 const g = globalThis as { __vpDrop?: number };
 g.__vpDrop = (g.__vpDrop ?? 0) + 1;
-const markup = dropSvg(tint, { id: `vpd${g.__vpDrop}`, ...(title ? { title } : {}), animate });
+const markup = dropSvg(tint, { id: `vpd${g.__vpDrop}`, ...(title ? { title } : {}), animate, ...(full ? { level: BRIM } : {}) });
 ---
 <span class:list={["vp-drop", `vp-drop-${size}`]} data-vt={vt} set:html={markup} />

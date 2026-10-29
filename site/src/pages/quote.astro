@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Field from "../components/Field.astro";
 import FormGuard from "../components/FormGuard.astro";
 import FormStatus from "../components/FormStatus.astro";
+import SentPeak from "../components/SentPeak.astro";
 import Icon from "../components/Icon.astro";
 import { getProducts, packText } from "../lib/catalog.ts";
 import { claim } from "../lib/claims.ts";
@@ -14,13 +15,19 @@ const copy = await page("quote");
 const products = await getProducts();
 const pricing = await claim("pricing-24h");
 // What the quote list needs to draw a line: never prices, only catalogue facts.
-const catalog = products.map((p) => ({
-  slug: p.id,
-  name: p.data.name,
-  code: p.data.code,
-  packs: p.data.packaging.map(packText),
-  density: p.data.density,
-}));
+// A grade's tanker (its sized bulk pack) becomes the "One tanker" quantity.
+const catalog = products.map((p) => {
+  const tanker = p.data.packaging.find((k) => /tanker/i.test(k.type) && k.size && k.unit);
+  return {
+    slug: p.id,
+    name: p.data.name,
+    code: p.data.code,
+    tint: p.data.tint,
+    packs: p.data.packaging.map(packText),
+    density: p.data.density,
+    tanker: tanker ? { qty: String(tanker.size), unit: tanker.unit, pack: packText(tanker) } : null,
+  };
+});
 const units = ["MT", "kL", "L", "kg", "drums", "pails"];
 const types = [
   ["quote", "Price quote"],
@@ -32,11 +39,17 @@ const types = [
 <Base title={copy.title} description={copy.description}>
   <section class="vp-section-tight">
     <div class="vp-container vp-split">
-      <form class="vp-form" id="quote" method="post" action="/api/rfq" data-vp-form data-quote aria-labelledby="quote-title">
+      <form class="vp-form" id="quote" method="post" action="/api/rfq" data-vp-form data-quote data-done="section" aria-labelledby="quote-title">
         <div class="vp-stack">
+          <p class="vp-progress-head vp-js"><span class="vp-eyebrow" data-step-text>Step 1 of 3</span><span class="vp-progress-saved" data-saved hidden><Icon name="check" size={16} stroke={2.4} />Saved on this device</span></p>
           <h1 class="vp-h-page" id="quote-title">{copy.headline}</h1>
           <p class="vp-small">{copy.lead}</p>
         </div>
+        <ol class="vp-steps vp-js" aria-label="Steps" data-progress>
+          <li><a href="#lines-title" data-step-label>Grades</a></li>
+          <li><a href="#delivery-title">Quantity and delivery</a></li>
+          <li><a href="#details-title">Your details</a></li>
+        </ol>
 
         <fieldset class="vp-fieldset">
           <legend class="vp-legend">What do you need?</legend>
@@ -51,7 +64,7 @@ const types = [
           <h2 class="vp-legend" id="lines-title">Products</h2>
           <ul class="vp-lines" data-lines aria-live="polite"></ul>
           <div class="vp-empty vp-js" data-lines-empty>
-            <p class="vp-small">Your quote list is empty. Add products here, or from the marketplace.</p>
+            <p class="vp-small">Your quote list is empty. Add products here, or from <a class="vp-link vp-link-under" href="/marketplace">the marketplace</a>.</p>
           </div>
           <div class="vp-field vp-js" data-add-wrap>
             <label for="add-product">Add a product</label>
@@ -71,8 +84,9 @@ const types = [
           <Field name="contract_months" label="For how many months" type="text" inputmode="numeric" maxlength={3} />
         </div>
 
+        <h2 class="vp-legend" id="delivery-title">Delivery</h2>
         <div class="vp-form-row">
-          <Field name="delivery_city" label="Delivery city and state" autocomplete="address-level2" maxlength={120} />
+          <Field name="delivery_city" label="Delivery city or PIN" autocomplete="address-level2" maxlength={120} />
           <Field name="required_by" label="Needed by" type="date" />
         </div>
         {
@@ -91,6 +105,7 @@ const types = [
           <label class="vp-check"><input type="checkbox" name="docs" value="sds" />Safety data sheet</label>
         </fieldset>
 
+        <h2 class="vp-legend" id="details-title">Your details</h2>
         <div class="vp-form-row">
           <Field name="name" label="Your name" required autocomplete="name" maxlength={120} />
           <Field name="company" label="Company" autocomplete="organization" maxlength={160} />
@@ -102,7 +117,7 @@ const types = [
         <Field name="message" label="Anything else" type="textarea" maxlength={2000} />
         <input type="hidden" name="offer_ref" data-offer-ref />
         <FormGuard id="quote" />
-        <FormStatus />
+        <FormStatus><SentPeak slot="done" /></FormStatus>
         <p class="vp-caption">We use these details only to reply to your enquiry.</p>
         <div class="vp-actions">
           <button class="vp-btn vp-btn-primary vp-btn-touch" type="submit">{t("cta.send")}</button>
@@ -129,6 +144,10 @@ const types = [
       <div class="vp-line-head">
         <p class="vp-line-name"><span data-line-name></span> <span class="vp-grade vp-grade-quiet" data-line-code></span></p>
         <button class="vp-btn vp-btn-secondary vp-btn-small" type="button" data-line-remove><Icon name="trash" size={18} /><span class="vp-sr">Remove</span></button>
+      </div>
+      <div class="vp-chips" role="group" aria-label="Quick quantity">
+        <button class="vp-chip" type="button" aria-pressed="false" data-chip="tanker" hidden></button>
+        <button class="vp-chip" type="button" aria-pressed="false" data-chip="10-mt">10 MT</button>
       </div>
       <div class="vp-line-fields">
         <div class="vp-field"><label data-for="qty">Quantity</label><input class="vp-input" data-field="qty" inputmode="decimal" maxlength="11" /></div>

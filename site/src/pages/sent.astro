@@ -1,16 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
-import Icon from "../components/Icon.astro";
+import SentPeak from "../components/SentPeak.astro";
+// Where a form sent without JavaScript lands. With JavaScript the quote page shows the same
+// peak in place, with the enquiry's reference; here the acknowledgement email carries it.
 ---
 <Base title="Request received" description="Your enquiry reached the Vasant Petrochem sales desk." noindex>
-  <section class="vp-section">
-    <div class="vp-container vp-measure vp-stack">
-      <span class="vp-done-icon"><Icon name="check" size={26} stroke={2.5} /></span>
-      <h1 class="vp-h-page">Request received</h1>
-      <p class="vp-lead">Your enquiry reached the sales desk. We reply within 24 hours on business days.</p>
-      <div class="vp-actions">
-        <a class="vp-btn vp-btn-primary" href="/marketplace">Back to the marketplace</a>
-      </div>
-    </div>
-  </section>
+  <SentPeak />
 </Base>

@@ -1,0 +1,50 @@
+---
+/**
+ * "Request received": the peak at the end of an enquiry. On /sent, and in
+ * place of the quote form once it is sent (islands/form.ts fills the
+ * reference, islands/quote.ts what was sent). The drop fills to the brim.
+ */
+import { claim } from "../lib/claims.ts";
+import { whatsappHref } from "../lib/company.ts";
+import { t } from "../lib/ui.ts";
+import Drop from "./Drop.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  /** The enquiry's reference, when the page knows it. */
+  reference?: string | null;
+}
+const { reference = null } = Astro.props;
+const pricing = await claim("pricing-24h");
+const oneContact = await claim("one-contact");
+const chat = whatsappHref(reference ? t("sent.chatTextRef").replace("{ref}", reference) : t("sent.chatText"));
+const spark = "M12 2c.6 4.9 2.5 7.4 10 10-7.5 2.6-9.4 5.1-10 10-.6-4.9-2.5-7.4-10-10 7.5-2.6 9.4-5.1 10-10Z";
+---
+<section class="vp-peak" aria-labelledby="peak-title" tabindex="-1" data-peak>
+  <div class="vp-peak-stage" aria-hidden="true">
+    <span class="vp-peak-light"></span>
+    <span class="vp-peak-drop"><Drop tint="gold" size="xl" full animate /></span>
+    {[1, 2, 3].map((n) => <svg class={`vp-peak-spark vp-peak-spark-${n}`} viewBox="0 0 24 24" focusable="false"><path d={spark} /></svg>)}
+  </div>
+  <div class="vp-container vp-peak-copy">
+    <h1 class="vp-peak-title" id="peak-title"><span>Request</span> <span>received</span></h1>
+    <p class="vp-lead">{t("sent.lead")}</p>
+    <p class="vp-peak-promise">{pricing}</p>
+    <div class="vp-peak-ref" data-ref-box hidden={!reference}>
+      <p><span class="vp-eyebrow">{t("form.reference")}</span> <span class="vp-mono" data-reference>{reference}</span></p>
+      <button class="vp-btn vp-btn-secondary vp-btn-small vp-js" type="button" data-copy-ref data-copied={t("sent.copied")}><Icon name="copy" size={16} /><span data-copy-label>{t("sent.copy")}</span></button>
+    </div>
+    <div class="vp-actions">
+      <a class="vp-btn vp-btn-primary vp-btn-touch" href={chat} target="_blank" rel="noopener" data-wa-chat data-text-ref={t("sent.chatTextRef")}><Icon name="whatsapp" />{t("sent.chat")}</a>
+      <a class="vp-btn vp-btn-secondary vp-btn-touch" href={whatsappHref(t("sent.lotsText"))} target="_blank" rel="noopener"><span class="vp-live-dot" aria-hidden="true"></span>{t("sent.lots")}</a>
+    </div>
+    <p class="vp-peak-contact"><Icon name="check" size={18} stroke={2.4} />{oneContact}</p>
+    <p><a class="vp-link vp-link-under" href="/marketplace">{t("sent.back")}</a></p>
+  </div>
+  <div class="vp-peak-sent" data-sent-summary hidden>
+    <div class="vp-container">
+      <h2 class="vp-eyebrow">{t("sent.what")}</h2>
+      <ul class="vp-peak-sent-list" data-sent-lines></ul>
+    </div>
+  </div>
+</section>
