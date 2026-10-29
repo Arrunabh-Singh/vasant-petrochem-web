@@ -2,7 +2,8 @@
 /**
  * The colour scale: every grade's illustrated colour, darkest to lightest
  * (lib/drop.ts byColour), so it ends in light. Decoration beside text that names the grades; with
- * `current`, that grade's swatch is marked and its code shown under it.
+ * `current`, that grade's swatch is marked and its code shown under it. With
+ * `links` (the home film), each swatch is a link to that grade's frame in the film.
  */
 import type { ProductEntry } from "../lib/catalog.ts";
 import { t } from "../lib/ui.ts";
@@ -10,20 +11,22 @@ import { t } from "../lib/ui.ts";
 interface Props {
   grades: ProductEntry[];
   current?: string;
+  links?: boolean;
 }
-const { grades, current } = Astro.props;
+const { grades, current, links = false } = Astro.props;
 ---
-<div class="vp-scale" aria-hidden="true">
-  <span class="vp-scale-end">{t("scale.darker")}</span>
-  <ol class="vp-scale-swatches">
+<div class="vp-scale" aria-hidden={links ? undefined : "true"}>
+  <span class="vp-scale-end" aria-hidden="true">{t("scale.darker")}</span>
+  <ol class="vp-scale-swatches" aria-label={links ? t("chapter.grades") : undefined}>
     {
       grades.map((p) => (
         <li class:list={["vp-swatch", { "is-current": p.id === current }]} data-tint={p.data.tint}>
+          {links && <a class="vp-swatch-link" href={`#grade-${p.id}`} aria-label={p.data.name}></a>}
           {p.id === current && <span class="vp-swatch-code">{p.data.code}</span>}
         </li>
       ))
     }
   </ol>
-  <span class="vp-scale-end">{t("scale.lighter")}</span>
+  <span class="vp-scale-end" aria-hidden="true">{t("scale.lighter")}</span>
   <span class="vp-scale-marker"></span>
 </div>

@@ -111,8 +111,25 @@ it originally.
     folder (Windows Home has no BitLocker), a non-admin daily-use
     account, daily NAS copy of Tally's own backup.
 
+## Cloudflare (decided 28 October)
+
+18. **Let AI training crawlers read the site.** Cloudflare dashboard →
+    `vasantpetrochem.com` → AI Crawl Control: allow GPTBot, ClaudeBot and
+    CCBot (or Security → Bots: turn "Block AI bots" off). Our own
+    `robots.txt` already allows them; Cloudflare's block answers them with
+    a 403.
+19. **Turn on Web Analytics** (free, cookieless): Analytics & Logs → Web
+    Analytics → add `vasantpetrochem.com` with automatic setup. No code
+    change; the site's CSP already allows the beacon.
+20. **Give Claude Cloudflare's data.** claude.ai → Settings → Connectors →
+    Add custom connector, signing in with Cloudflare each time:
+    - `https://graphql.mcp.cloudflare.com/mcp` (traffic, bots, Web Analytics);
+    - `https://observability.mcp.cloudflare.com/mcp` (the Worker's logs and errors);
+    - optionally `https://mcp.cloudflare.com/mcp` (settings; an agent changes
+      nothing there without your OK).
+
 ## If something goes wrong
 
-18. Run `docs/runbooks/incident-response.md` — the 30-minute "we got
+21. Run `docs/runbooks/incident-response.md` — the 30-minute "we got
     breached" playbook. It also covers what to do the moment before
     you're sure it's real (freeze first, investigate after).

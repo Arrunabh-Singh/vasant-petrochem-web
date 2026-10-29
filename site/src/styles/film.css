@@ -7,8 +7,10 @@
 :root { --vp-bar: calc(var(--target-touch) + var(--space-3) + max(var(--space-4), env(safe-area-inset-bottom))); }
 
 /* The film's timing, read by islands/liquid.ts too: the drop is full at
-   --fill-end, and the grades share the stretch from --scale-from, one slot each. */
-.vp-film { --n: 1; --fill-end: 10%; --scale-from: 22%; --scale-span: 72%; }
+   --fill-end, and the grades share the stretch from --scale-from, one slot each.
+   --sfn and --ssn are the same two shares as plain numbers, for the snap points
+   (tests/unit/motion-css.test.ts keeps them equal). */
+.vp-film { --n: 1; --fill-end: 10%; --scale-from: 22%; --scale-span: 72%; --sfn: .22; --ssn: .72; }
 .vp-film:has(.vp-oil:nth-child(2)) { --n: 2; }
 .vp-film:has(.vp-oil:nth-child(3)) { --n: 3; }
 .vp-film:has(.vp-oil:nth-child(4)) { --n: 4; }
@@ -21,24 +23,24 @@
 .vp-film:has(.vp-oil:nth-child(11)) { --n: 11; }
 .vp-film:has(.vp-oil:nth-child(12)) { --n: 12; }
 /* Each grade's slot: its text, swatch, light and fallback drop share it. */
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > * {
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > * {
   --i: 0;
   --slot-start: calc(var(--scale-from) + var(--i) * var(--scale-span) / var(--n));
   --slot-in: calc(var(--scale-from) + (var(--i) + .25) * var(--scale-span) / var(--n));
   --slot-end: calc(var(--scale-from) + (var(--i) + 1) * var(--scale-span) / var(--n));
   --slot-out: calc(var(--scale-from) + (var(--i) + 1.25) * var(--scale-span) / var(--n));
 }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(2) { --i: 1; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(3) { --i: 2; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(4) { --i: 3; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(5) { --i: 4; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(6) { --i: 5; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(7) { --i: 6; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(8) { --i: 7; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(9) { --i: 8; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(10) { --i: 9; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(11) { --i: 10; }
-.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops) > :nth-child(12) { --i: 11; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(2) { --i: 1; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(3) { --i: 2; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(4) { --i: 3; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(5) { --i: 4; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(6) { --i: 5; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(7) { --i: 6; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(8) { --i: 7; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(9) { --i: 8; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(10) { --i: 9; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(11) { --i: 10; }
+.vp-film :is(.vp-oils, .vp-scale-swatches, .vp-film-glow, .vp-film-drops, .vp-film-snaps-grades) > :nth-child(12) { --i: 11; }
 
 /* ------------------------------------------- 1–2 the hero and the colour scale */
 /* Still: the hero in the morning light, then every grade on ivory, each lit in its own colour.
@@ -51,6 +53,8 @@
 .vp-film-float { position: relative; width: min(40vw, 170px); line-height: 0; }
 .vp-film-float .vp-liquid { width: 100%; }
 .vp-film-glow, .vp-film-drops, .vp-film .vp-scale, .vp-open-glint { display: none; }
+/* The film's own controls (the chapter anchor, snap points, skip link, scroll cue and grade count) exist only while it plays. */
+.vp-chapters, .vp-snap-top, .vp-film-snaps, .vp-film-skip, .vp-scroll-cue, .vp-oil-count { display: none; }
 .vp-open-shadow { width: 64%; height: 16px; margin-top: var(--space-4); border-radius: 50%; background: var(--text); opacity: .14; filter: blur(9px); }
 .vp-film-scale { grid-column: full; display: grid; gap: var(--space-3); padding: var(--space-14) var(--space-gutter); background: var(--ground-raised); color: var(--text); }
 .vp-film-title { font: var(--t-display-m-compact); letter-spacing: var(--t-display-m-compact-tracking); color: var(--text); text-wrap: balance; }
@@ -74,7 +78,7 @@
 }
 
 /* ---------------------------------------------------------- 3 statement */
-.vp-statement { position: relative; overflow: hidden; padding: var(--space-16) 0; }
+.vp-statement { position: relative; overflow: clip; padding: var(--space-16) 0; }
 .vp-statement .vp-container { position: relative; }
 .vp-statement-text { margin: var(--space-4) 0 var(--space-8); max-width: 30ch; font: var(--t-statement-compact); letter-spacing: var(--t-statement-compact-tracking); color: var(--text); text-wrap: pretty; }
 /* Engraved gold line-work behind the company's words, as on a certificate or a banknote. */
@@ -156,13 +160,13 @@
    its stage sticks for the length of the scene, and its parts play across
    the scene's `contain` range (the stretch where the stage is pinned).
    ====================================================================== */
-@media screen and (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-  @supports (container-type: size) {
+@media screen and (prefers-reduced-motion: no-preference) and (scripting: enabled) and (min-height: 480px) {
+  @supports (container-type: size) and ((animation-timeline: view()) or (not (-webkit-touch-callout: none))) {
     /* 1–2 · One stage: the hero; the drop is held to the light box and passes
        along the colour scale, darkest grade to lightest, one per slot, so the
        scroll ends in light. Positions are in the stage's own units: --hx/--hy
        where the drop sits in the hero, --fx/--fy where it is held to the light. */
-    .vp-film { height: calc(100svh + var(--n) * 83svh); view-timeline: --film block; }
+    .vp-film { position: relative; height: calc(100svh + var(--n) * 60svh); view-timeline: --film block; }
     .vp-film-stage {
       position: sticky; top: 0; height: 100svh; overflow: hidden; container-type: size;
       grid-template: "stage" 100% / 100%;
@@ -189,23 +193,35 @@
     .vp-film-glow > span { position: absolute; left: var(--fx); top: var(--fy); z-index: 1; opacity: 0; width: calc(var(--glow) * 2.2); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, #fff 0%, #ffffffe6 26%, color-mix(in srgb, var(--tint-light) 38%, transparent) 58%, color-mix(in srgb, var(--tint-light) 12%, transparent) 80%, transparent); animation: vp-glow linear both; --tl: --film; animation-timeline: --film; --ar: contain var(--slot-start) contain var(--slot-out); animation-range: contain var(--slot-start) contain var(--slot-out); }
     .vp-film-glow > .vp-film-glow-own { z-index: 0; animation-name: vp-glow-own; --ar: contain 12% contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 4); animation-range: contain 12% contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 4); }
 
-    .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: calc(var(--space-5) * 2 + var(--space-6) + var(--dw) * 1.7626 * var(--hs)) var(--edge) 0; animation: vp-copy-out linear both; --tl: --film; animation-timeline: --film; --ar: contain 9% contain 13%; animation-range: contain 9% contain 13%; }
+    .vp-film-copy { position: relative; z-index: 1; align-self: start; padding: calc(var(--space-5) * 2 + var(--space-6) + var(--dw) * 1.7626 * var(--hs)) var(--edge) 0; animation: vp-copy-out linear both, vp-gone linear both; --tl: --film, --film; animation-timeline: --film, --film; --ar: contain 9% contain 13%, contain 9% contain 13%; animation-range: contain 9% contain 13%, contain 9% contain 13%; }
     .vp-film:has(.vp-film-copy :focus-visible) :is(.vp-film-glow, .vp-film-scale, .vp-scale) { visibility: hidden; }
-    /* Short phones: no room above the headline, so the drop waits below the screen and rises in. */
-    @media (max-height: 760px) {
-      .vp-film-stage { --hs: .42; }
-      .vp-film-copy .vp-h-hero { font-size: clamp(2.25rem, 6.2cqb, 2.75rem); line-height: 1; }
+    /* Phones with Safari's toolbar shown: at the page's top the header still pushes the stage down,
+       so the drop opens smaller and the hero's type follows the stage's height, keeping the buttons above the bar.
+       Measured on the stage (100svh), never the screen: a phone's toolbar changes the screen's height mid-scroll. */
+    @container (max-height: 840px) and (max-width: 1023px) {
+      .vp-film-copy { --hs: .42; }
+      .vp-film-drop { --hs: .42; --hy: calc(var(--space-5) + var(--dw) * 1.7626 * var(--hs) / 2); }
+      .vp-film-copy .vp-h-hero { font-size: clamp(2rem, 5.4cqb, 2.75rem); line-height: 1; }
       .vp-film-copy .vp-lead { margin: var(--space-4) 0 var(--space-6); }
     }
+    @container (max-height: 760px) and (max-width: 1023px) {
+      .vp-film-copy { --hs: .3; }
+      .vp-film-drop { --hs: .3; --hy: calc(var(--space-5) + var(--dw) * 1.7626 * var(--hs) / 2); }
+      .vp-film-copy .vp-lead { font-size: .9375rem; line-height: 1.45; }
+    }
     /* The shortest phones: the drop waits just below the screen and rises in, and the hero's type tightens so its buttons stay above the bar. */
-    @media (max-height: 620px) {
-      .vp-film-stage { --hs: .85; --hy: calc(100cqb + var(--dw) * 1.7626 * var(--hs) / 2); }
+    @container (max-height: 620px) and (max-width: 1023px) {
+      .vp-film-drop { --hs: .85; --hy: calc(100cqb + var(--dw) * 1.7626 * var(--hs) / 2); }
       .vp-film-copy { padding-top: var(--space-5); }
       .vp-film-copy .vp-h-hero { font-size: clamp(1.875rem, 6.6cqb, 2.75rem); line-height: 1; }
       .vp-film-copy .vp-lead { font-size: .9375rem; line-height: 1.45; margin: var(--space-3) 0 var(--space-5); }
       .vp-film .vp-oil-name { font-size: clamp(2rem, 9.5cqi, 2.75rem); }
       .vp-film .vp-oil-meta { font-size: .875rem; line-height: 1.25rem; }
+      /* No room for the count: the scale's marker already shows where you are. */
+      .vp-film .vp-oil-count { display: none; }
     }
+    /* The copy stops taking taps as it leaves (vp-gone), so it never covers the grades' links:
+       a separate animation, so vp-copy-out can run on the compositor. */
     .vp-film-copy:has(:focus-visible) { animation: none; }
 
     .vp-film-drop { position: relative; place-self: start; display: block; width: var(--dw); padding: 0; animation: vp-film-glide linear both, vp-off linear both; --tl: --film, --film; animation-timeline: --film, --film; --ar: contain 10.5% contain 16.5%, contain 94% contain 100%; animation-range: contain 10.5% contain 16.5%, contain 94% contain 100%; }
@@ -229,15 +245,56 @@
     .vp-film .vp-swatch { width: 22px; animation: vp-swatch linear both; --tl: --film; animation-timeline: --film; --ar: contain var(--slot-start) contain var(--slot-end); animation-range: contain var(--slot-start) contain var(--slot-end); }
     .vp-film .vp-scale-marker { display: block; position: absolute; left: calc(var(--sw) / 2 - 6px); top: calc(100% + 4px); width: 0; height: 0; border: 6px solid transparent; border-top: 0; border-bottom-color: var(--gold-deep); animation: vp-marker-x linear both; --tl: --film; animation-timeline: --film; --ar: contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 2) contain calc(var(--scale-from) + var(--scale-span) - var(--scale-span) / var(--n) / 2); animation-range: contain calc(var(--scale-from) + var(--scale-span) / var(--n) / 2) contain calc(var(--scale-from) + var(--scale-span) - var(--scale-span) / var(--n) / 2); }
 
-    /* The narrowest phones: smaller swatches, so "Darker" and "Lighter" stay on screen. */
-    @media (max-width: 359px) { .vp-film .vp-scale { --sw: 16px; --pitch: 20px; } .vp-film .vp-scale-swatches { gap: 4px; } .vp-film .vp-swatch { width: 16px; } }
+    /* The narrowest phones: smaller swatches, so "Darker" and "Lighter" stay on screen, and the skip link takes the eyebrow's row. */
+    @media (max-width: 359px) { .vp-film .vp-scale { --sw: 16px; --pitch: 20px; } .vp-film .vp-scale-swatches { gap: 4px; } .vp-film .vp-swatch { width: 16px; } .vp-film-scale > .vp-eyebrow { display: none; } }
+
+    /* ---- Pacing: one frame per flick, and where you are.
+       Down to the last grade, islands/film-snap.ts sets html.vp-snap and the page
+       snaps, mandatory, to the film's frames: the page's top (the hero), the drop
+       filled, the scale's title, each grade's held frame, and the statement below,
+       the way out for keys. Each has scroll-snap-stop: always, so no flick, swipe,
+       wheel notch or key passes a frame. The browser snaps; scrolling itself is
+       never scripted. A flick lands on the frame nearest where it would have
+       stopped, so frames sit 40–55% of a screen apart: a gentle flick still reaches
+       the next one, and a finger's own travel rarely passes one. */
+    html.vp-snap { scroll-snap-type: y mandatory; scroll-padding-top: 0; }
+    .vp-snap-top, .vp-film-snaps { display: block; position: absolute; left: 0; top: 0; width: 1px; height: 1px; }
+    .vp-film-snaps { inset: 0; width: auto; height: auto; pointer-events: none; }
+    .vp-film-snaps-grades { display: contents; }
+    /* A frame's share of the pinned stretch (--at), placed in the film. The screen's
+       height is taken halfway between a phone's toolbar shown and hidden, so the
+       frame lands inside its hold either way. */
+    .vp-snap-drop, .vp-snap-title, .vp-film-snaps-grades > span { position: absolute; left: 0; width: 1px; height: 1px; top: calc(var(--at) * (100% - 50svh - 50lvh)); }
+    /* The hero with its drop filled, before its words leave (vp-copy-out starts at 9%); the title in its hold. */
+    .vp-snap-drop { --at: .09; }
+    .vp-snap-title { --at: .178; }
+    .vp-film-snaps-grades > span { --at: calc(var(--sfn) + (var(--i) + .5) * var(--ssn) / var(--n)); }
+    .vp-snap-top, .vp-snap-drop, .vp-snap-title, .vp-film-snaps-grades > span, .vp-statement { scroll-snap-align: start; scroll-snap-stop: always; }
+
+    /* The colour scale is the film's page control: each swatch is a link to its grade's frame. */
+    .vp-film .vp-swatch-link { position: absolute; inset: -12px -3px; border-radius: var(--radius-xs); animation: vp-live linear both; --tl: --film; animation-timeline: --film; --ar: contain 15% contain 100%; animation-range: contain 15% contain 100%; }
+    .vp-film .vp-scale:has(:focus-visible) { animation: none; opacity: 1; }
+    /* Each grade's place in the scale, over its name. */
+    .vp-oil-count { display: block; font: var(--t-label); letter-spacing: var(--t-label-tracking); color: var(--gold-ink); font-variant-numeric: tabular-nums; }
+    /* "Skip the film", opposite the eyebrow once the film has begun; always there for the keyboard. */
+    .vp-film-stage > .vp-film-skip { display: block; align-self: start; justify-self: end; margin: calc(var(--space-6) - var(--space-1)) var(--edge) 0 0; padding: var(--space-1) 0; pointer-events: auto; font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--text-2); text-decoration: underline; text-underline-offset: .3em; opacity: 0; animation: vp-show linear both, vp-live linear both; --tl: --film, --film; animation-timeline: --film, --film; --ar: contain 13% contain 100%, contain 13% contain 100%; animation-range: contain 13% contain 100%, contain 13% contain 100%; }
+    .vp-film-stage > .vp-film-skip:hover { color: var(--gold-ink); }
+    .vp-film-stage > .vp-film-skip:focus-visible { animation: none; opacity: 1; }
+
+    /* The chapter anchor: a gold hairline across the top fills as the film plays.
+       Phones read the chapters out, and show them when the keyboard reaches them. */
+    .vp-chapters { display: block; }
+    .vp-chapters-fill { position: fixed; left: 0; right: 0; top: 0; z-index: 25; height: 2px; background: var(--gold); transform-origin: left; animation: vp-progress linear both; --tl: --film; animation-timeline: --film; --ar: contain 0% contain 100%; animation-range: contain 0% contain 100%; }
+    .vp-chapters ol { position: fixed; top: var(--space-3); left: var(--space-3); right: var(--space-3); z-index: 45; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin: 0; padding: var(--space-3) var(--space-4); list-style: none; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-float); }
+    .vp-chapters ol:not(:focus-within) { width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+    .vp-chapters a { display: inline-flex; align-items: center; min-height: var(--target); font: var(--t-small); color: var(--text); }
 
     /* The words: the scale's name, then one grade at a time. */
     .vp-film-scale { display: grid; grid-template: "x" 100% / 100%; gap: 0; padding: 0; background: none; }
     .vp-film-scale > * { grid-area: x; }
-    .vp-film-scale > .vp-eyebrow { align-self: start; justify-self: center; margin-top: var(--space-6); opacity: 0; animation: vp-show linear both; --tl: --film; animation-timeline: --film; --ar: contain 18% contain 100%; animation-range: contain 18% contain 100%; }
+    .vp-film-scale > .vp-eyebrow { align-self: start; justify-self: start; margin: var(--space-6) 0 0 var(--edge); opacity: 0; animation: vp-show linear both; --tl: --film; animation-timeline: --film; --ar: contain 18% contain 100%; animation-range: contain 18% contain 100%; }
     .vp-film-title, .vp-oils { align-self: start; margin: var(--text-top) var(--edge) 0; }
-    .vp-film-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); opacity: 0; animation: vp-word linear both; --tl: --film; animation-timeline: --film; --ar: contain 16.5% contain 23.5%; animation-range: contain 16.5% contain 23.5%; }
+    .vp-film-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); opacity: 0; animation: vp-word linear both; --tl: --film; animation-timeline: --film; --ar: contain 14.5% contain 21.5%; animation-range: contain 14.5% contain 21.5%; }
     .vp-oils { display: grid; grid-template: "g" auto / 100%; }
     .vp-oil { grid-area: g; padding: 0; border: 0; background: none; overflow: visible; opacity: 0; animation: vp-oil linear both; --tl: --film; animation-timeline: --film; --ar: contain var(--slot-start) contain var(--slot-end); animation-range: contain var(--slot-start) contain var(--slot-end); }
     .vp-oil::before, .vp-oil .vp-drop { display: none; }
@@ -270,6 +327,19 @@
       .vp-oil-name { font-size: clamp(3.5rem, 8.2cqi, 7.5rem); line-height: .94; letter-spacing: -0.045em; }
       .vp-oil-meta { margin-top: var(--space-4); font: var(--t-spec-large); }
       .vp-oil .vp-link { margin-top: var(--space-4); }
+      .vp-film-stage > .vp-film-skip { margin-top: calc(var(--space-10) - var(--space-1)); }
+      /* A dot per chapter at the right edge; its name shows on hover and keyboard focus. */
+      .vp-chapters ol, .vp-chapters ol:not(:focus-within) { top: 50%; left: auto; right: var(--space-4); z-index: 25; display: grid; gap: 0; width: auto; height: auto; padding: 0; overflow: visible; clip-path: none; border: 0; background: none; box-shadow: none; translate: 0 -50%; }
+      .vp-chapters a { position: relative; display: grid; place-items: center; width: var(--target); height: 32px; min-height: 0; color: var(--text-2); text-decoration: none; }
+      .vp-chapters a::after { content: ""; width: 8px; height: 8px; border: 1.5px solid var(--gold-deep); border-radius: 50%; transition: scale 150ms var(--ease-out), background-color 150ms var(--ease-out); }
+      .vp-chapters a[aria-current]::after { background: var(--gold); scale: 1.35; }
+      .vp-chapters a span { position: absolute; right: 100%; top: 50%; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-float); font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; white-space: nowrap; pointer-events: none; opacity: 0; translate: var(--space-2) -50%; transition: opacity 150ms var(--ease-out), translate 150ms var(--ease-out); }
+      .vp-chapters a:is(:hover, :focus-visible) span { opacity: 1; translate: 0 -50%; }
+      /* "Scroll", under the hero, gone at the first scroll. At the page's top the header
+         still pushes the stage down, so the cue sits a header higher, above the fold. */
+      .vp-scroll-cue { display: grid; justify-items: center; gap: var(--space-2); align-self: end; justify-self: center; margin-bottom: calc(var(--space-8) + var(--nav-height)); font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--text-3); animation: vp-off linear both; --tl: --film; animation-timeline: --film; --ar: contain 0% contain 4%; animation-range: contain 0% contain 4%; }
+      .vp-cue-tick { width: 1px; height: var(--space-8); overflow: hidden; background: var(--line-strong); }
+      .vp-cue-tick::after { content: ""; display: block; height: 40%; background: var(--gold-deep); animation: vp-cue 1.8s var(--ease-in-out) infinite; }
       .vp-film-note { display: block; align-self: end; justify-self: end; margin: 0 var(--edge) var(--space-8) 0; opacity: 0; animation: vp-show linear both; --tl: --film; animation-timeline: --film; --ar: contain 20% contain 100%; animation-range: contain 20% contain 100%; }
     }
 
@@ -278,7 +348,12 @@
     @keyframes vp-show { 0% { opacity: 0; } 8%, 92% { opacity: 1; } 100% { opacity: 0; } }
     @keyframes vp-glow { 0% { opacity: 0; } 20%, 80% { opacity: 1; } 100% { opacity: 0; } }
     @keyframes vp-glow-own { 0% { opacity: 0; } 50%, 75% { opacity: 1; } 100% { opacity: 0; } }
-    @keyframes vp-copy-out { to { opacity: 0; filter: blur(12px); translate: 0 -24px; pointer-events: none; } }
+    @keyframes vp-copy-out { from { opacity: 1; filter: blur(0); translate: 0 0; } to { opacity: 0; filter: blur(12px); translate: 0 -24px; } }
+    @keyframes vp-gone { to { pointer-events: none; } }
+    /* Takes taps only while its element shows (vp-show's timing). */
+    @keyframes vp-live { 0%, 100% { pointer-events: none; } 8%, 92% { pointer-events: auto; } }
+    @keyframes vp-progress { from { scale: 0 1; } 96% { scale: 1 1; opacity: 1; } to { scale: 1 1; opacity: 0; } }
+    @keyframes vp-cue { from { translate: 0 -100%; } to { translate: 0 250%; } }
     @keyframes vp-film-glide {
       from { translate: calc(var(--hx) - 50%) calc(var(--hy) - 50%); scale: var(--hs); }
       to { translate: calc(var(--fx) - 50%) calc(var(--fy) - 50%); scale: 1; }
@@ -289,9 +364,9 @@
       100% { opacity: 0; filter: blur(16px); translate: 0 -28px; scale: 1.02; }
     }
     @keyframes vp-oil {
-      0% { opacity: 0; filter: blur(14px); translate: 0 28px; z-index: 0; }
-      22%, 80% { opacity: 1; filter: none; translate: 0 0; z-index: 2; }
-      100% { opacity: 0; filter: blur(14px); translate: 0 -28px; z-index: 0; }
+      0% { opacity: 0; filter: blur(14px); translate: 0 28px; }
+      22%, 80% { opacity: 1; filter: blur(0); translate: 0 0; }
+      100% { opacity: 0; filter: blur(14px); translate: 0 -28px; }
     }
     @keyframes vp-hit { 0%, 100% { pointer-events: none; } 22%, 80% { pointer-events: auto; } }
     @keyframes vp-swatch { 0%, 100% { scale: 1; } 25%, 75% { scale: 1.3; } }
@@ -334,14 +409,14 @@
       .vp-road-steps li:nth-child(n+4) { --ar: contain 76% contain 84%; animation-range: contain 76% contain 84%; }
     }
     @keyframes vp-route { from { scale: 0 1; } to { scale: 1 1; } }
-    @keyframes vp-drive { to { translate: calc(100cqi - 100% - 44px - var(--space-6)) 0; } }
+    @keyframes vp-drive { from { translate: 0 0; } to { translate: calc(100cqi - 100% - 44px - var(--space-6)) 0; } }
     @keyframes vp-ripple { 0% { transform: scale(.6); opacity: 0; } 20% { opacity: .55; } 100% { transform: scale(2.2); opacity: 0; } }
     @keyframes vp-caption {
       0% { opacity: 0; translate: 0 16px; }
       15%, 85% { opacity: 1; translate: 0 0; }
       100% { opacity: 0; translate: 0 -16px; }
     }
-    @keyframes vp-rise-in { from { opacity: 0; translate: 0 16px; } }
+    @keyframes vp-rise-in { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
 
     /* 5 · Explore resolves letter by letter. */
     .vp-explore-word { view-timeline: --explore block; }

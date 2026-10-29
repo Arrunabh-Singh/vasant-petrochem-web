@@ -19,3 +19,6 @@ zap/
 sbom.cdx.json
 # Review screenshots (npm run shots)
 shots/
+# The Apple rig's output (tests/ios/film.mjs)
+ios-film/
+mac-film/

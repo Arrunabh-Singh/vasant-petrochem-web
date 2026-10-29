@@ -1,0 +1,133 @@
+name: Apple
+
+# The home film on real Apple WebKit, which the Linux jobs in site.yml can't
+# reproduce: Mobile Safari in the iOS 27 Simulator, swiped with a real finger
+# so Safari's toolbar hides and shows as on a phone, and desktop Safari 27.
+# Each run uploads screenshots and a report
+# (tests/ios/film.mjs, tests/film-checks.ts); a frame with a problem fails it.
+# Standard macOS runners cost nothing for a public repository.
+on:
+  pull_request:
+    paths: ["site/**", ".github/workflows/ios.yml"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apple-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  WRANGLER_SEND_METRICS: "false"
+  # Cloudflare's always-pass test key: the real one is refused on localhost.
+  PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+
+jobs:
+  iphone:
+    name: ${{ matrix.device }} (iOS ${{ matrix.os }})
+    runs-on: xcode-27
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { device: "iPhone 18 Pro", os: "27.0" }
+          - { device: "iPhone Duo", os: "27.1" }
+    defaults:
+      run:
+        working-directory: site
+    env:
+      DEVICE: ${{ matrix.device }}
+      OS: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Start the site
+        run: |
+          npm run preview > preview.log 2>&1 &
+          for i in $(seq 1 120); do curl -sf -o /dev/null http://localhost:4321/ && exit 0; sleep 1; done
+          cat preview.log; exit 1
+      - name: Boot the Simulator
+        run: |
+          xcrun simctl list runtimes
+          UDID=$(xcrun simctl list devices available -j | node -e '
+            const d = JSON.parse(require("fs").readFileSync(0, "utf8")).devices;
+            const rt = Object.keys(d).find((k) => k.endsWith("iOS-" + process.env.OS.replace(".", "-")));
+            const dev = rt && d[rt].find((x) => x.name === process.env.DEVICE);
+            if (!dev) { console.error(`no ${process.env.DEVICE} on iOS ${process.env.OS}:`, JSON.stringify(Object.fromEntries(Object.entries(d).map(([k, v]) => [k, v.map((x) => x.name)])))); process.exit(1); }
+            console.log(dev.udid);')
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          # A phone's default: motion on (the film plays only without reduced motion).
+          xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceMotionEnabled -bool false
+          xcrun simctl spawn "$UDID" defaults read com.apple.Accessibility ReduceMotionEnabled || true
+      - name: Start Appium
+        run: |
+          npm install -g appium@3.9.0
+          appium driver install xcuitest@12.22.2
+          # Appium drops a connection that stays quiet for 10 minutes, and the first session
+          # (a Simulator restart, then building WebDriverAgent) can take longer.
+          appium --port 4723 --keep-alive-timeout 1800 --log-timestamp > appium.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:4723/status && exit 0; sleep 1; done
+          cat appium.log; exit 1
+      - name: Swipe through the film
+        run: |
+          node --experimental-strip-types tests/ios/film.mjs iphone ios-film
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-film-${{ matrix.os }}
+          path: |
+            site/ios-film/
+            site/appium.log
+            site/preview.log
+          retention-days: 14
+
+  mac:
+    name: Safari 27 on macOS
+    runs-on: xcode-27
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Start the site
+        run: |
+          npm run preview > preview.log 2>&1 &
+          for i in $(seq 1 120); do curl -sf -o /dev/null http://localhost:4321/ && exit 0; sleep 1; done
+          cat preview.log; exit 1
+      - name: Start safaridriver
+        run: |
+          # A Mac's default: motion on (the runner's image reduces it, which shows the still page).
+          defaults write com.apple.universalaccess reduceMotion -bool false || true
+          defaults read com.apple.universalaccess reduceMotion || true
+          sudo safaridriver --enable
+          safaridriver -p 4444 > safaridriver.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://127.0.0.1:4444/status && exit 0; sleep 1; done
+          cat safaridriver.log; exit 1
+      - name: Play the film
+        run: node --experimental-strip-types tests/ios/film.mjs mac mac-film
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mac-film
+          path: |
+            site/mac-film/
+            site/preview.log
+          retention-days: 14

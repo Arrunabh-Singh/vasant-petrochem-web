@@ -1,7 +1,7 @@
 // Screenshots for review, at a phone (390) and a laptop (1440) width.
 //   npm run shots                     every main page, full length, as the still page
 //   npm run shots -- /quote /about    just these pages
-//   npm run shots -- --film           the home film as contact sheets, every 4% of its pinned stretch
+//   npm run shots -- --film           the home film as contact sheets: every 4% of its pinned stretch, and the frames it snaps to
 //   npm run shots -- --browser webkit an engine other than Chromium (webkit, firefox); WebKit uses iPhone 15 for the phone
 // Full-length captures use reduced motion: scroll-driven reveals show each
 // element only as it scrolls into view, so a full-page capture with motion on
@@ -68,17 +68,34 @@ for (const [width, height, tag, thumb, cols] of SIZES) {
       const stops = [];
       for (let p = 0; p <= 100; p += 4) stops.push(Math.round(top + (length * p) / 100));
       for (let y = top + length; y < total; y += Math.round(length / 12)) stops.push(Math.min(total, y));
+      const shot = async () => sharp(await page.screenshot({ caret: "initial" })).resize(thumb).png().toBuffer();
+      const h = Math.round((thumb * vh) / (phone.viewport.width));
+      const sheet = (frames, file) =>
+        sharp({ create: { width: cols * (thumb + 6), height: Math.ceil(frames.length / cols) * (h + 6), channels: 3, background: "#777" } })
+          .composite(frames.map((input, i) => ({ input, left: (i % cols) * (thumb + 6), top: Math.floor(i / cols) * (h + 6) })))
+          .png()
+          .toFile(file);
+      // The sweep with the page's snapping off, so every position shows, not the frame it would snap to.
+      await page.evaluate(() => (document.documentElement.style.scrollSnapType = "none"));
       const frames = [];
       for (const y of stops) {
         await page.evaluate((y) => scrollTo({ top: y, behavior: "instant" }), y);
         await page.waitForTimeout(250);
-        frames.push(await sharp(await page.screenshot({ caret: "initial" })).resize(thumb).png().toBuffer());
+        frames.push(await shot());
       }
-      const h = Math.round((thumb * vh) / (phone.viewport.width));
-      await sharp({ create: { width: cols * (thumb + 6), height: Math.ceil(frames.length / cols) * (h + 6), channels: 3, background: "#777" } })
-        .composite(frames.map((input, i) => ({ input, left: (i % cols) * (thumb + 6), top: Math.floor(i / cols) * (h + 6) })))
-        .png()
-        .toFile(name);
+      await sheet(frames, name);
+      // Then the frames a visitor lands on, one Page Down at a time, until the page lets go past the film.
+      if (!reduce) {
+        await page.evaluate(() => ((document.documentElement.style.scrollSnapType = ""), scrollTo({ top: 0, behavior: "instant" })));
+        const landed = [];
+        for (let i = 0; i < 20; i++) {
+          await page.waitForTimeout(700);
+          landed.push(await shot());
+          if (!(await page.evaluate(() => document.documentElement.classList.contains("vp-snap")))) break;
+          await page.keyboard.press("PageDown");
+        }
+        await sheet(landed, name.replace(/\.png$/, "-frames.png"));
+      }
     } else {
       // Scroll through first so lazy images are in the capture.
       await page.evaluate(async () => {

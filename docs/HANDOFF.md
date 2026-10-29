@@ -1,6 +1,6 @@
 # Handoff: where Vasant Petrochem's software stands
 
-Last updated 24 October 2026, after the light gold redesign went live (#38). Written for the next AI agent or person to pick up the work. Keep it current: when you finish something that changes the picture below, update this file in the same pull request.
+Last updated 28 October 2026, during the lead-engine work (#46). Written for the next AI agent or person to pick up the work. Keep it current: when you finish something that changes the picture below, update this file in the same pull request.
 
 **Read in this order:**
 1. This file: what is live, what is waiting, how to ship.
@@ -90,8 +90,9 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 - **Tokens.** Colours are named by role (`ground`, `surface`, `text`, `text-2`, `text-3`, `gold`, `gold-ink`, …) in `design-system/tokens.json`. `compileTokens` in `site/scripts/prepare.mjs` compiles them.
 - **Type.** Schibsted Grotesk (variable 400–900) for everything that reads; IBM Plex Mono for codes, values and labels.
 - **The film:**
-  - the files: `site/src/pages/index.astro`, `site/src/styles/film.css`, `site/src/islands/liquid.ts` (WebGL) and `site/src/islands/film-focus.ts` (keyboard);
+  - the files: `site/src/pages/index.astro`, `site/src/styles/film.css`, `site/src/islands/liquid.ts` (WebGL), `site/src/islands/film-focus.ts` (keyboard) and `site/src/islands/film-snap.ts` (snapping and the chapter anchor);
   - its timing lives in `--fill-end`, `--scale-from` and `--scale-span` on `.vp-film`;
+  - it snaps one frame per flick, with frames 40–55% of a screen apart; the rules, the gap model and the Apple rig are in the `motion` skill (`.claude/skills/motion/SKILL.md`);
   - the grades run darkest to lightest (`byColour` in `site/src/lib/drop.ts`), so the scroll ends in light;
   - only the grade on screen takes a click.
 - **Design artifacts** (claude.ai):
@@ -103,6 +104,18 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 
 ## 7. Open items
 
+**Work in progress (28 October): the site as a lead engine.**
+- The plan and where to resume: `docs/plans/2026-10-28-lead-engine.md`. Start at its "Resume here" section.
+- Draft PR #46 (branch `claude/sharp-cannon-807c29`) contains:
+  - the Apple rig (`.github/workflows/ios.yml`): iPhone 18 Pro, iPhone Duo and Safari 27 on macOS;
+  - iPhones playing the film natively;
+  - one frame per flick, with native CSS scroll snap, and frames 40–55% of a screen apart;
+  - the chapter anchor, the grade count, the scroll cue and the skip link;
+  - the site-wide reveals removed;
+  - the `motion` skill.
+- Still to do on #46: every check green on its latest commit (iPhone 18 Pro and Safari 27 on macOS already pass), then merge, then the owner checks on their iPhone.
+- Next, in the plan's order: PR E (the quote flow and its "Request received" peak), then PR B, PR C, PR D1 and PR D2.
+
 **Waiting on the owner.** Each has a `TODO(...)` marker in `content/`; search for it.
 - `VP-HUM-001`: legal entity name, GSTIN, Udyam, CIN and registered office.
 - `VP-HUM-002`: email on the company domain (`sales@` and the others), then retire the Gmail address.
@@ -113,6 +126,10 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 - `VP-HUM-014`: written policies (quality, health and safety, environment, ethics, sanctions screening).
 - `VP-CORP-001` and `-002`: people and careers.
 - `VP-SEO-007`: HS and CAS codes, checked by a customs broker.
+- **Cloudflare settings** (decided 28 October; the steps are in `docs/OWNER_CHECKLIST.md`, "Cloudflare"):
+  - **AI training crawlers are let in.** GPTBot, ClaudeBot and CCBot got a 403 from Cloudflare's AI bot blocking, although `robots.txt` allows them. The owner turns the block off. Then those user agents must get a 200 on `/`, `/llms.txt` and `/catalog.json`.
+  - **Web Analytics goes on** from the dashboard, with no code change. The CSP already allows its beacon. Then the home page must carry `static.cloudflareinsights.com/beacon.min.js` with no CSP errors.
+  - **Cloudflare's own MCP servers become claude.ai connectors** (GraphQL Analytics and Workers Observability), so an agent can read traffic, bots, errors and Core Web Vitals. The first report and the weekly ones follow Part 12 of the plan.
 - **Console tasks:** `docs/OWNER_CHECKLIST.md`.
 
 **Agent work, ready to pick up:**

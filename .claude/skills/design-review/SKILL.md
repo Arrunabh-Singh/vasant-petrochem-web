@@ -26,7 +26,7 @@ The run fails on horizontal overflow, console errors or CSP violations. Look at 
    - With reduced motion, everything is visible and nothing pins.
 2. **Conventions**
    - The navigation, the action bar on phones and the WhatsApp pill on laptops behave like the rest of the site.
-   - Native scrolling is never smoothed or snapped.
+   - Scrolling is never smoothed or scripted. Only the film snaps: one frame per flick, swipe or key, down to its last grade, and freely past it.
    - Forms use the right input types and keep the buyer's input on errors.
 3. **Visual craft**
    - Only tokens are used, with one accent per view, and alignment holds to the grid.
@@ -35,6 +35,8 @@ The run fails on horizontal overflow, console errors or CSP violations. Look at 
 4. **Interaction**
    - Loading, empty and error states exist and say what to do next.
    - The film's motion follows the scroll. Only transform, opacity, blur and colour move.
+   - Where you are is always visible in the film: the grade's place (`03 / 08`), the scale's marker, the hairline and, on laptops, the chapter dots. Each snap frame is a composed screen, with nothing half-faded.
+   - For anything on iPhones or Mac Safari, run the Apple rig and read its report (the `motion` skill).
 5. **Writing**
    - Plain, specific English, and buttons that say what happens.
    - Every promise comes from `content/claims.json`.
