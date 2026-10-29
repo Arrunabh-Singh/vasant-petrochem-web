@@ -27,6 +27,7 @@ const path = pagePath(Astro.url);
         <Icon name="basket" />
         <span class="vp-count" data-basket-count hidden></span>
       </a>
+      <button class="vp-nav-icon vp-nav-sound vp-js" type="button" aria-pressed="false" aria-label={t("nav.sound")} data-sound><Icon name="sound-off" /><Icon name="sound-on" /></button>
       <a class="vp-btn vp-btn-primary vp-btn-small vp-nav-cta" href={quoteHref}>{t("cta.quote")}</a>
       <button class="vp-nav-icon vp-nav-menu" type="button" popovertarget="vp-nav-sheet" aria-label={t("nav.open")}>
         <Icon name="menu" size={22} />
@@ -47,5 +48,6 @@ const path = pagePath(Astro.url);
       </ul>
     </nav>
     <a class="vp-btn vp-btn-primary vp-btn-touch vp-btn-full" href={quoteHref}>{t("cta.quote")}</a>
+    <button class="vp-sheet-sound vp-js" type="button" aria-pressed="false" data-sound><Icon name="sound-off" /><Icon name="sound-on" />{t("nav.sound")}</button>
   </div>
 </header>

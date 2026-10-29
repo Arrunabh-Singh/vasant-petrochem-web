@@ -4,6 +4,7 @@
  * the list (data-go).
  */
 import { addLine, readBasket, removeLine } from "./basket.ts";
+import { play } from "./sound.ts";
 
 const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-add]")];
 
@@ -26,7 +27,10 @@ for (const b of buttons) {
       return;
     }
     if (on) removeLine(slug);
-    else addLine(slug);
+    else {
+      addLine(slug);
+      play("add");
+    }
     sync();
   });
 }

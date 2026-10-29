@@ -1,5 +1,5 @@
 ---
-/** The error banner and the success panel a public form swaps to (filled by islands/form.ts). */
+/** The error banner and the success panel a public form swaps to (filled by islands/form.ts); a "done" slot replaces the panel. */
 import { t } from "../lib/ui.ts";
 import Icon from "./Icon.astro";
 
@@ -14,10 +14,16 @@ const { title = t("form.sent") } = Astro.props;
   <span data-form-error-text>{t("form.error")}</span>
 </div>
 <template data-form-success>
-  <div class="vp-form vp-form-done" role="status" tabindex="-1">
-    <span class="vp-done-icon"><Icon name="check" size={26} stroke={2.5} /></span>
-    <h3 class="vp-form-title">{title}</h3>
-    <p>{t("form.reference")}: <span class="vp-mono" data-reference></span></p>
-    <p>{t("form.reply")}</p>
-  </div>
+  {
+    Astro.slots.has("done") ? (
+      <slot name="done" />
+    ) : (
+      <div class="vp-form vp-form-done" role="status" tabindex="-1">
+        <span class="vp-done-icon"><Icon name="check" size={26} stroke={2.5} /></span>
+        <h3 class="vp-form-title">{title}</h3>
+        <p>{t("form.reference")}: <span class="vp-mono" data-reference></span></p>
+        <p>{t("form.reply")}</p>
+      </div>
+    )
+  }
 </template>

@@ -64,9 +64,10 @@ function succeed(form: HTMLFormElement, reply: ServerReply) {
     link.href = reply.url;
     link.hidden = false;
   }
-  form.replaceWith(done);
+  // data-done names what the confirmation replaces, when it is more than the form (the quote page's whole section).
+  (form.closest(form.dataset.done ?? "form") ?? form).replaceWith(done);
   done.focus();
-  dispatchEvent(new CustomEvent("vp:sent", { detail: { form: form.id } }));
+  dispatchEvent(new CustomEvent("vp:sent", { detail: { form: form.id, reference: reply.reference ?? null } }));
 }
 
 function setup(form: HTMLFormElement) {

@@ -1,38 +1,25 @@
 # The site as a lead engine: a film people finish, agents can read, and doors that bring buyers back
 
-## Resume here (29 October)
+## Resume here (29 October, afternoon)
+
+**The owner's order (29 October):** finish this plan, then the FUCHS Cassida GL 220 lot, in one run. Each PR merges once CI, the Apple rig and the design review are green, and the owner gets each preview link without being asked to wait for it.
 
 **Where things stand:**
-- **PR #46**, the iPhone film fix:
-  - On dc79378, 10 of 12 checks passed, iPhone 18 Pro (iOS 27.0) and Safari 27 on macOS among them.
-  - The two red ones, e2e (Firefox) and iPhone Duo (iOS 27.1), are fixed in the commit after it (below).
-  - Merge when everything is green; then the owner checks on their own iPhone.
-- **The canvas draft** of Parts 4–9 and 11: https://claude.ai/artifact/63XqLSZXhGJnpUAWWJDU8r. No owner comments yet.
-- **PR E**, the quote flow and its "Request received" peak:
-  - built and checked in Chromium at 390 and 1440, but kept local (not pushed) until #46 merges;
-  - if that work is lost, rebuild it from Part 11 and the canvas draft.
-- **Not started:** PR B, PR C, PR D1, PR D2, task #35, and the 150 kB budget guard.
-- **The owner's steps are still open** (re-checked 29 October; section 5):
-  - GPTBot, ClaudeBot and CCBot still get a 403;
-  - the home page carries no Web Analytics beacon;
-  - Cloudflare's connectors are not added yet.
-
-**The two fixes after dc79378:**
-- **e2e (Firefox):**
-  - **Cause:** the film tests waited for `networkidle`. Firefox never reached it, although every request was answered.
-  - **Fix:** `islands/motion.ts` now marks `html[data-engine]` wherever it loads the scroll engine. The tests' `open()` waits for the fonts and, where the page is marked, for `html.vp-scrub`.
-- **iPhone Duo (iOS 27.1):**
-  - **Cause:** Appium drops a connection that stays quiet for 10 minutes (`--keep-alive-timeout`, default 600 s). The Duo's first session restarted the Simulator's UI (174 s), then built WebDriverAgent. So the session request got "socket hang up" at exactly 600 s.
-  - **Fix:** the rig now starts Appium with `--keep-alive-timeout 1800`.
-  - **If the Duo still runs out of time:** build WebDriverAgent in its own step, then use `appium:usePrebuiltWDA`.
+- **Live:**
+  - #46: the Apple rig; iPhones play the film natively, one frame per flick; the chapter anchor and cues; the `motion` skill;
+  - #47: canonical links without `.html`; the rig waits for Safari to load each page.
+- **The canvas draft** (https://claude.ai/artifact/63XqLSZXhGJnpUAWWJDU8r): no comments from the owner.
+- **In review:** PR E, the quote flow and its "Request received" peak (Part 11).
+- **Not started:** PR B's finale ring, gradients, 3D drop and sound bed (its opening is built), PR C, PR D1, PR D2 and task #35.
+- **The owner's steps are still open** (section 5): GPTBot, ClaudeBot and CCBot get a 403, the home page has no Web Analytics beacon, and Cloudflare's connectors aren't added.
 
 **Then, in order:**
-1. **Merge #46.** Squash it as `fix(site): iPhones play the film natively, one frame per flick, the Apple rig (#46)`, then restart the branch from main.
-2. **PR E:** the quote flow and the `/sent` peak (Part 11). Open it as a draft PR, get the owner's OK on the preview, then merge.
-3. **PR B** (Parts 4–7 and 9). It also raises the home page's JS budget guard in `site/scripts/checks.mjs` to 150 kB.
-4. **PR C** (Part 8), with the "Finish your quote" bar and the quote tank.
-5. **PR D1, then PR D2** (Part 10). The owner applies D2's migration.
-6. **Task #35:** the design-system artifact in Sunlit gold.
+1. **PR E:** merge when green.
+2. **PR B** (Parts 4–7 and 9). It raises the home page's JS budget guard in `site/scripts/checks.mjs` to 150 kB.
+3. **PR C** (Part 8), with the "Finish your quote" bar and the quote tank. Its featured hero arrives with the Cassida lot.
+4. **PR D1, then PR D2** (Part 10). The owner OK'd D2's migration on 29 October: the agent applies it with the Supabase MCP, then re-runs the security advisor.
+5. **The FUCHS Cassida GL 220 lot**, then the collateral system, skills and naming convention. Their plan joins `docs/plans/` with the lot's first PR.
+6. **Task #35:** the design-system artifact in Sunlit gold, last, so it includes the collateral pieces.
 7. **Part 12:** its checks and first report, once the owner has made the Cloudflare changes.
 
 ### 5. Part 12: Cloudflare's own data, read by Claude (owner, 28 October: "we are on Cloudflare now; use its metrics")

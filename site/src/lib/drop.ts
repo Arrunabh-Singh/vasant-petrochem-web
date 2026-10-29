@@ -10,6 +10,8 @@ export type Tint = (typeof TintList)[number];
 export const DROP_PATH = "M50 0C47.62 4.39 0 117.26 0 126.26A50 50 0 0 0 100 126.26C100 117.26 52.38 4.39 50 0Z";
 export const DROP_H = 176.26;
 export const LEVEL = 107.07;
+/** The liquid's level in a drop filled to the brim ("Request received"). */
+export const BRIM = 4;
 export const HIGHLIGHT = "M10.1 130.3C11.2 141.5 16.2 153.2 24.2 159.6C31.4 165.3 39.4 168 47.5 167.7";
 const CHROME: [number, string][] = [
   [0, "#979797"], [0.1, "#999b9b"], [0.19, "#b1b3b2"], [0.28, "#d8dadc"], [0.33, "#f3f4f5"], [0.37, "#f5f7f9"],
@@ -44,11 +46,12 @@ const stop = (offset: number, colour: string, opacity?: number) =>
 /**
  * SVG markup for one drop. `id` must be unique on the page (gradients and the
  * clip path are referenced by id). With `title` the drop is an image with that
- * accessible name; without it, decoration.
+ * accessible name; without it, decoration. `level` is where the liquid stops (LEVEL, or BRIM).
  */
-export function dropSvg(tint: Tint, opts: { id: string; title?: string; animate?: boolean }): string {
+export function dropSvg(tint: Tint, opts: { id: string; title?: string; animate?: boolean; level?: number }): string {
   const t = TINT_COLOURS[tint];
   const id = opts.id;
+  const level = opts.level ?? LEVEL;
   const chrome = CHROME.map(([o, c]) => stop(o, c)).join("");
   const liquid = [stop(0, t.light, 0.95), stop(0.08, t.mid), stop(0.33, t.light), stop(0.58, t.mid), stop(0.84, t.deep), stop(1, t.deep)].join("");
   const a11y = opts.title ? `role="img" aria-label="${esc(opts.title)}"` : `aria-hidden="true" focusable="false"`;
@@ -56,13 +59,13 @@ export function dropSvg(tint: Tint, opts: { id: string; title?: string; animate?
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 ${DROP_H}" ${a11y} class="vp-drop-svg${opts.animate ? " vp-drop-animate" : ""}">` +
     `<defs>` +
     `<linearGradient id="${id}-c" x1="0" y1="0" x2="0" y2="${DROP_H}" gradientUnits="userSpaceOnUse">${chrome}</linearGradient>` +
-    `<linearGradient id="${id}-l" x1="0" y1="${LEVEL}" x2="0" y2="${DROP_H}" gradientUnits="userSpaceOnUse">${liquid}</linearGradient>` +
+    `<linearGradient id="${id}-l" x1="0" y1="${level}" x2="0" y2="${DROP_H}" gradientUnits="userSpaceOnUse">${liquid}</linearGradient>` +
     `<clipPath id="${id}-k"><path d="${DROP_PATH}"/></clipPath>` +
     `</defs>` +
     `<path d="${DROP_PATH}" fill="url(#${id}-c)"/>` +
     `<g clip-path="url(#${id}-k)"><g class="vp-drop-liquid">` +
-    `<rect x="-2" y="${LEVEL}" width="104" height="${(DROP_H - LEVEL + 2).toFixed(2)}" fill="url(#${id}-l)"/>` +
-    `<rect x="-2" y="${LEVEL}" width="104" height="2.2" fill="#ffffff" opacity="0.32"/>` +
+    `<rect x="-2" y="${level}" width="104" height="${(DROP_H - level + 2).toFixed(2)}" fill="url(#${id}-l)"/>` +
+    `<rect x="-2" y="${level}" width="104" height="2.2" fill="#ffffff" opacity="0.32"/>` +
     `<path d="${HIGHLIGHT}" fill="none" stroke="#ffffff" stroke-width="4.6" stroke-linecap="round" opacity="0.9"/>` +
     `</g></g>` +
     (t.rim ? `<path d="${DROP_PATH}" fill="none" stroke="#8f9496" stroke-width="1.3"/>` : "") +
