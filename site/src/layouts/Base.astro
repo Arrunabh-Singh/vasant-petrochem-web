@@ -5,6 +5,7 @@ import Footer from "../components/Footer.astro";
 import ContactBar from "../components/ContactBar.astro";
 import SearchDialog from "../components/SearchDialog.astro";
 import { company, SITE_URL } from "../lib/company.ts";
+import { pagePath } from "../lib/nav.ts";
 import { abs, jsonLd, organization } from "../lib/seo.ts";
 import { t } from "../lib/ui.ts";
 
@@ -30,7 +31,7 @@ interface Props {
 const {
   title,
   description,
-  path = Astro.url.pathname,
+  path = pagePath(Astro.url),
   ogImage = "/og/default.png",
   structured = [],
   noindex = false,

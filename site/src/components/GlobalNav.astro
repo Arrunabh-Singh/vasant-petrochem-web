@@ -1,5 +1,5 @@
 ---
-import { navigation, isCurrent } from "../lib/nav.ts";
+import { navigation, isCurrent, pagePath } from "../lib/nav.ts";
 import { t } from "../lib/ui.ts";
 import Icon from "./Icon.astro";
 
@@ -7,7 +7,7 @@ interface Props {
   quoteHref?: string;
 }
 const { quoteHref = "/quote" } = Astro.props;
-const path = Astro.url.pathname;
+const path = pagePath(Astro.url);
 ---
 <header class="vp-nav">
   <div class="vp-nav-inner">
