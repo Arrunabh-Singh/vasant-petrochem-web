@@ -6,6 +6,7 @@
 //   - an internal link to a page that does not exist
 //   - JavaScript over the page's budget (gzipped)
 //   - a stale copyright year
+//   - a canonical link to a .html address (a built page's Astro.url ends in .html)
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
 import { gzipSync } from "node:zlib";
@@ -71,6 +72,7 @@ for (const file of html) {
   const js = [...doc.matchAll(/<script\b[^>]*\bsrc="(\/_astro\/[^"]+\.js)"/gi)].reduce((n, m) => n + gzSize(m[1]), 0);
   if (js > BUDGET(page)) fail(`ships ${js} bytes of gzipped JS (budget ${BUDGET(page)})`);
   if (/vp-footer/.test(doc) && !doc.includes(year)) fail(`footer copyright does not reach ${year}`);
+  if (/<link rel="canonical" href="[^"]*\.html"/.test(doc)) fail("has a canonical link to a .html address");
 }
 
 if (problems.length) {

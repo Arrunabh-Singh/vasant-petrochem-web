@@ -34,6 +34,9 @@ export async function footerColumns() {
     .filter((col) => col.links.length > 0);
 }
 
+/** The page's own path as its links write it: a built page (`build.format: "file"`) sees "/about.html" or "/index.html". */
+export const pagePath = (url: URL) => url.pathname.replace(/(?:\/index)?\.html$/, "") || "/";
+
 /** True when `path` is `href` or below it ("/products/x" is under "/marketplace"). */
 export function isCurrent(href: string, path: string): boolean {
   if (href === "/marketplace" && path.startsWith("/products")) return true;

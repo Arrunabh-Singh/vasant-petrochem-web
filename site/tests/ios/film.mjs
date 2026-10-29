@@ -75,6 +75,13 @@ async function context(native) {
 async function go(path) {
   await context(false);
   await wd("POST", `/session/${s}/url`, { url: BASE + path });
+  // Wait for the page itself: a busy Simulator's Web Inspector can take minutes to commit a
+  // navigation, and a fixed wait once ran the checks on Safari's Start Page (iPhone Duo, 29 October).
+  const until = Date.now() + 300_000;
+  while (!(await run((u) => location.href === u && document.readyState === "complete", BASE + path))) {
+    if (Date.now() > until) throw new Error(`${path} never loaded: Safari is on ${await run(() => location.href)}`);
+    await sleep(2000);
+  }
   await sleep(3000);
   await run(startFrameLog);
 }

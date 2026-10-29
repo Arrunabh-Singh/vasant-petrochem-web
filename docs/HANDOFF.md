@@ -144,3 +144,4 @@ The hub deploys from `main` on Vercel. Database changes are applied by a person,
 - **Company facts.** They live only in `content/company.json`, and a test fails if they appear anywhere else.
 - **Hub and devices.** The hub's paths keep working on `www` only through the Worker's bypass routes (ADR-0005). Moving the hub means updating clients first.
 - **Previews.** Use a phone-sized screenshot as well as a laptop one; the owner checks on a phone first.
+- **A page's own path.** Built pages see `Astro.url.pathname` ending in `.html` (`build.format: "file"`), so canonical links once pointed at `/about.html`. Use `pagePath(Astro.url)` from `site/src/lib/nav.ts`; `npm run check` fails a canonical link to a `.html` address.

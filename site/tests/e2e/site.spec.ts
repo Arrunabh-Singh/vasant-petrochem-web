@@ -47,6 +47,14 @@ test.describe("every page", () => {
   }
 });
 
+test("each page names its own address, and the header marks where you are", async ({ page }) => {
+  await page.goto("/about");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.vasantpetrochem.com/about");
+  await expect(page.locator('.vp-nav-links a[href="/about"]')).toHaveAttribute("aria-current", "page");
+  await page.goto("/");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.vasantpetrochem.com/");
+});
+
 test("the home film plays without errors", async ({ page }) => {
   const problems = watch(page);
   await page.goto("/");
