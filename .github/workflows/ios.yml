@@ -27,7 +27,8 @@ jobs:
   iphone:
     name: ${{ matrix.device }} (iOS ${{ matrix.os }})
     runs-on: xcode-27
-    timeout-minutes: 60
+    # The iPhone 18 Pro was still going after 51 minutes on #49's busy runner.
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:

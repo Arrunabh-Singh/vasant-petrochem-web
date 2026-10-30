@@ -61,7 +61,20 @@ const caps = iphone
     }
   : { browserName: "safari" };
 const { sessionId: s } = await wd("POST", "/session", { capabilities: { alwaysMatch: caps } });
-const run = (fn, arg = null) => wd("POST", `/session/${s}/execute/sync`, { script: `return (${fn})(arguments[0]);`, args: [arg] });
+// While a page script runs past a second, Appium asks WebDriverAgent for an alert, and WDA's
+// Safari heuristic can take a centred block of the page for one: on 29 October (#49) it read the
+// whole product page as an alert, on a runner where one script took over 20 s. The site opens no
+// alerts, so the script runs again. ponytail: a real alert fails all three tries with the same error.
+async function run(fn, arg = null) {
+  for (let i = 1; ; i++) {
+    try {
+      return await wd("POST", `/session/${s}/execute/sync`, { script: `return (${fn})(arguments[0]);`, args: [arg] });
+    } catch (e) {
+      if (i === 3 || !/unexpected alert open/i.test(e.message)) throw e;
+      console.log(`WebDriverAgent saw an alert during ${fn.name || "a script"} (try ${i}): running it again`);
+    }
+  }
+}
 
 // Mobile Safari is a web context inside the native app: swipes and full-screen
 // shots (with Safari's toolbar) need the native one, the page's checks the web one.
