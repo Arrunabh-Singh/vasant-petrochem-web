@@ -46,10 +46,11 @@ if (film && filmPlays()) {
   const io = new IntersectionObserver(mark, { rootMargin: "-50% 0px -50% 0px" });
   marks.forEach((m) => io.observe(m));
   mark();
-  // A chapter in the film is reached with snapping on, so the jump lands on its frame; one past the film with it off,
-  // or the browser would hold the jump at the film's way out.
-  links.forEach((a) => a.addEventListener("click", () => {
-    root.classList.toggle("vp-snap", film.contains(document.getElementById(a.dataset.chapter ?? "")));
+  // A chapter in the film is reached with snapping on, so the jump lands on its frame; one past the film, and "Skip the
+  // film", with it off before the jump sets off: the browser would hold the jump at the film's way out, and WebKit
+  // stops a glide where it is when snapping turns off on the way (on 30 October, 245 px short of the statement).
+  [...links, ...film.querySelectorAll<HTMLAnchorElement>(".vp-film-skip")].forEach((a) => a.addEventListener("click", () => {
+    root.classList.toggle("vp-snap", film.contains(document.getElementById(a.hash.slice(1))));
   }));
 }
 

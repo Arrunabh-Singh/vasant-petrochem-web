@@ -16,7 +16,7 @@ The brand book's "Motion" chapter (`design-system/README.md`) says what the film
 | `site/src/lib/film.ts` | `iosWebKit()` and `filmPlays()`: where the film plays at all |
 | `site/src/islands/motion.ts` | Loads `scrub.ts` for Firefox and Mac Safari; `?film=scrub` forces it |
 | `site/src/islands/scrub.ts` | The engine: plays the same CSS animations from each rule's `--tl` and `--ar` |
-| `site/src/islands/film-snap.ts` | Turns snapping on and off, marks the current chapter, and sets snapping before a chapter jump |
+| `site/src/islands/film-snap.ts` | Turns snapping on and off, marks the current chapter, and sets snapping before a chapter jump or "Skip the film" |
 | `site/src/islands/film-focus.ts`, `liquid.ts` | The keyboard path through the grades; the WebGL glass drop: the drop's outline turned about its axis and lit from the north-east, a quarter-turn and the pour sound as each grade starts (geometry cached on resize, never read per frame) |
 | `site/src/islands/ring.ts`, `.vp-ring` in `film.css` | The finale's ring: the island sets each door's place, `--d`; CSS draws the arc from it |
 | `site/tests/e2e/ring.spec.ts` | The ring: the sentence, the buttons, the keys, a drag, taps, the reduced-motion grid |
@@ -75,7 +75,7 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 
 **How a frame is placed.** `--at` is a frame's share of the pinned stretch. Its top is `--at × (100% − 50svh − 50lvh)`: the screen's height taken halfway between a phone's toolbar shown and hidden, so the frame lands inside its hold either way.
 
-**When snapping is on.** `film-snap.ts` watches the last grade's frame. A pixel past it, snapping turns off, so a flick from the last grade carries on out of the film instead of springing back. A link into the page past the film (`/#explore`) glides there through the film (`scroll-behavior: smooth`), so snapping waits until its target arrives; otherwise the film's frames could catch the jump.
+**When snapping is on.** `film-snap.ts` watches the last grade's frame. A pixel past it, snapping turns off, so a flick from the last grade carries on out of the film instead of springing back. A link into the page past the film (`/#explore`) glides there through the film (`scroll-behavior: smooth`), so snapping waits until its target arrives; otherwise the film's frames could catch the jump. A chapter link, or "Skip the film", sets snapping before its jump sets off: on for a frame in the film, off for anywhere past it. Never let it change during a glide: WebKit stops the glide where it is (245 px short of the statement in CI, 30 October).
 
 | Screen | top → drop | drop → title | title → first grade | between grades |
 | --- | --- | --- | --- | --- |

@@ -231,7 +231,9 @@ test.describe("one frame per input", () => {
     if (hasTouch) await skip.tap();
     else await skip.click();
     await settle(page);
-    expect(await page.evaluate(where)).toBe("statement");
+    // Like a chapter link past the film, it turns snapping off before it jumps, so the statement lands under the page's own scroll padding.
+    await expect(page.locator("html")).not.toHaveClass(/vp-snap/);
+    expect(Math.abs(await page.evaluate(() => document.querySelector(".vp-statement")!.getBoundingClientRect().top - parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)))).toBeLessThan(2);
   });
 
   test("a chapter dot goes to its chapter", async ({ page, hasTouch, browserName }) => {

@@ -25,8 +25,15 @@ async function settle(page: Page) {
  */
 async function open(page: Page, centre = true) {
   await page.goto("/#explore");
-  // The browser scrolls to the finale smoothly once the page has loaded, stopping short by the header's room (scroll-padding-top).
-  await page.waitForFunction(() => document.fonts.status === "loaded" && document.querySelector(".vp-ring")?.classList.contains("is-live") && document.getElementById("explore")!.getBoundingClientRect().top <= parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) + 2);
+  // The browser glides to the finale once the page has loaded. It can stop a few pixels off its mark (Firefox in CI, 9 px
+  // on 30 October), so wait until the page is still with the finale at the top, every poll comparing with the last.
+  await page.waitForFunction(() => {
+    const w = window as { vpLastTop?: number };
+    const top = document.getElementById("explore")!.getBoundingClientRect().top;
+    const still = top === w.vpLastTop;
+    w.vpLastTop = top;
+    return still && Math.abs(top) < innerHeight / 4 && document.fonts.status === "loaded" && document.querySelector(".vp-ring")?.classList.contains("is-live");
+  }, null, { polling: 150 });
   if (centre) {
     await page.evaluate(() => document.querySelector(".vp-ring")!.scrollIntoView({ block: "center", behavior: "instant" }));
     // The whole sentence is read now, so the ring turns to the last door it names. Wait for that door, not only for
