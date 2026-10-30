@@ -15,8 +15,8 @@
 .vp-liquid.is-live .vp-drop-liquid { visibility: hidden; }
 .vp-liquid.is-live .vp-liquid-canvas, .vp-liquid.is-live .vp-liquid-glint { opacity: 1; }
 
-/* A statement's words and a heading's letters, each in its own span. */
-.vp-lit .w, .vp-letters .l { display: inline-block; }
+/* A statement's words, each in its own span. */
+.vp-lit .w { display: inline-block; }
 
 @media screen and (prefers-reduced-motion: no-preference) {
   /* A page title resolves from blur as the page opens. It starts at opacity

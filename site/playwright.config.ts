@@ -13,9 +13,9 @@ export default defineConfig({
   projects: [
     { name: "phone", use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
     { name: "laptop", use: { viewport: { width: 1440, height: 900 } } },
-    // Safari's engine on an iPhone, and Firefox at phone size (Firefox has no isMobile): the film first.
-    { name: "webkit-iphone", testMatch: /film\.spec\.ts/, use: { ...devices["iPhone 15"], browserName: "webkit" } },
-    { name: "firefox-phone", testMatch: /film\.spec\.ts/, use: { browserName: "firefox", viewport: { width: 390, height: 844 }, hasTouch: true } },
+    // Safari's engine on an iPhone, and Firefox at phone size (Firefox has no isMobile): the film, the opening and the ring.
+    { name: "webkit-iphone", testMatch: /(film|intro|ring)\.spec\.ts/, use: { ...devices["iPhone 15"], browserName: "webkit" } },
+    { name: "firefox-phone", testMatch: /(film|intro|ring)\.spec\.ts/, use: { browserName: "firefox", viewport: { width: 390, height: 844 }, hasTouch: true } },
   ],
   // CI starts the preview once and shares it with Lighthouse and ZAP. Locally,
   // restart the preview after a build: wrangler dev keeps serving the old Worker.

@@ -126,6 +126,10 @@ const blockItem = z.object({
   body: text(2, 600).optional(),
   /** A claim id from content/claims.json; the page shows that claim's text. */
   claim: slug.optional(),
+  /** Where the item leads: a path on this site, or "whatsapp" for a chat with the sales desk. */
+  href: z.string().regex(/^(\/[a-z0-9/-]*|whatsapp)$/).optional(),
+  /** The link's words, saying where it goes ("Open the marketplace"). */
+  cta: text(2, 40).optional(),
 });
 
 export const blockSchema = z.object({

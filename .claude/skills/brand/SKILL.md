@@ -34,6 +34,6 @@ Browsers may keep the old logo for up to a day after the merge (`/brand/*` is ca
 
 ## Motion
 
-The rules are in the brand book's "Motion" chapter. Scroll drives motion; there are no loaders and no custom cursors; scrolling is never scripted, and only the film snaps, one frame per flick; and the still page must be complete. The home film lives in `site/src/styles/film.css`, and the site-wide vocabulary in `site/src/styles/motion.css`. Before changing either, read the `motion` skill: its rules keep the film smooth on iPhones, and it says how to check a change on Apple's browsers.
+The rules are in the brand book's "Motion" chapter. Scroll drives motion; the only loader is the home page's opening, once a tab; there are no custom cursors; scrolling is never scripted, and only the film snaps, one frame per flick; and the still page must be complete. The home film lives in `site/src/styles/film.css`, and the site-wide vocabulary in `site/src/styles/motion.css`. Before changing either, read the `motion` skill: its rules keep the film smooth on iPhones, and it says how to check a change on Apple's browsers.
 
 Open a pull request with before and after screenshots. The owner approves brand changes.

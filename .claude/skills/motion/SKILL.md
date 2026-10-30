@@ -16,12 +16,16 @@ The brand book's "Motion" chapter (`design-system/README.md`) says what the film
 | `site/src/lib/film.ts` | `iosWebKit()` and `filmPlays()`: where the film plays at all |
 | `site/src/islands/motion.ts` | Loads `scrub.ts` for Firefox and Mac Safari; `?film=scrub` forces it |
 | `site/src/islands/scrub.ts` | The engine: plays the same CSS animations from each rule's `--tl` and `--ar` |
-| `site/src/islands/film-snap.ts` | Turns snapping on and off, marks the current chapter, and sets snapping before a chapter jump |
-| `site/src/islands/film-focus.ts`, `liquid.ts` | The keyboard path through the grades; the WebGL liquid (geometry cached on resize, never read per frame) |
+| `site/src/islands/film-snap.ts` | Turns snapping on and off, marks the current chapter, and sets snapping before a chapter jump or "Skip the film" |
+| `site/src/islands/film-focus.ts`, `liquid.ts` | The keyboard path through the grades; the WebGL glass drop: the drop's outline turned about its axis and lit from the north-east, a quarter-turn and the pour sound as each grade starts (geometry cached on resize, never read per frame) |
+| `site/src/islands/ring.ts`, `.vp-ring` in `film.css` | The finale's ring: the island sets each door's place, `--d`; CSS draws the arc from it |
+| `site/tests/e2e/ring.spec.ts` | The ring: the sentence, the buttons, the keys, a drag, taps, the reduced-motion grid |
 | `site/tests/film-checks.ts` | In-page checks shared by e2e and the rig: `scrollFilm`, `filmTop`, `filmProblems`, `filmState`, `frameGaps` |
 | `site/tests/unit/motion-css.test.ts` | The rules below that a test can hold |
 | `site/tests/e2e/film.spec.ts` | The film at 390 and 1440, including "one frame per input" |
 | `site/tests/ios/film.mjs`, `.github/workflows/ios.yml` | The Apple rig |
+| `site/src/components/Intro.astro`, `islands/intro-gate.js`, `islands/intro.ts`, `styles/intro.css` | The home page's opening: the gate decides before the first paint (`html.vp-opening`); the island makes it modal, fills the drop, rolls the counter and flies the drop to the hero on Enter |
+| `site/tests/e2e/intro.spec.ts` | The opening, asked for with `?loader=on` (automated browsers skip it) |
 
 ## Rules
 
@@ -35,6 +39,24 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 6. **`--sfn` and `--ssn` equal `--scale-from` and `--scale-span`.** The snap frames use the plain numbers. (Test.)
 7. **Scrolling is never scripted.** Snapping is native CSS scroll snap, on only while the film plays to its last grade. No smooth-scroll library, no `scrollTo` on wheel or touch.
 8. **Faded is not gone.** An element that fades out must also stop taking taps (`vp-gone`), or it covers the links beneath it.
+
+## The opening
+
+- **Outside `<main>`** (Base's `top` slot), so the engine and the rule that hands Firefox and Mac Safari to it never touch its motion.
+- **The gate decides before the first paint.** `intro-gate.js` is a classic, parser-blocking script at the top of the body; the dialog shows through CSS (`html.vp-opening`) before `intro.ts` makes it modal. Without that script, it fades by itself after 8 seconds.
+- **The flight lands on the hero's drop.** At Enter, `intro.ts` measures `.vp-film-float` and flies the opening's drop onto it; the hero's drop stays hidden until then, so the two never show apart. Move or resize the hero's drop and the flight follows.
+- **The counter's wheels** are three cells of IBM Plex Mono at line-height .8, on one line with the % and no whitespace between them, so the % sits on the digits' baseline.
+- **`play()` on a finished animation runs it again.** The hero title's animations are held while the opening is open; play only the ones still paused.
+- The rig starts with it: `film.mjs` loads `/?loader=on`, waits for Ready and taps Enter.
+
+## The finale's ring
+
+- **CSS draws the arc; the island only places the doors.** `ring.ts` writes each door's `--d` (its place, 0 in front, wrapped into ±half the ring), `--z` and its classes. `film.css` splits `--d` into three clamped steps (`--c1` to `--c3`) and their absolute values (`--a1` to `--a4`), and builds each door's `translateX`, `perspective`, `rotateY`, `scale`, opacity and blur from them, so each step out from the front can have its own spacing, angle and fade.
+- **Every turn is one tween** (ease-out, 300 to 700 ms), so a turn of several doors follows the arc, and the wrap happens out of sight at the back.
+- **Never from the screen's edges.** A drag that starts within 24 px of either edge is left to the browser's back gesture; one that moves more down than across is the page scrolling.
+- **`overflow: clip`, never `hidden`,** on the ring: `hidden` makes a scroll container, and the view timelines inside it stop following the page.
+- **The sentence turns it until the reader takes it.** A button, a key, a drag or a tap makes it theirs; scrolling then never moves it.
+- **Still is a grid.** With reduced motion or without the island, the doors are a plain grid of links.
 
 ## Pacing: the gap rule
 
@@ -53,7 +75,7 @@ Each comes from a real glitch. "Test" means a unit test fails if it's broken.
 
 **How a frame is placed.** `--at` is a frame's share of the pinned stretch. Its top is `--at × (100% − 50svh − 50lvh)`: the screen's height taken halfway between a phone's toolbar shown and hidden, so the frame lands inside its hold either way.
 
-**When snapping is on.** `film-snap.ts` watches the last grade's frame. A pixel past it, snapping turns off, so a flick from the last grade carries on out of the film instead of springing back.
+**When snapping is on.** `film-snap.ts` watches the last grade's frame. A pixel past it, snapping turns off, so a flick from the last grade carries on out of the film instead of springing back. A link into the page past the film (`/#explore`) glides there through the film (`scroll-behavior: smooth`), so snapping waits until its target arrives; otherwise the film's frames could catch the jump. A chapter link, or "Skip the film", sets snapping before its jump sets off: on for a frame in the film, off for anywhere past it. Never let it change during a glide: WebKit stops the glide where it is (245 px short of the statement in CI, 30 October). WebKit also leaves the root's scroll padding out of these jumps, so their target lands flush at the top there, and under the padding in Chromium and Firefox.
 
 | Screen | top → drop | drop → title | title → first grade | between grades |
 | --- | --- | --- | --- | --- |
@@ -89,6 +111,7 @@ Each grade adds 60svh to the film (`--n` counts them), so adding a product keeps
    - safaridriver's wheel actions don't scroll, so the Mac steps use `scrollFilm`, and keys after `filmTop`.
    - Appium answers a new session only after it builds WebDriverAgent, which can take more than five minutes, and on the iPhone Duo more than ten. `film.mjs` uses `node:http` because `fetch` gives up at five, and the workflow starts Appium with `--keep-alive-timeout 1800` because Appium drops a connection that stays quiet for ten (its default, 600 s).
    - A busy Simulator's Web Inspector can take minutes to commit a navigation, so `go()` waits until Safari is on the page (its address, and `readyState` complete), for up to five minutes, before any check. A fixed three-second wait once ran the checks on Safari's Start Page.
+   - `UnexpectedAlertOpenError: A modal dialog was open` with no alert on screen is WebDriverAgent's Safari heuristic: while a page script runs past a second, Appium asks for an alert, and WDA can read a centred block holding a text area and buttons (the product page) as one. `run()` tries the script three times; the site opens no alerts.
 5. **The owner's iPhone is the last check.** The Simulator proves WebKit's behaviour, not a phone's GPU.
 
 ## When an iPhone glitches

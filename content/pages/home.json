@@ -18,19 +18,6 @@
         { "title": "Central India", "claim": "from-mangaliya" }
       ]
     },
-    "explore": {
-      "heading": "Explore"
-    },
-    "find": {
-      "eyebrow": "Marketplace",
-      "heading": "Find your grade",
-      "body": "Search by grade, code or use, or start from a product family."
-    },
-    "offers": {
-      "eyebrow": "Available now",
-      "heading": "Live offers",
-      "body": "Lots ready to move, approved by the sales desk. Prices on request."
-    },
     "how": {
       "eyebrow": "How we work",
       "heading": "From enquiry to dispatch",
@@ -41,22 +28,19 @@
         { "title": "Documents", "claim": "test-reports-on-request" }
       ]
     },
-    "industries": {
-      "eyebrow": "Industries",
-      "heading": "Where our products go to work"
-    },
-    "supply": {
-      "heading": "Supply and logistics",
-      "body": "How orders are packed, dispatched and documented.",
+    "finale": {
+      "heading": "Want more?",
+      "body": "Every grade is in the [marketplace](/marketplace), and lots ready to move are in [live offers](/marketplace/offers). Start from what you make in [industries](/industries), see how orders travel in [supply](/supply), or [get a quote](/quote).",
       "items": [
-        { "title": "Drums or bulk", "claim": "drums-or-bulk" },
-        { "title": "One contact", "claim": "one-contact" }
+        { "title": "Marketplace", "body": "Every grade we supply, with its typical properties.", "href": "/marketplace", "cta": "Open the marketplace" },
+        { "title": "Live offers", "body": "Lots ready to move, approved by the sales desk.", "href": "/marketplace/offers", "cta": "See today’s lots" },
+        { "title": "Industries", "body": "Start from what you make or build.", "href": "/industries", "cta": "Find your industry" },
+        { "title": "Supply and logistics", "claim": "drums-or-bulk", "href": "/supply", "cta": "See how we supply" },
+        { "title": "Get a quote", "claim": "pricing-24h", "href": "/quote", "cta": "Start your quote" },
+        { "title": "WhatsApp", "body": "Ask the sales desk about any grade.", "href": "whatsapp", "cta": "Chat on WhatsApp" },
+        { "title": "Documents", "body": "Data sheets for every product.", "href": "/documents", "cta": "Open the documents" },
+        { "title": "About us", "claim": "manufacturing-and-trading", "href": "/about", "cta": "Read about us" }
       ]
-    },
-    "trading": {
-      "eyebrow": "Also trading",
-      "heading": "Branded lubricants and specialty oils",
-      "items": [{ "title": "Branded lubricants", "claim": "branded-lubricants" }]
     },
     "cta": {
       "heading": "Can’t find your grade?",

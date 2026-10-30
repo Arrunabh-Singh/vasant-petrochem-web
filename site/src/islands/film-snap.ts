@@ -19,7 +19,19 @@ if (film && filmPlays()) {
   const root = document.documentElement;
   // Snapping is on while the last grade's frame is at or below the screen's top: a root stretched far below the screen.
   const last = film.querySelector(".vp-film-snaps-grades > span:last-child");
-  if (last) new IntersectionObserver(([e]) => root.classList.toggle("vp-snap", e?.isIntersecting ?? false), { rootMargin: "0px 0px 10000% 0px" }).observe(last);
+  if (last) {
+    const io = new IntersectionObserver(([e]) => root.classList.toggle("vp-snap", e?.isIntersecting ?? false), { rootMargin: "0px 0px 10000% 0px" });
+    // A link into the page past the film (/#explore) scrolls there through the film: snapping waits until it arrives, or it would catch the jump.
+    const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+    if (target && !film.contains(target)) {
+      const arrive = new IntersectionObserver(([e]) => {
+        if (!e?.isIntersecting) return;
+        arrive.disconnect();
+        io.observe(last);
+      });
+      arrive.observe(target);
+    } else io.observe(last);
+  }
 
   const links = [...document.querySelectorAll<HTMLAnchorElement>(".vp-chapters a[data-chapter]")];
   const marks = links.map((a) => document.getElementById(a.dataset.chapter ?? "")).filter((m): m is HTMLElement => m !== null);
@@ -34,10 +46,11 @@ if (film && filmPlays()) {
   const io = new IntersectionObserver(mark, { rootMargin: "-50% 0px -50% 0px" });
   marks.forEach((m) => io.observe(m));
   mark();
-  // A chapter in the film is reached with snapping on, so the jump lands on its frame; one past the film with it off,
-  // or the browser would hold the jump at the film's way out.
-  links.forEach((a) => a.addEventListener("click", () => {
-    root.classList.toggle("vp-snap", film.contains(document.getElementById(a.dataset.chapter ?? "")));
+  // A chapter in the film is reached with snapping on, so the jump lands on its frame; one past the film, and "Skip the
+  // film", with it off before the jump sets off: the browser would hold the jump at the film's way out, and WebKit
+  // stops a glide where it is when snapping turns off on the way (on 30 October, 245 px short of the statement).
+  [...links, ...film.querySelectorAll<HTMLAnchorElement>(".vp-film-skip")].forEach((a) => a.addEventListener("click", () => {
+    root.classList.toggle("vp-snap", film.contains(document.getElementById(a.hash.slice(1))));
   }));
 }
 

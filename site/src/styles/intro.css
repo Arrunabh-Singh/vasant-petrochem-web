@@ -1,0 +1,100 @@
+/* The opening (components/Intro.astro, islands/intro.ts). A closed dialog
+   stays hidden; when the page opens with it (html.vp-opening, set by
+   islands/intro-gate.js before the first paint) it covers the screen at once,
+   before its script makes it modal. If that script never runs, it fades by
+   itself after 8 seconds and the page beneath is there. */
+.vp-intro {
+  position: fixed; inset: 0; z-index: 1000;
+  width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; overflow: hidden; overscroll-behavior: none;
+  grid-template-rows: auto 1fr auto;
+  background: none; color: var(--text);
+}
+html.vp-opening .vp-intro:not([open]) { display: grid; animation: vp-intro-failsafe .6s 8s var(--ease-out) both; }
+@keyframes vp-intro-failsafe { to { opacity: 0; visibility: hidden; } }
+.vp-intro[open] { display: grid; }
+.vp-intro::backdrop { background: none; }
+.vp-intro:focus-visible { box-shadow: none; }
+/* The page holds still under it. The hero's drop waits for the opening's, which flies onto it
+   (islands/intro.ts), and shows as the opening fades, so the two never show apart. */
+html:has(.vp-intro[open]) { overflow: hidden; }
+html:has(.vp-intro[open]:not(.is-gone, .is-skipping)) .vp-film-drop { visibility: hidden; }
+
+/* The ground: ivory, with the morning light in the north-east corner. On
+   Enter the ivory lifts and the light floods in from the same corner. */
+.vp-intro::before, .vp-intro::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.vp-intro::before {
+  background:
+    radial-gradient(closest-side, var(--surface), color-mix(in srgb, var(--surface) 92%, transparent) 22%, color-mix(in srgb, var(--gold-tint) 90%, transparent) 42%, color-mix(in srgb, var(--gold-sheen) 34%, transparent) 70%, transparent) right -240px top -260px / 700px 700px no-repeat,
+    radial-gradient(closest-side, color-mix(in srgb, var(--ground-raised) 95%, transparent), transparent) left -220px bottom -300px / 620px 620px no-repeat,
+    var(--ground);
+}
+.vp-intro::after {
+  background: radial-gradient(circle at 100% 0, var(--surface), color-mix(in srgb, var(--gold-tint) 85%, transparent) 32%, transparent 66%);
+  opacity: 0; transform-origin: 100% 0;
+}
+
+.vp-intro-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) var(--space-3) 0 var(--space-gutter); }
+.vp-intro-logo { display: block; width: auto; height: 28px; }
+.vp-intro-skip, .vp-intro-state, .vp-intro-parts, .vp-intro-foot { font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; }
+.vp-intro-skip { min-height: var(--target); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-sm); background: none; color: var(--text-2); text-decoration: underline; text-underline-offset: .3em; cursor: pointer; }
+.vp-intro-skip:hover { color: var(--text); text-decoration-thickness: 2px; }
+
+.vp-intro-main { display: grid; align-content: center; justify-items: center; gap: var(--space-10); padding: var(--space-6) var(--space-5); }
+.vp-intro-stage { display: flex; align-items: center; gap: var(--space-6); }
+.vp-intro-drop { position: relative; flex: none; width: 112px; line-height: 0; }
+.vp-intro-drop svg { width: 100%; height: auto; filter: drop-shadow(0 16px 18px color-mix(in srgb, var(--text) 16%, transparent)); }
+.vp-intro-drop::after { content: ""; position: absolute; left: -18%; right: -18%; top: 100%; height: 22px; margin-top: var(--space-2); border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--gold-ink) 24%, transparent), transparent); }
+/* The liquid stands at --p of the brand level (0 empty, 1 full), set by islands/intro.ts as the page gets ready. */
+.vp-intro .vp-drop-liquid { transform-box: fill-box; transform: translateY(calc((1 - var(--p, 0)) * 100%)); }
+
+.vp-intro-meter { display: grid; justify-items: start; gap: var(--space-2); }
+.vp-intro-state { color: var(--gold-ink); }
+.vp-intro-count { padding-block: .05em; white-space: nowrap; font: 600 76px/.8 var(--font-mono); letter-spacing: -.04em; color: var(--text); }
+/* Rolling digits, moved by transform alone: each wheel holds a blank and 0–9, and --d picks the cell.
+   In a .8em cell, IBM Plex Mono (ascent 1.025em, descent .275em) sets the digits' baseline .025em
+   above the cell's foot. A clipping inline-block takes its bottom margin edge as its baseline, so the
+   negative margin puts the wheel's baseline on the digits', and the % beside it sits on the same line. */
+.vp-wheel { display: inline-block; width: .6em; height: .8em; margin-bottom: -.025em; overflow: hidden; }
+.vp-wheel-strip { display: grid; grid-auto-rows: .8em; transform: translateY(calc(var(--d, 0) * -.8em)); transition: transform .35s var(--ease-out); }
+.vp-wheel-strip > span { text-align: center; }
+/* The ones wheel shows 0 from the first paint, before its script sets --d. */
+.vp-wheel:nth-child(3) { --d: 1; }
+.vp-intro-pct { margin-inline-start: var(--space-1); font-size: 20px; color: var(--text-3); }
+.vp-intro-line { display: block; width: 180px; height: 2px; background: var(--line); }
+.vp-intro-line::after { content: ""; display: block; height: 100%; background: var(--gold); transform: scaleX(var(--p, 0)); transform-origin: 0 0; }
+.vp-intro-parts { margin-top: var(--space-1); color: var(--text-3); }
+.vp-intro-parts .is-done { color: var(--gold-ink); }
+
+/* Enter appears once the page is ready; Skip intro, Enter and Escape work before that. */
+.vp-intro-go { display: grid; gap: var(--space-3); width: min(100%, 350px); transition: opacity .4s var(--ease-out); }
+.vp-intro:not(.is-ready) .vp-intro-go { opacity: 0; visibility: hidden; }
+.vp-intro-note { margin-top: calc(var(--space-4) * -1); font: var(--t-small); color: var(--text-3); text-align: center; text-wrap: balance; }
+.vp-intro-keys { display: none; }
+@media (hover: hover) and (pointer: fine) { .vp-intro-keys { display: inline; } }
+.vp-intro-foot { padding: 0 var(--space-5) var(--space-8); text-align: center; color: var(--text-3); }
+
+@media (min-width: 1024px) {
+  .vp-intro-bar { padding: var(--space-6) var(--space-14) 0 var(--space-16); }
+  .vp-intro-logo { height: 34px; }
+  .vp-intro-main { gap: var(--space-16); }
+  .vp-intro-stage { gap: var(--space-14); }
+  .vp-intro-drop { width: 176px; }
+  .vp-intro::before { background-position: right -260px top -420px, left -320px bottom -480px; background-size: 1300px 1300px, 980px 980px; }
+  .vp-intro-count { font-size: 132px; }
+  .vp-intro-pct { font-size: 28px; }
+  .vp-intro-line { width: 300px; }
+  .vp-intro-go { display: flex; justify-content: center; width: auto; }
+  .vp-intro-foot { padding: 0 var(--space-16) var(--space-10); text-align: start; }
+}
+
+/* Going in. Enter: the controls fade, the drop flies to the hero's
+   (islands/intro.ts), its liquid settles to the hero's level, the ivory lifts
+   and the light floods in. Skip intro and Escape: a quick fade. */
+.vp-intro.is-leaving :is(.vp-intro-bar, .vp-intro-meter, .vp-intro-go, .vp-intro-note, .vp-intro-foot) { opacity: 0; transition: opacity .25s var(--ease-out); }
+.vp-intro.is-leaving .vp-intro-drop::after { opacity: 0; transition: opacity .25s var(--ease-out); }
+.vp-intro.is-leaving .vp-drop-liquid { transition: transform .9s var(--ease-in-out); }
+.vp-intro.is-leaving::before { opacity: 0; transition: opacity .7s .3s var(--ease-in-out); }
+.vp-intro.is-leaving::after { animation: vp-intro-light 1.3s var(--ease-out) both; }
+@keyframes vp-intro-light { 0% { opacity: 0; transform: scale(.6); } 40% { opacity: 1; } 100% { opacity: 0; transform: scale(1.5); } }
+.vp-intro.is-gone, .vp-intro.is-skipping { opacity: 0; transition: opacity .2s var(--ease-out); }

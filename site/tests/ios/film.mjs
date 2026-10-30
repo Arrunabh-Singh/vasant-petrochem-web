@@ -6,6 +6,7 @@
 //   node --experimental-strip-types tests/ios/film.mjs mac <out>
 //     Desktop Safari through safaridriver: the film frame by frame, then Space and
 //     Page Down with the page's snapping on. (safaridriver's wheel actions don't scroll.)
+// Both start with the home page's opening (?loader=on): Ready, then Enter, a real tap on iPhones.
 // After each step it saves a screenshot and runs tests/film-checks.ts in the
 // page. Writes <out>/report.json, prints one line per step, and exits 1 if any
 // frame has a problem. Env: WD (WebDriver URL), UDID, DEVICE, OS, BASE.
@@ -60,7 +61,20 @@ const caps = iphone
     }
   : { browserName: "safari" };
 const { sessionId: s } = await wd("POST", "/session", { capabilities: { alwaysMatch: caps } });
-const run = (fn, arg = null) => wd("POST", `/session/${s}/execute/sync`, { script: `return (${fn})(arguments[0]);`, args: [arg] });
+// While a page script runs past a second, Appium asks WebDriverAgent for an alert, and WDA's
+// Safari heuristic can take a centred block of the page for one: on 29 October (#49) it read the
+// whole product page as an alert, on a runner where one script took over 20 s. The site opens no
+// alerts, so the script runs again. ponytail: a real alert fails all three tries with the same error.
+async function run(fn, arg = null) {
+  for (let i = 1; ; i++) {
+    try {
+      return await wd("POST", `/session/${s}/execute/sync`, { script: `return (${fn})(arguments[0]);`, args: [arg] });
+    } catch (e) {
+      if (i === 3 || !/unexpected alert open/i.test(e.message)) throw e;
+      console.log(`WebDriverAgent saw an alert during ${fn.name || "a script"} (try ${i}): running it again`);
+    }
+  }
+}
 
 // Mobile Safari is a web context inside the native app: swipes and full-screen
 // shots (with Safari's toolbar) need the native one, the page's checks the web one.
@@ -104,22 +118,45 @@ async function swipe(y0, y1, ms) {
 
 const steps = [];
 let failed = 0;
-async function record(page, kind, film = true) {
+async function record(page, kind, film = true, found = []) {
   await sleep(film ? 1600 : 900); // momentum settles
   await context(true);
   const n = String(steps.length).padStart(3, "0");
   writeFileSync(`${out}/${n}-${page}-${kind}.png`, Buffer.from(await wd("GET", `/session/${s}/screenshot`), "base64"));
   await context(false);
   const state = await run(filmState);
-  const problems = film && page === "home" ? await run(filmProblems, iphone) : [];
+  const problems = [...found, ...(film && page === "home" ? await run(filmProblems, iphone) : [])];
   const frames = await run(frameGaps);
   failed += problems.length;
   steps.push({ n, page, kind, state, frames, problems });
   console.log(`${n} ${page} ${kind.padEnd(6)} y=${state.y} vh=${state.vh} share=${state.share} grade=${state.grade} engine=${state.engine} native=${state.native} touch=${state.touch} reduced=${state.reduced} film=${state.tall}x slow-frames=${frames.slow}/${frames.frames} worst=${frames.worst}ms ${problems.length ? "PROBLEMS: " + problems.join("; ") : "ok"}`);
 }
 
+/** The opening (components/Intro.astro), which automated browsers skip unless asked: Ready, then in through Enter. */
+async function opening() {
+  await go("/?loader=on");
+  for (let i = 0; i < 20 && !(await run(() => !!document.querySelector(".vp-intro.is-ready"))); i++) await sleep(500);
+  await record("home", "intro", false);
+  try {
+    if (!iphone) throw new Error("desktop Safari");
+    // A real finger on the button, found by its accessible name.
+    await context(true);
+    const enter = await wd("POST", `/session/${s}/element`, { using: "accessibility id", value: "Enter" });
+    await wd("POST", `/session/${s}/element/${Object.values(enter)[0]}/click`, {});
+  } catch (e) {
+    if (iphone) console.log(`no native tap on Enter (${String(e.message).slice(0, 200)}): clicking it from the page`);
+    await context(false);
+    await run(() => document.querySelector('[data-intro-go="enter"]').click());
+  }
+  await sleep(1500); // the drop's flight to the hero
+  await context(false);
+  const open = await run(() => !!document.querySelector("dialog[data-intro]"));
+  await record("home", "enter", false, open ? ["the opening is still open after Enter"] : []);
+}
+
 try {
   if (iphone) {
+    await opening();
     await go("/");
     await record("home", "start");
     // A visitor's thumb: normal flicks down the film, a few fast ones, slow drags, then flicks back up.
@@ -135,6 +172,7 @@ try {
     }
   } else {
     await wd("POST", `/session/${s}/window/rect`, { width: 1440, height: 900 });
+    await opening();
     await go("/");
     await record("home", "start");
     for (let i = 0; i <= 40; i++) {

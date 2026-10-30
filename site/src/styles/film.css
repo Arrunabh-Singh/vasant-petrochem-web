@@ -123,24 +123,105 @@
   .vp-road-steps p { grid-column: 1; max-width: 28ch; }
 }
 
-/* --------------------------------------------------------------- 5 explore */
-.vp-explore { padding: var(--space-14) 0; }
-.vp-explore-word { margin-bottom: var(--space-10); font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); color: var(--text); }
-.vp-tiles { display: grid; gap: var(--space-5); }
-.vp-tile { display: grid; align-content: start; gap: var(--space-4); padding: var(--space-6); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
-.vp-tile h3 { font: var(--t-display-m-compact); color: var(--text); text-wrap: balance; }
-.vp-tile .vp-facts { grid-template-columns: 1fr; padding: var(--space-4) 0; }
-.vp-tile-wide { margin-bottom: var(--space-5); }
-.vp-tile-links { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-.vp-tile-links a { display: flex; align-items: center; justify-content: space-between; min-height: var(--target-touch); border-bottom: 1px solid var(--line); font: var(--t-button); color: var(--text); text-decoration: none; }
-.vp-tile-links a:hover { color: var(--gold-ink); }
+/* ------------------------------------------------------------- 5 want more */
+/* "Want more?": a sentence names the doors into the site, over soft fields of light; below it, the doors.
+   Still, they are a grid of cards; islands/ring.ts makes them a ring to turn (.vp-ring.is-live). */
+.vp-finale { position: relative; isolation: isolate; padding: var(--space-14) 0 var(--space-10); }
+/* The light fades in from the section's top edge, so no seam shows against the road above. */
+.vp-finale-light { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; -webkit-mask: linear-gradient(transparent, #000 22%); mask: linear-gradient(transparent, #000 22%); }
+.vp-finale-light span { position: absolute; display: block; border-radius: 50%; }
+.vp-finale-sun { right: -260px; top: -220px; width: 640px; aspect-ratio: 1; background: radial-gradient(closest-side, #fffffff2, rgb(240 207 138 / .55) 46%, transparent); }
+.vp-finale-ivory { left: -340px; top: 30%; width: 900px; aspect-ratio: 1; background: radial-gradient(closest-side, rgb(247 241 228 / .95), transparent); }
+/* Behind the ring, the light of the door in front: each door's field fades in as it turns to face you. */
+.vp-finale-tints { inset: 0; border-radius: 0; }
+.vp-finale-tints > span { left: 50%; bottom: -18%; width: min(130vw, 980px); aspect-ratio: 1; translate: -50% 0; --k: 34%; background: radial-gradient(closest-side, color-mix(in srgb, var(--tint-light) var(--k), transparent), color-mix(in srgb, var(--tint-light) calc(var(--k) / 3), transparent) 60%, transparent); opacity: 0; transition: opacity 700ms var(--ease-out); }
+.vp-finale-tints > .is-on { opacity: 1; }
+.vp-finale [data-tint="live"] { --tint-light: var(--live); --k: 14%; }
+.vp-finale-head { position: relative; }
+.vp-finale-title { font: var(--t-film-compact); letter-spacing: var(--t-film-compact-tracking); color: var(--text); }
+/* Large type, so its unlit words (line-strong, 3.4:1) still read. */
+.vp-finale-text { max-width: 34ch; margin-top: var(--space-5); font: 700 1.5rem/2rem var(--font-display); letter-spacing: -0.015em; color: var(--text); text-wrap: pretty; }
+.vp-finale-text a { color: inherit; text-decoration: underline 2px var(--line-strong); text-underline-offset: .2em; }
+.vp-finale-text a:hover { color: var(--gold-ink); }
+/* The word whose door faces you. */
+.vp-finale-text a.is-on { color: var(--gold-ink) !important; text-decoration: underline 3px var(--gold); }
+
+.vp-ring { margin-top: var(--space-10); }
+.vp-doors { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--space-4); max-width: var(--container); margin: 0 auto; padding: 0 var(--space-gutter); list-style: none; }
+.vp-door > a { display: flex; flex-direction: column; gap: var(--space-3); height: 100%; padding: var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); text-decoration: none; box-shadow: 0 28px 56px -30px rgb(23 18 11 / .45); }
+.vp-door > a:hover { border-color: var(--gold); }
+.vp-door-art { display: flex; align-items: flex-end; height: 48px; color: var(--gold-ink); }
+.vp-door-art .vp-drop { width: 26px; }
+.vp-door-swatches { display: flex; align-items: flex-end; gap: 4px; }
+.vp-door-swatches span { width: 14px; height: 28px; border-radius: 3px; background: linear-gradient(var(--tint-light), var(--tint-deep)); box-shadow: inset 0 0 0 1px rgb(23 18 11 / .12); }
+.vp-door-lots { display: grid; gap: 4px; }
+.vp-door-lots span { width: 130px; height: 11px; border: 1px solid rgb(143 106 42 / .35); border-radius: 3px; background: var(--gold-tint); }
+.vp-door-lots span:nth-child(2) { width: 152px; }
+.vp-door-lots span:nth-child(3) { width: 140px; border-color: var(--gold-deep); background: var(--gold); }
+.vp-door-name { display: inline-flex; align-items: center; gap: var(--space-2); font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--gold-ink); }
+.vp-door-name:has(.vp-live-dot) { color: var(--live); }
+.vp-door-text { font: 800 1.25rem/1.625rem var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+.vp-door-cta { display: inline-flex; align-items: center; gap: var(--space-2); margin-top: auto; padding-top: var(--space-2); font: var(--t-button); color: var(--gold-ink); }
+
+/* The ring: the door in front faces you, the others turn away along an arc, smaller,
+   softer and fainter with each place. islands/ring.ts sets each door's place (--d,
+   0 in front, negative to the left) and stacking (--z); the geometry is here, per
+   screen: spacing (--p1..3, in card widths), turn (--r1..3, degrees), shrink, fade and blur. */
+.vp-ring-bar { display: none; }
+.vp-ring.is-live {
+  --cw: 240px; --ch: 320px; --persp: 900px;
+  --p1: .98; --p2: .6; --p3: .3; --r1: 46; --r2: 14; --r3: 10;
+  --s1: .2; --s2: .14; --s3: .12; --o1: .2; --o2: .5; --o3: .3; --b1: 1px; --b2: 1.5px; --b3: 1.5px;
+  /* Clipped without becoming a scroll container, so focus never scrolls the ring sideways. */
+  overflow: hidden; overflow: clip; padding: var(--space-6) 0 var(--space-4);
+}
+.vp-ring.is-live .vp-doors { position: relative; display: block; height: var(--ch); max-width: none; margin: 0; padding: 0; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.vp-ring.is-live .vp-doors::after { content: ""; position: absolute; left: 50%; top: 100%; z-index: -1; width: min(900px, 92%); height: 44px; translate: -50% 0; border-radius: 50%; background: radial-gradient(closest-side, rgb(23 18 11 / .13), transparent); }
+.vp-ring.is-live .vp-door {
+  position: absolute; left: 50%; top: 0; width: var(--cw); height: var(--ch); margin-left: calc(var(--cw) / -2); z-index: var(--z, 0);
+  --c1: clamp(-1, var(--d, 0), 1);
+  --c2: clamp(-1, var(--d, 0) - var(--c1), 1);
+  --c3: clamp(-1, var(--d, 0) - var(--c1) - var(--c2), 1);
+  --a1: max(var(--c1), -1 * var(--c1));
+  --a2: max(var(--c2), -1 * var(--c2));
+  --a3: max(var(--c3), -1 * var(--c3));
+  --a4: max(var(--d, 0) - var(--c1) - var(--c2) - var(--c3), var(--c1) + var(--c2) + var(--c3) - var(--d, 0));
+  transform: translateX(calc((var(--c1) * var(--p1) + var(--c2) * var(--p2) + var(--c3) * var(--p3)) * var(--cw))) perspective(var(--persp)) rotateY(calc((var(--c1) * var(--r1) + var(--c2) * var(--r2) + var(--c3) * var(--r3)) * -1deg)) scale(calc(1 - var(--a1) * var(--s1) - var(--a2) * var(--s2) - var(--a3) * var(--s3)));
+  opacity: calc(1 - var(--a1) * var(--o1) - var(--a2) * var(--o2) - var(--a3) * var(--o3) - var(--a4));
+  filter: blur(calc(var(--a1) * var(--b1) + var(--a2) * var(--b2) + var(--a3) * var(--b3)));
+}
+.vp-ring.is-live .vp-door > a { -webkit-user-drag: none; }
+.vp-ring.is-live .vp-door.is-far { pointer-events: none; }
+.vp-ring.is-live .vp-door.is-front > a { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold), 0 0 0 6px rgb(207 161 69 / .18), 0 36px 64px -28px rgb(36 104 81 / .45); }
+.vp-ring.is-live .vp-ring-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); max-width: 30rem; margin: var(--space-4) auto 0; padding: 0 var(--space-gutter); }
+.vp-ring-btn { display: grid; place-items: center; flex: none; width: var(--target-touch); height: var(--target-touch); padding: 0; border: 1px solid var(--line-strong); border-radius: 50%; background: var(--surface); color: var(--text); cursor: pointer; }
+.vp-ring-btn:hover { border-color: var(--gold-deep); color: var(--gold-ink); }
+.vp-ring-prev .vp-icon { rotate: 90deg; }
+.vp-ring-next .vp-icon { rotate: -90deg; }
+.vp-ring-count { display: grid; justify-items: center; gap: 2px; font: var(--t-label); letter-spacing: var(--t-label-tracking); text-transform: uppercase; color: var(--text-3); text-align: center; font-variant-numeric: tabular-nums; }
+.vp-ring-hint { font: var(--t-small); font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text); }
+.vp-ring-hint-touch, .vp-ring.is-used .vp-ring-hint { display: none; }
+@media (hover: none) and (pointer: coarse) { .vp-ring-hint-pointer { display: none; } .vp-ring-hint-touch { display: inline; } }
 @media (min-width: 1024px) {
-  .vp-explore { padding: var(--space-24) 0; }
-  .vp-explore-word { font: var(--t-film); letter-spacing: var(--t-film-tracking); }
-  .vp-tiles { grid-template-columns: 1fr 1fr; gap: var(--space-6); }
-  .vp-tile { padding: var(--space-10); }
-  .vp-tile h3 { font: var(--t-display-m); }
-  .vp-tile-wide { margin-bottom: var(--space-6); }
+  .vp-finale { padding: var(--space-24) 0 var(--space-16); }
+  .vp-finale-title { font: var(--t-film); letter-spacing: var(--t-film-tracking); }
+  .vp-finale-text { max-width: 42ch; font-size: 2rem; line-height: 2.75rem; }
+  .vp-finale-sun { right: -300px; top: -380px; width: 1100px; }
+  .vp-ring { margin-top: var(--space-12); }
+  .vp-doors { grid-template-columns: repeat(4, 1fr); gap: var(--space-5); padding: 0 var(--space-8); }
+  .vp-door > a { padding: var(--space-6); }
+  .vp-door-art { height: 64px; }
+  .vp-door-art .vp-drop { width: 34px; }
+  .vp-door-swatches span { width: 18px; height: 34px; }
+  .vp-door-lots span { width: 168px; height: 14px; }
+  .vp-door-lots span:nth-child(2) { width: 200px; }
+  .vp-door-lots span:nth-child(3) { width: 184px; }
+  .vp-door-text { font-size: 1.5rem; line-height: 1.875rem; }
+  .vp-ring.is-live {
+    --cw: 280px; --ch: 360px; --persp: 1200px;
+    --p1: 1.22; --p2: .81; --p3: .38; --r1: 28; --r2: 20; --r3: 14;
+    --s1: .14; --s2: .14; --s3: .16; --o1: 0; --o2: .22; --o3: .36; --b1: 0px; --b2: 1.5px; --b3: 1.5px;
+  }
 }
 
 /* ----------------------------------------------------------------- 6 close */
@@ -299,7 +380,8 @@
     .vp-oil { grid-area: g; padding: 0; border: 0; background: none; overflow: visible; opacity: 0; animation: vp-oil linear both; --tl: --film; animation-timeline: --film; --ar: contain var(--slot-start) contain var(--slot-end); animation-range: contain var(--slot-start) contain var(--slot-end); }
     .vp-oil::before, .vp-oil .vp-drop { display: none; }
     .vp-oil .vp-link { animation: vp-hit linear both; --tl: --film; animation-timeline: --film; --ar: contain var(--slot-start) contain var(--slot-end); animation-range: contain var(--slot-start) contain var(--slot-end); }
-    .vp-oil-name { font: 900 clamp(2.25rem, 11cqi, 3.25rem)/.96 var(--font-display); letter-spacing: -0.035em; }
+    /* Each grade's name stands forward of the light: a hairline of light above it and a warm shadow below. */
+    .vp-oil-name { font: 900 clamp(2.25rem, 11cqi, 3.25rem)/.96 var(--font-display); letter-spacing: -0.035em; text-shadow: 0 -1px 0 #ffffffb3, 0 18px 36px rgb(161 110 39 / .24); }
     .vp-oil-meta { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); margin-top: var(--space-2); font: 500 .9375rem/1.375rem var(--font-mono); }
     .vp-oil-code { font: inherit; letter-spacing: var(--t-grade-tracking); }
     /* Only the grade on screen is clicked; one that has keyboard focus shows, alone. */
@@ -369,7 +451,8 @@
       100% { opacity: 0; filter: blur(14px); translate: 0 -28px; }
     }
     @keyframes vp-hit { 0%, 100% { pointer-events: none; } 22%, 80% { pointer-events: auto; } }
-    @keyframes vp-swatch { 0%, 100% { scale: 1; } 25%, 75% { scale: 1.3; } }
+    /* As the marker reaches a swatch it turns over like a tile, and turns back as the marker leaves. */
+    @keyframes vp-swatch { 0%, 100% { scale: 1; rotate: x 0deg; } 25%, 75% { scale: 1.3; rotate: x 180deg; } }
     @keyframes vp-marker-x { from { translate: 0 0; } to { translate: calc((var(--n) - 1) * var(--pitch)) 0; } }
     /* The liquid starts low in the drop (the island's LOW) and rises to the brand level. */
     @keyframes vp-level { from { transform: translateY(55%); } to { transform: none; } }
@@ -418,17 +501,16 @@
     }
     @keyframes vp-rise-in { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
 
-    /* 5 · Explore resolves letter by letter. */
-    .vp-explore-word { view-timeline: --explore block; }
-    .vp-letters .l { animation: vp-letter linear both; --tl: --explore; animation-timeline: --explore; }
-    .vp-letters .l:nth-child(1) { --ar: cover 6% cover 26%; animation-range: cover 6% cover 26%; }
-    .vp-letters .l:nth-child(2) { --ar: cover 9% cover 29%; animation-range: cover 9% cover 29%; }
-    .vp-letters .l:nth-child(3) { --ar: cover 12% cover 32%; animation-range: cover 12% cover 32%; }
-    .vp-letters .l:nth-child(4) { --ar: cover 15% cover 35%; animation-range: cover 15% cover 35%; }
-    .vp-letters .l:nth-child(5) { --ar: cover 18% cover 38%; animation-range: cover 18% cover 38%; }
-    .vp-letters .l:nth-child(6) { --ar: cover 21% cover 41%; animation-range: cover 21% cover 41%; }
-    .vp-letters .l:nth-child(7) { --ar: cover 24% cover 44%; animation-range: cover 24% cover 44%; }
-    .vp-letters .l:nth-child(n+8) { --ar: cover 27% cover 47%; animation-range: cover 27% cover 47%; }
-    @keyframes vp-letter { from { opacity: 0; filter: blur(14px); transform: translateY(.18em); } }
+    /* 5 · Want more? The title resolves out of the light; the light's fields drift at their own depths,
+       the sun slower than the page and the ivory faster, and the ring rises into place. */
+    .vp-finale { view-timeline: --finale block; }
+    .vp-finale-title { animation: vp-resolve linear both; --tl: --finale; animation-timeline: --finale; --ar: cover 10% cover 32%; animation-range: cover 10% cover 32%; }
+    .vp-finale-sun { animation: vp-drift-far linear both; --tl: --finale; animation-timeline: --finale; --ar: cover 0% cover 100%; animation-range: cover 0% cover 100%; }
+    .vp-finale-ivory { animation: vp-drift-near linear both; --tl: --finale; animation-timeline: --finale; --ar: cover 0% cover 100%; animation-range: cover 0% cover 100%; }
+    .vp-ring { animation: vp-ring-rise linear both; --tl: --finale; animation-timeline: --finale; --ar: cover 0% cover 40%; animation-range: cover 0% cover 40%; }
+    @keyframes vp-resolve { from { opacity: 0; filter: blur(14px); scale: .96; } to { opacity: 1; filter: blur(0); scale: 1; } }
+    @keyframes vp-drift-far { from { translate: 0 -14%; } to { translate: 0 14%; } }
+    @keyframes vp-drift-near { from { translate: 0 10%; } to { translate: 0 -10%; } }
+    @keyframes vp-ring-rise { from { translate: 0 72px; } to { translate: 0 0; } }
   }
 }

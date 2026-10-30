@@ -87,6 +87,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .vp-btn-primary:hover { background: var(--gold-pressed); }
 .vp-btn-secondary { background: var(--surface); color: var(--text); border-color: var(--line-strong); }
 .vp-btn-secondary:hover { background: var(--surface-hover); border-color: var(--text-3); }
+/* Pressed: the button's own colour and a 1px push, at once, in place of the browser's tap highlight. */
+.vp-btn { -webkit-tap-highlight-color: transparent; }
+.vp-btn:active:not(:disabled, [aria-disabled="true"]) { translate: 0 1px; }
+.vp-btn-primary:active { background: var(--gold-pressed); }
+.vp-btn-secondary:active { background: var(--surface-hover); border-color: var(--text-3); }
 /* On the gold band: warm black, and its outline. */
 .vp-btn-dark { background: var(--text); color: var(--gold-tint); }
 .vp-btn-dark:hover { background: var(--text-2); }
